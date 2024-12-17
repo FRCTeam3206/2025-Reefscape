@@ -19,10 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Configs;
-import frc.robot.Constants.ModuleConstants;
 
 @Logged
 public class MAXSwerveModule {
@@ -141,10 +138,7 @@ public class MAXSwerveModule {
 
   public void simulationPeriodic(double timestep) {
     // double timestep = 20e-3;
-    m_drivingSparkSim.iterate(
-        m_correctedDesiredState.speedMetersPerSecond,
-        12,
-        timestep);
+    m_drivingSparkSim.iterate(m_correctedDesiredState.speedMetersPerSecond, 12, timestep);
     m_turningEncoderSim.setPosition(m_correctedDesiredState.angle.getRadians());
   }
 }
