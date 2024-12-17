@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,6 +29,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.FlywheelSubsystem;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
@@ -45,11 +47,16 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private boolean m_fieldRelative = true;
 
+  private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
+
   // The driver's controller
   CommandXboxController m_driverController =
       new CommandXboxController(OIConstants.kDriverControllerPort);
 
   public Robot() {
+    if (isSimulation()) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
     DataLogManager.start();
     Epilogue.bind(this);
   }
@@ -75,6 +82,8 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     m_driverController.x().whileTrue(m_robotDrive.setXCommand());
     m_driverController.y().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+
+    m_driverController.povUp().whileTrue(m_flywheel.setRPMCommand(5676 / 2));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -85,6 +94,8 @@ public class Robot extends TimedRobot {
             adjustJoystick(m_driverController::getLeftX, true),
             adjustJoystick(m_driverController::getRightX, true),
             () -> m_fieldRelative));
+
+    m_flywheel.setDefaultCommand(m_flywheel.stopCommand());
   }
 
   /**
@@ -135,6 +146,24 @@ public class Robot extends TimedRobot {
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+  }
+
+  /**
+   * Apply desired adjustments to a joystick input, such as deadbanding and nonlinear transforms.
+   *
+   * @param input The input value from the joystick
+   * @param negate Whether to invert the input
+   * @return The adjusted value from the joystick
+   */
+  private DoubleSupplier adjustJoystick(DoubleSupplier input, boolean negate) {
+    return () -> {
+      double value = input.getAsDouble();
+      if (negate) {
+        value = -value;
+      }
+      value = MathUtil.applyDeadband(value, OIConstants.kDriveDeadband);
+      return value;
+    };
   }
 
   /**
@@ -207,21 +236,9 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-  /**
-   * Apply desired adjustments to a joystick input, such as deadbanding and nonlinear transforms.
-   *
-   * @param input The input value from the joystick
-   * @param negate Whether to invert the input
-   * @return The adjusted value from the joystick
-   */
-  private DoubleSupplier adjustJoystick(DoubleSupplier input, boolean negate) {
-    return () -> {
-      double value = input.getAsDouble();
-      if (negate) {
-        value = -value;
-      }
-      value = MathUtil.applyDeadband(value, OIConstants.kDriveDeadband);
-      return value;
-    };
-  }
+  @Override
+  public void simulationInit() {}
+
+  @Override
+  public void simulationPeriodic() {}
 }
