@@ -45,17 +45,6 @@ public class MAXSwerveModule {
   private final SparkMaxSim m_turningSparkSim;
   private final SparkAbsoluteEncoderSim m_turningEncoderSim;
 
-  private final DCMotorSim m_drivingMotorSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              m_driveMotor, 0.00013, 1 / ModuleConstants.kDrivingMotorReduction),
-          m_driveMotor);
-  private final DCMotorSim m_turningMotorSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              m_turnMotor, 0.00013, 1 / ModuleConstants.kDrivingMotorReduction),
-          m_driveMotor);
-
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor, encoder, and PID
    * controller. This configuration is specific to the REV MAXSwerve Module built with NEOs, SPARKS
