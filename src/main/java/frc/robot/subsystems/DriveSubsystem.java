@@ -9,6 +9,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -111,14 +112,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    double timestep = 20e-3;
+    double timestep = 0.02;
     m_frontLeft.simulationPeriodic(timestep);
     m_frontRight.simulationPeriodic(timestep);
     m_rearLeft.simulationPeriodic(timestep);
     m_rearRight.simulationPeriodic(timestep);
-
-    var rot = (m_speedsRequested.omegaRadiansPerSecond * timestep);
-    m_gyroSimAngle.set(-rot * 180.0 / Math.PI);
+    Rotation2d dTheta = Rotation2d.fromRadians(m_speedsRequested.omegaRadiansPerSecond * timestep);
+    m_gyroSimAngle.set(-getPose().getRotation().plus(dTheta).getDegrees());
   }
 
   /**
@@ -221,6 +221,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public double getYaw() {
+    return m_gyro.getYaw();
   }
 
   /**

@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -36,11 +37,13 @@ public class MAXSwerveModule {
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+  private SwerveModuleState m_correctedDesiredState = new SwerveModuleState(0.0, new Rotation2d());
 
   private final DCMotor m_driveMotor = DCMotor.getNEO(1);
   private final DCMotor m_turnMotor = DCMotor.getNeo550(1);
   private final SparkMaxSim m_drivingSparkSim;
   private final SparkMaxSim m_turningSparkSim;
+  private final SparkAbsoluteEncoderSim m_turningEncoderSim;
 
   private final DCMotorSim m_drivingMotorSim =
       new DCMotorSim(
@@ -64,6 +67,7 @@ public class MAXSwerveModule {
 
     m_drivingSparkSim = new SparkMaxSim(m_drivingSpark, m_driveMotor);
     m_turningSparkSim = new SparkMaxSim(m_turningSpark, m_turnMotor);
+    m_turningEncoderSim = m_turningSparkSim.getAbsoluteEncoderSim();
 
     m_drivingEncoder = m_drivingSpark.getEncoder();
     m_turningEncoder = m_turningSpark.getAbsoluteEncoder();
@@ -86,7 +90,8 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
-    setDesiredState(m_desiredState);
+    m_drivingSpark.set(0);
+    m_turningSpark.set(0);
   }
 
   /**
@@ -136,6 +141,7 @@ public class MAXSwerveModule {
     m_turningClosedLoopController.setReference(
         correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
+    m_correctedDesiredState = correctedDesiredState;
     m_desiredState = desiredState;
   }
 
@@ -146,7 +152,10 @@ public class MAXSwerveModule {
 
   public void simulationPeriodic(double timestep) {
     // double timestep = 20e-3;
-    m_drivingSparkSim.iterate(m_desiredState.speedMetersPerSecond, 12, timestep);
-    m_turningSparkSim.iterate(m_desiredState.angle.getRadians(), 12, timestep);
+    m_drivingSparkSim.iterate(
+        m_correctedDesiredState.speedMetersPerSecond,
+        12,
+        timestep);
+    m_turningEncoderSim.setPosition(m_correctedDesiredState.angle.getRadians());
   }
 }
