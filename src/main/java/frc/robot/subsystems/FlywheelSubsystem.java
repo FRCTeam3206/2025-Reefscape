@@ -39,7 +39,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
   private final DCMotor m_gearbox = DCMotor.getNEO(1);
   private final SparkMaxSim m_sparkMaxSim = new SparkMaxSim(m_sparkMax, m_gearbox);
-  
+
   private final FlywheelSim m_flywheelSim =
       new FlywheelSim(
           LinearSystemId.createFlywheelSystem(m_gearbox, kColsonMomentOfInertia, 1), m_gearbox);

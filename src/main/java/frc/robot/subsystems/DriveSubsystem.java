@@ -7,12 +7,14 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -48,6 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+  private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
+  private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
   // Odometry class for tracking robot pose
   @NotLogged // everything in here is already logged by modules or getPose()
@@ -103,6 +107,18 @@ public class DriveSubsystem extends SubsystemBase {
         };
 
     m_speedsMeasured = DriveConstants.kDriveKinematics.toChassisSpeeds(m_statesMeasured);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    double timestep = 20e-3;
+    m_frontLeft.simulationPeriodic(timestep);
+    m_frontRight.simulationPeriodic(timestep);
+    m_rearLeft.simulationPeriodic(timestep);
+    m_rearRight.simulationPeriodic(timestep);
+
+    var rot = (m_speedsRequested.omegaRadiansPerSecond * timestep);
+    m_gyroSimAngle.set(-rot * 180.0 / Math.PI);
   }
 
   /**
