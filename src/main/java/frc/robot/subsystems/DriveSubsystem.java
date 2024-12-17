@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    double timestep = 0.02;
+    double timestep = 20e-3;
     m_frontLeft.simulationPeriodic(timestep);
     m_frontRight.simulationPeriodic(timestep);
     m_rearLeft.simulationPeriodic(timestep);
