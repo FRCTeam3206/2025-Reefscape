@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -49,6 +50,8 @@ public class Robot extends TimedRobot {
 
   private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
 
+  private double m_lastTime = 0;
+
   // The driver's controller
   CommandXboxController m_driverController =
       new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -57,6 +60,8 @@ public class Robot extends TimedRobot {
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+    m_lastTime = Timer.getFPGATimestamp();
+
     DataLogManager.start();
     Epilogue.bind(this);
   }
@@ -241,4 +246,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  public double getLoopTime() {
+    double now = Timer.getFPGATimestamp();
+    double loopTime = now - m_lastTime;
+    m_lastTime = now;
+    return loopTime;
+  }
 }
