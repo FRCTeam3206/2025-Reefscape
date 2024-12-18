@@ -205,7 +205,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns the heading of the robot.
+   * Returns the current Yaw value in degrees reported by the sensor.
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
