@@ -138,7 +138,7 @@ public class MAXSwerveModule {
 
   public void simulationPeriodic(double timestep) {
     // double timestep = 20e-3;
-    m_drivingSparkSim.iterate(m_correctedDesiredState.speedMetersPerSecond, 12, timestep/500);
+    m_drivingSparkSim.iterate(m_correctedDesiredState.speedMetersPerSecond, 12, timestep / 500);
     m_turningEncoderSim.setPosition(m_correctedDesiredState.angle.getRadians());
   }
 }
