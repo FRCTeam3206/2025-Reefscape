@@ -81,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
   @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsMeasured = new ChassisSpeeds();
 
-  @SuppressWarnings("unused")
+  // @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsRequested = new ChassisSpeeds();
 
   /** Creates a new DriveSubsystem. */
@@ -209,6 +209,16 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
+  public double getYaw() {
+    return m_gyro.getYaw();
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return The robot's heading in degrees with continuous angle. Use when wraparound could be a
+   *     problem.
+   */
   public double getHeading() {
     return m_gyro.getRotation2d().getDegrees();
   }
@@ -220,10 +230,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  }
-
-  public double getYaw() {
-    return m_gyro.getYaw();
   }
 
   /**
