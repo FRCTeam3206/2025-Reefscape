@@ -95,6 +95,7 @@ public class Robot extends TimedRobot {
     m_driverController
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+    m_driverController.b().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
     m_driverController.povUp().whileTrue(m_flywheel.setRPMCommand(5676 / 2));
   }
@@ -238,7 +239,7 @@ public class Robot extends TimedRobot {
     DriverStation.getAlliance()
         .ifPresent((alliance) -> m_invertControls = alliance.equals(Alliance.Blue));
     if (Robot.isSimulation()) {
-      resetSimPose();
+      resetRobotToFieldCenter();
     }
   }
 
@@ -269,8 +270,7 @@ public class Robot extends TimedRobot {
     return loopTime;
   }
 
-  public void resetSimPose() {
-    if (Robot.isReal()) return;
+  public void resetRobotToFieldCenter() {
     var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     var heading =
         (DriverStation.getAlliance().isPresent()
