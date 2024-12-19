@@ -92,7 +92,9 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     m_driverController.x().whileTrue(m_robotDrive.setXCommand());
     m_driverController.y().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
-    m_driverController.a().onTrue(m_robotDrive.runOnce(m_robotDrive::zeroHeading));
+    m_driverController
+        .a()
+        .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
 
     m_driverController.povUp().whileTrue(m_flywheel.setRPMCommand(5676 / 2));
   }

@@ -200,7 +200,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-    var pose = m_odometry.getPoseMeters();
+    m_gyro.reset();
+  }
+
+  /**
+   * Zeroes the heading of the robot and sets the pose.
+   *
+   * @param pose The pose that the robot will have after reset.
+   */
+  public void zeroHeading(Pose2d pose) {
     m_gyro.reset();
     resetOdometry(pose);
   }
