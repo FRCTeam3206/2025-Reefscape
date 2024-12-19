@@ -95,9 +95,11 @@ public class Robot extends TimedRobot {
   private void configureDefaultCommands() {
     m_robotDrive.setDefaultCommand(
         m_robotDrive.driveCommand(
-            adjustJoystick(m_driverController::getLeftY, true),
-            adjustJoystick(m_driverController::getLeftX, true),
-            adjustJoystick(m_driverController::getRightX, true),
+            adjustJoystick(
+                m_driverController::getLeftY, () -> m_invertControls || !m_fieldRelative),
+            adjustJoystick(
+                m_driverController::getLeftX, () -> m_invertControls || !m_fieldRelative),
+            adjustJoystick(m_driverController::getRightX, () -> true),
             () -> m_fieldRelative));
 
     m_flywheel.setDefaultCommand(m_flywheel.stopCommand());
@@ -160,10 +162,10 @@ public class Robot extends TimedRobot {
    * @param negate Whether to invert the input
    * @return The adjusted value from the joystick
    */
-  private DoubleSupplier adjustJoystick(DoubleSupplier input, boolean negate) {
+  private DoubleSupplier adjustJoystick(DoubleSupplier input, BooleanSupplier negate) {
     return () -> {
       double value = input.getAsDouble();
-      if (negate) {
+      if (negate.getAsBoolean()) {
         value = -value;
       }
       value = MathUtil.applyDeadband(value, OIConstants.kDriveDeadband);
@@ -225,6 +227,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    DriverStation.getAlliance()
+        .ifPresent((alliance) -> m_invertControls = alliance.equals(Alliance.Blue));
   }
 
   /** This function is called periodically during operator control. */
