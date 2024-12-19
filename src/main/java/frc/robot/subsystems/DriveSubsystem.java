@@ -9,7 +9,6 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -117,8 +116,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.simulationPeriodic(timestep);
     m_rearLeft.simulationPeriodic(timestep);
     m_rearRight.simulationPeriodic(timestep);
-    Rotation2d dTheta = Rotation2d.fromRadians(m_speedsRequested.omegaRadiansPerSecond * timestep);
-    m_gyroSimAngle.set(-getPose().getRotation().plus(dTheta).getDegrees());
+    double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
+    m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
   }
 
   /**
@@ -201,7 +200,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
+    var pose = m_odometry.getPoseMeters();
     m_gyro.reset();
+    resetOdometry(pose);
   }
 
   /**

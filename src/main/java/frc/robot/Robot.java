@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +19,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -32,6 +35,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -47,6 +51,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private boolean m_fieldRelative = true;
+  private boolean m_invertControls = true;
 
   private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
 
@@ -87,6 +92,7 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     m_driverController.x().whileTrue(m_robotDrive.setXCommand());
     m_driverController.y().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+    m_driverController.a().onTrue(m_robotDrive.runOnce(m_robotDrive::zeroHeading));
 
     m_driverController.povUp().whileTrue(m_flywheel.setRPMCommand(5676 / 2));
   }
@@ -229,6 +235,9 @@ public class Robot extends TimedRobot {
     }
     DriverStation.getAlliance()
         .ifPresent((alliance) -> m_invertControls = alliance.equals(Alliance.Blue));
+    if (Robot.isSimulation()) {
+      resetSimPose();
+    }
   }
 
   /** This function is called periodically during operator control. */
@@ -256,5 +265,21 @@ public class Robot extends TimedRobot {
     double loopTime = now - m_lastTime;
     m_lastTime = now;
     return loopTime;
+  }
+
+  public void resetSimPose() {
+    if (Robot.isReal()) return;
+    var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    var heading =
+        (DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red)
+            ? 180.0
+            : 0.0;
+    // m_robotDrive.setYaw(0);
+    m_robotDrive.resetOdometry(
+        new Pose2d(
+            field.getFieldLength() / 2,
+            field.getFieldWidth() / 2,
+            Rotation2d.fromDegrees(heading)));
   }
 }
