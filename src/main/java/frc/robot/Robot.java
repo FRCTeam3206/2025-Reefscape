@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
   private double m_speedMultiplier = 0.5;
 
   private double m_lastTime = 0;
+  private double m_loopTime = 0;
 
   // The driver's controller
   CommandXboxController m_driverController =
@@ -196,6 +197,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    double now = Timer.getFPGATimestamp();
+    m_loopTime = now - m_lastTime;
+    m_lastTime = now;
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -264,10 +268,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {}
 
   public double getLoopTime() {
-    double now = Timer.getFPGATimestamp();
-    double loopTime = now - m_lastTime;
-    m_lastTime = now;
-    return loopTime;
+    return m_loopTime;
   }
 
   public void resetRobotToFieldCenter() {
