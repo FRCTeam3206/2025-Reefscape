@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
+  private double m_speedMultiplier = 0.5;
 
   private double m_lastTime = 0;
 
@@ -100,10 +101,17 @@ public class Robot extends TimedRobot {
     m_robotDrive.setDefaultCommand(
         m_robotDrive.driveCommand(
             adjustJoystick(
-                m_driverController::getLeftY, () -> m_invertControls || !m_fieldRelative),
+                m_driverController::getLeftY, 
+                () -> m_speedMultiplier, 
+                () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(
-                m_driverController::getLeftX, () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(m_driverController::getRightX, () -> true),
+                m_driverController::getLeftX, 
+                () -> m_speedMultiplier, 
+                () -> m_invertControls || !m_fieldRelative),
+            adjustJoystick(
+                m_driverController::getRightX, 
+                () -> m_speedMultiplier, 
+                () -> true),
             () -> m_fieldRelative));
   }
 
@@ -164,13 +172,14 @@ public class Robot extends TimedRobot {
    * @param negate Whether to invert the input
    * @return The adjusted value from the joystick
    */
-  private DoubleSupplier adjustJoystick(DoubleSupplier input, BooleanSupplier negate) {
+  private DoubleSupplier adjustJoystick(DoubleSupplier input, DoubleSupplier multiplier, BooleanSupplier negate) {
     return () -> {
       double value = input.getAsDouble();
       if (negate.getAsBoolean()) {
         value = -value;
       }
       value = MathUtil.applyDeadband(value, OIConstants.kDriveDeadband);
+      value = multiplier.getAsDouble() * value;
       return value;
     };
   }
