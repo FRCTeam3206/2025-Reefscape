@@ -33,7 +33,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.FlywheelSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -52,8 +51,6 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
-
-  private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
 
   private double m_lastTime = 0;
 
@@ -96,8 +93,6 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.b().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-
-    m_driverController.povUp().whileTrue(m_flywheel.setRPMCommand(5676 / 2));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -110,8 +105,6 @@ public class Robot extends TimedRobot {
                 m_driverController::getLeftX, () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getRightX, () -> true),
             () -> m_fieldRelative));
-
-    m_flywheel.setDefaultCommand(m_flywheel.stopCommand());
   }
 
   /**
