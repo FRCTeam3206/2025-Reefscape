@@ -1,22 +1,15 @@
-# MAXSwerve Java Template v2025.0
-
-See [the online changelog](https://github.com/REVrobotics/MAXSwerve-Java-Template/blob/main/CHANGELOG.md) for information about updates to the template that may have been released since you created your project.
+# Team 3205 MAXSwerve Java Template for 2025
 
 ## Description
 
-A template project for an FRC swerve drivetrain that uses REV MAXSwerve Modules.
+A project for Nya, the Team 3206 swerve drivetrain that uses REV MAXSwerve Modules. The practice bot is also equipped with a NavX v2 Gyro and an OrangePi5 connected to a Arducam OV9281 camera for AprilTags.
 
-Note that this is meant to be used with a drivetrain composed of four MAXSwerve Modules, each configured with two SPARKS MAX, a NEO as the driving motor, a NEO 550 as the turning motor, and a REV Through Bore Encoder as the absolute turning encoder.
-
-To get started, make sure you have calibrated the zero offsets for the absolute encoders in the Hardware Client using the `Absolute Encoder` tab under the associated turning SPARK MAX devices.
+The project is based on the Rev MaxSwere v2025.0.0 template with many additions. The code incorporates Epilogue for logging. It also includes simple (non-physics-based) simulation capability. 
 
 ## Prerequisites
 
 * SPARK MAX Firmware v25.0.0
-* REVLib v2025.0.0
+* REVLib v2025.0.0-beta-3
+* Studica v2025.1.1-beta-4
 
-## Configuration
 
-It is possible that this project will not work for your robot right out of the box. Various things like the CAN IDs, PIDF gains, chassis configuration, etc. must be determined for your own robot!
-
-These values can be adjusted in the `Configs.java` and `Constants.java` files.
