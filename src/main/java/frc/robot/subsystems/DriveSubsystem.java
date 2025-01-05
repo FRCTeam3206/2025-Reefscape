@@ -7,12 +7,14 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -48,6 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+  private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
+  private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
   // Odometry class for tracking robot pose
   @NotLogged // everything in here is already logged by modules or getPose()
@@ -76,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
   @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsMeasured = new ChassisSpeeds();
 
-  @SuppressWarnings("unused")
+  // @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsRequested = new ChassisSpeeds();
 
   /** Creates a new DriveSubsystem. */
@@ -103,6 +107,17 @@ public class DriveSubsystem extends SubsystemBase {
         };
 
     m_speedsMeasured = DriveConstants.kDriveKinematics.toChassisSpeeds(m_statesMeasured);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    double timestep = 20e-3;
+    m_frontLeft.simulationPeriodic(timestep);
+    m_frontRight.simulationPeriodic(timestep);
+    m_rearLeft.simulationPeriodic(timestep);
+    m_rearRight.simulationPeriodic(timestep);
+    double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
+    m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
   }
 
   /**
@@ -145,7 +160,6 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
-    @SuppressWarnings("removal")
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
@@ -190,9 +204,29 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns the heading of the robot.
+   * Zeroes the heading of the robot and sets the pose.
+   *
+   * @param pose The pose that the robot will have after reset.
+   */
+  public void zeroHeading(Pose2d pose) {
+    m_gyro.reset();
+    resetOdometry(pose);
+  }
+
+  /**
+   * Returns the current Yaw value in degrees reported by the sensor.
    *
    * @return the robot's heading in degrees, from -180 to 180
+   */
+  public double getYaw() {
+    return m_gyro.getYaw();
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return The robot's heading in degrees with continuous angle. Use when wraparound could be a
+   *     problem.
    */
   public double getHeading() {
     return m_gyro.getRotation2d().getDegrees();
