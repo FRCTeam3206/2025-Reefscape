@@ -244,6 +244,7 @@ public class Robot extends TimedRobot {
         .ifPresent((alliance) -> m_invertControls = alliance.equals(Alliance.Blue));
     if (Robot.isSimulation()) {
       resetRobotToFieldCenter();
+      m_invertControls = true;
     }
   }
 
@@ -278,7 +279,7 @@ public class Robot extends TimedRobot {
                 && DriverStation.getAlliance().get() == Alliance.Red)
             ? 180.0
             : 0.0;
-    // m_robotDrive.setYaw(0);
+    m_robotDrive.zeroHeading();
     m_robotDrive.resetOdometry(
         new Pose2d(
             field.getFieldLength() / 2,
