@@ -56,6 +56,8 @@ public class Robot extends TimedRobot {
   private double m_lastTime = 0;
   private double m_loopTime = 0;
 
+  private Alliance m_prevAlliance = null;
+
   // The driver's controller
   CommandXboxController m_driverController =
       new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -90,11 +92,11 @@ public class Robot extends TimedRobot {
    */
   private void configureButtonBindings() {
     m_driverController.x().whileTrue(m_robotDrive.setXCommand());
-    m_driverController.y().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+    m_driverController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
     m_driverController
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_driverController.b().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -240,10 +242,15 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    DriverStation.getAlliance()
-        .ifPresent((alliance) -> m_invertControls = alliance.equals(Alliance.Blue));
+    if (!DriverStation.getAlliance().isEmpty()) {
+      var alliance = DriverStation.getAlliance().get();
+      m_invertControls = alliance.equals(Alliance.Blue);
+      if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
+        resetRobotToFieldCenter();
+        m_prevAlliance = alliance;
+      }
+    }
     if (Robot.isSimulation()) {
-      resetRobotToFieldCenter();
       m_invertControls = true;
     }
   }
