@@ -8,6 +8,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -56,6 +57,7 @@ public class Robot extends TimedRobot {
   private double m_lastTime = 0;
   private double m_loopTime = 0;
 
+  @NotLogged
   private Alliance m_prevAlliance = null;
 
   // The driver's controller
@@ -250,9 +252,9 @@ public class Robot extends TimedRobot {
         m_prevAlliance = alliance;
       }
     }
-    if (Robot.isSimulation()) {
-      m_invertControls = true;
-    }
+    // if (Robot.isSimulation()) {
+    //   m_invertControls = true;
+    // }
   }
 
   /** This function is called periodically during operator control. */
