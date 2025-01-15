@@ -57,8 +57,7 @@ public class Robot extends TimedRobot {
   private double m_lastTime = 0;
   private double m_loopTime = 0;
 
-  @NotLogged
-  private Alliance m_prevAlliance = null;
+  @NotLogged private Alliance m_prevAlliance = null;
 
   // The driver's controller
   CommandXboxController m_driverController =
