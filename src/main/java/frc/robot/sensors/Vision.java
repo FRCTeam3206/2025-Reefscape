@@ -1,7 +1,6 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -84,7 +83,8 @@ public class Vision {
       Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
     if (estimatedPose.isEmpty()) {
       // No pose input. Default to single-tag std devs
-      curStdDevs = VisionConstants.kSingleTagStdDevs;
+      // Don't trust this because it doesn't know anything.
+      curStdDevs = VisionConstants.kUntrustworthyStdDevs;
 
     } else {
       // Pose present. Start running Heuristic
@@ -92,10 +92,14 @@ public class Vision {
       int numTags = 0;
       double avgDist = 0;
 
+      PhotonTrackedTarget firstTarget = new PhotonTrackedTarget();
       // Precalculation - see how many tags we found, and calculate an average-distance metric
       for (var tgt : targets) {
         var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
         if (tagPose.isEmpty()) continue;
+        if (numTags == 0) {
+          firstTarget = tgt;
+        }
         numTags++;
         avgDist +=
             tagPose
@@ -107,15 +111,21 @@ public class Vision {
 
       if (numTags == 0) {
         // No tags visible. Default to single-tag std devs
-        curStdDevs = VisionConstants.kSingleTagStdDevs;
+        // Don't trust this because it doesn't know anything.
+        curStdDevs = VisionConstants.kUntrustworthyStdDevs;
       } else {
         // One or more tags visible, run the full heuristic.
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         if (numTags > 1) estStdDevs = VisionConstants.kMultiTagStdDevs;
+        // Don't trust if there is only one tag and either the ambiguity is greater than 0.2 or it
+        // returns -1 (meaning it's invalid).
+        if (numTags == 1
+            && (firstTarget.getPoseAmbiguity() > 0.2 || firstTarget.getPoseAmbiguity() == -1)) {
+          estStdDevs = VisionConstants.kUntrustworthyStdDevs;
+        }
         // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
-          estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        if (numTags == 1 && avgDist > 4) estStdDevs = VisionConstants.kUntrustworthyStdDevs;
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
         curStdDevs = estStdDevs;
       }
