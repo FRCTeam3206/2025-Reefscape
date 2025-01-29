@@ -4,10 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -107,5 +115,31 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class VisionConstants {
+    public static final AprilTagFieldLayout kTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+    // Camera 1
+    public static final String kCamera1Name = "AprilTagCamera1";
+    public static final Transform3d kRobotToCamera1 =
+        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(15), 0));
+
+    // The standard deviations of our vision estimated poses, which affect correction rate
+    // (Fake values. Experiment and determine estimation noise on an actual robot.)
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
+
+  public static final class VisionSimConstants {
+    public static final int kCameraWidth = 640;
+    public static final int kCameraHeight = 480;
+    public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(100);
+    public static final double kAvgDetectionNoisePixels = 0.25;
+    public static final double kStdDevDetectionNoisePixels = 0.08;
+    public static final int kImageCaptureFPS = 20;
+    public static final int kAvgLatencyMs = 35;
+    public static final int kStdDevLatencyMs = 5;
   }
 }
