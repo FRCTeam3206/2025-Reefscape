@@ -72,6 +72,9 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 14;
 
     public static final boolean kGyroReversed = false;
+
+    // These values need to be tuned.
+    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(1, 1, 2);
   }
 
   public static final class ModuleConstants {
