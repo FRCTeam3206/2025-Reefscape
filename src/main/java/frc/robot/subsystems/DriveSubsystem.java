@@ -144,6 +144,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.simulationPeriodic(timestep);
     double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
     m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
+
+    visionSim.update(getPose());
   }
 
   /**

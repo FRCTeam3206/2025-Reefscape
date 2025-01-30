@@ -74,7 +74,7 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
 
     // These values need to be tuned.
-    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(1, 1, 2);
+    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.5, 0.5, 0.1);
   }
 
   public static final class ModuleConstants {
@@ -127,7 +127,7 @@ public final class Constants {
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
-        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(15), 0));
+        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(-15), 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
