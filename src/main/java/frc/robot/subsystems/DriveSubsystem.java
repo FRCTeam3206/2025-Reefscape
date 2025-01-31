@@ -74,8 +74,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
           },
           new Pose2d());
-          // DriveConstants.kStateStdDevs,
-          // VisionConstants.kSingleTagStdDevs);
 
   private SwerveModuleState[] m_statesMeasured =
       new SwerveModuleState[] {
