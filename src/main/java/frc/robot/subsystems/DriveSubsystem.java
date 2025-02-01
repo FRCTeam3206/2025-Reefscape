@@ -8,18 +8,24 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.sensors.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import org.photonvision.simulation.VisionSystemSim;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase {
@@ -50,13 +56,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+  private final Vision vision;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
-  // Odometry class for tracking robot pose
+  final VisionSystemSim visionSim;
+
   @NotLogged // everything in here is already logged by modules or getPose()
-  private SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
+  private final SwerveDrivePoseEstimator m_poseEstimator =
+      new SwerveDrivePoseEstimator(
           DriveConstants.kDriveKinematics,
           m_gyro.getRotation2d(),
           new SwerveModulePosition[] {
@@ -64,7 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
-          });
+          },
+          new Pose2d());
 
   private SwerveModuleState[] m_statesMeasured =
       new SwerveModuleState[] {
@@ -84,12 +93,17 @@ public class DriveSubsystem extends SubsystemBase {
   private ChassisSpeeds m_speedsRequested = new ChassisSpeeds();
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {}
+  public DriveSubsystem() {
+    visionSim = new VisionSystemSim("main-sim");
+    visionSim.addAprilTags(VisionConstants.kTagLayout);
+
+    vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
+  }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    m_odometry.update(
+    m_poseEstimator.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -97,6 +111,16 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+
+    vision
+        .getEstimatedGlobalPose()
+        .ifPresent(
+            est -> {
+              // Change our trust in the measurement based on the tags we can see
+              var estStdDevs = vision.getEstimationStdDevs();
+
+              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+            });
 
     m_statesMeasured =
         new SwerveModuleState[] {
@@ -118,6 +142,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.simulationPeriodic(timestep);
     double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
     m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
+
+    visionSim.update(getPose());
   }
 
   /**
@@ -126,7 +152,13 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
+  }
+
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+  public void addVisionMeasurement(
+      Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**
@@ -135,7 +167,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
+    m_poseEstimator.resetPosition(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
