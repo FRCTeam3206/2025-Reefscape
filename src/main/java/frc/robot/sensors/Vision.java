@@ -24,6 +24,9 @@ public class Vision {
   private final PhotonPoseEstimator photonEstimator;
   final VisionSystemSim visionSim;
   private Matrix<N3, N1> curStdDevs;
+  private double yawTag;
+  private double distanceTag;
+  private int goalID;
 
   public Vision(String cameraName, Transform3d robotToCamera, VisionSystemSim visionSim) {
     this.visionSim = visionSim;
