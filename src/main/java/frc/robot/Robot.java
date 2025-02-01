@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_driverController.y().whileTrue(m_robotDrive.alignToAprilTagCommand());
   }
 
   /** Use this method to define default commands for subsystems. */

@@ -123,6 +123,8 @@ public final class Constants {
   public static final class VisionConstants {
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    
+    public static final double kTurnSpeedMultiplier = -1.0 / 60.0;
 
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";

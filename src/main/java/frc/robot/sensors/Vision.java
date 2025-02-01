@@ -24,9 +24,10 @@ public class Vision {
   private final PhotonPoseEstimator photonEstimator;
   final VisionSystemSim visionSim;
   private Matrix<N3, N1> curStdDevs;
-  private double yawTag;
-  private double distanceTag;
-  private int goalID;
+  private double yawToTag = 0;
+  private double tagArea = 0;
+  private int goalID = 7;
+  private boolean targetVisible = false;
 
   public Vision(String cameraName, Transform3d robotToCamera, VisionSystemSim visionSim) {
     this.visionSim = visionSim;
@@ -160,5 +161,42 @@ public class Vision {
   public Field2d getSimDebugField() {
     if (!Robot.isSimulation()) return null;
     return visionSim.getDebugField();
+  }
+
+  public void updateYawDistance(int newGoal) {
+    goalID = newGoal;
+    updateYawDistance();
+  }
+
+  public void updateYawDistance() {
+    var results = camera.getAllUnreadResults();
+    if (!results.isEmpty()) {
+      var result = results.get(results.size() - 1);
+      if (result.hasTargets()) {
+        for (var target : result.getTargets()) {
+          if (target.getFiducialId() == goalID) {
+            yawToTag = target.getYaw();
+            tagArea = target.getArea();
+            targetVisible = true;
+          }
+        }
+      }
+    }
+  }
+
+  public double getYawToTag() {
+    return yawToTag;
+  }
+
+  public double getTagArea() {
+    return tagArea;
+  }
+
+  public int getGoalID() {
+    return goalID;
+  }
+
+  public boolean getTargetVisible() {
+    return targetVisible;
   }
 }

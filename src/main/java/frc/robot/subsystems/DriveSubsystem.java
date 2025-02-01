@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -112,15 +113,21 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
-    vision
-        .getEstimatedGlobalPose()
-        .ifPresent(
-            est -> {
-              // Change our trust in the measurement based on the tags we can see
-              var estStdDevs = vision.getEstimationStdDevs();
+    // vision
+    //     .getEstimatedGlobalPose()
+    //     .ifPresent(
+    //         est -> {
+    //           // Change our trust in the measurement based on the tags we can see
+    //           var estStdDevs = vision.getEstimationStdDevs();
 
-              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-            });
+    //           addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
+    // estStdDevs);
+    //         });
+    vision.updateYawDistance();
+    SmartDashboard.putNumber("Current yaw value:", vision.getYawToTag());
+    SmartDashboard.putNumber("Current area value:", vision.getTagArea());
+    SmartDashboard.putNumber("Current goal ID:", vision.getGoalID());
+    SmartDashboard.putBoolean("Target visibility:", vision.getTargetVisible());
 
     m_statesMeasured =
         new SwerveModuleState[] {
@@ -201,6 +208,18 @@ public class DriveSubsystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     setModuleStates(swerveModuleStates);
+  }
+
+  public void alignToAprilTag() {
+    drive(0, 0, vision.getYawToTag() * VisionConstants.kTurnSpeedMultiplier, false);
+  }
+
+  public double calculateTurnSpeed(double yaw) {
+    return Math.signum(yaw) * Math.sqrt(Math.abs(yaw)) * VisionConstants.kTurnSpeedMultiplier;
+  }
+
+  public Command alignToAprilTagCommand() { 
+    return this.run(() -> alignToAprilTag());
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
