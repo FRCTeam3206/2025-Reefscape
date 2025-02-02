@@ -211,7 +211,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void alignToAprilTag() {
-    drive(0, 0, vision.getYawToTag() * VisionConstants.kTurnSpeedMultiplier, false);
+    if (vision.getTargetVisible()) {
+      drive(0, 0, calculateTurnSpeed(vision.getYawToTag()), false);
+    }
   }
 
   public double calculateTurnSpeed(double yaw) {

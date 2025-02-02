@@ -170,6 +170,7 @@ public class Vision {
 
   public void updateYawDistance() {
     var results = camera.getAllUnreadResults();
+    targetVisible = false;
     if (!results.isEmpty()) {
       var result = results.get(results.size() - 1);
       if (result.hasTargets()) {
