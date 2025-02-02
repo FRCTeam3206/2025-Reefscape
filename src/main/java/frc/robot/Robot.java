@@ -30,9 +30,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.pathing.PathingCommandGenerator;
+import frc.pathing.robotprofile.RobotProfile;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PathingConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -62,6 +66,17 @@ public class Robot extends TimedRobot {
   // The driver's controller
   CommandXboxController m_driverController =
       new CommandXboxController(OIConstants.kDriverControllerPort);
+
+  RobotProfile m_robotProfile =
+      new RobotProfile(
+          PathingConstants.kRobotMassKg,
+          ModuleConstants.kWheelDiameterMeters,
+          PathingConstants.kRobotLengthMeters,
+          PathingConstants.kRobotWidthMeters,
+          PathingConstants.kDriveMotor);
+  PathingCommandGenerator m_pathGen =
+      new PathingCommandGenerator(
+          m_robotProfile, m_robotDrive::getPose, m_robotDrive::driveSpeed, m_robotDrive);
 
   public Robot() {
     if (isSimulation()) {
@@ -98,6 +113,8 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+
+    // m_driverController.y().whileTrue(m_pathGen.);
   }
 
   /** Use this method to define default commands for subsystems. */

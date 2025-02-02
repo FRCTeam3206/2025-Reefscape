@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.pathing.robotprofile.RobotProfile;
-import me.nabdev.pathfinding.Pathfinder;
-import me.nabdev.pathfinding.structures.ImpossiblePathException;
-import me.nabdev.pathfinding.structures.Path;
-
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.structures.ImpossiblePathException;
+import me.nabdev.pathfinding.structures.Path;
 
 /** A command to go to the given position. */
 public class PathingCommand extends Command {

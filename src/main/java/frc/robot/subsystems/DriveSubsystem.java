@@ -203,6 +203,14 @@ public class DriveSubsystem extends SubsystemBase {
     setModuleStates(swerveModuleStates);
   }
 
+  public void driveSpeed(ChassisSpeeds speeds) {
+    drive(
+        speeds.vxMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+        speeds.vyMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+        speeds.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
+        true);
+  }
+
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
     setModuleStates(DriveConstants.kStatesX);

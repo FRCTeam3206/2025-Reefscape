@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.pathing.robotprofile.Motor;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -146,5 +147,12 @@ public final class Constants {
     public static final int kImageCaptureFPS = 20;
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
+  }
+
+  public static final class PathingConstants {
+    public static final double kRobotMassKg = 200;
+    public static final double kRobotLengthMeters = Units.inchesToMeters(35); // including bumpers
+    public static final double kRobotWidthMeters = kRobotLengthMeters; // including bumpers
+    public static final Motor kDriveMotor = Motor.NEO();
   }
 }
