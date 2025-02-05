@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -147,4 +148,13 @@ public final class Constants {
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
   }
+
+  public static final class CoralConstants {
+    // random numbers right now
+    public static final int kFirstMotorCanId = 30;
+    public static final int kSecondMotorCanId = 40;
+    // Might not end up being "Neo550", Line 155
+    public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
+  }
+
 }
