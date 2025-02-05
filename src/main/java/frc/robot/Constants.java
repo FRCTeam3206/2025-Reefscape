@@ -237,12 +237,30 @@ public final class Constants {
           };
     }
 
+    public static final class Sensor {
+      //idk what units or whatever since idk what sensors we're using
+      public static final double kDistanceTillItsDangerous = 2;
+    }
+
+    public static final class Controller {
+      // private static final double
+      // forgot what i was writing here but it was probably important
+    }
+
     public static final class Encoder {
       // Distance of movement per encoder pulse
       public static final double kDistancePerPulse = 2.0 * Math.PI * 0.0508 / 4096;
       // Change this later idk what it is
       public static final int kAChannel = 0;
       public static final int kBChannel = 1;
+    }
+
+    //ways the elevator can go
+    //It aint really needed i just learned what an enum is and watned 2 use it 
+    public static enum WaysItCanMove {
+      down,
+      up,
+      nowhere
     }
   }
 
