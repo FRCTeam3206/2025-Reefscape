@@ -30,6 +30,8 @@ import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Elevator m_elevator = new Elevator();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -118,6 +121,7 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
+    m_elevator.setDefaultCommand(m_elevator.stop());
   }
 
   /**
