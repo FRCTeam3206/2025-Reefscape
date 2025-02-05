@@ -14,8 +14,6 @@ public class Algae extends SubsystemBase {
 
   private final SparkMaxSim m_armMotorSim =
       new SparkMaxSim(m_armMotor, AlgaeConstants.kArmMotorType);
-  private final SparkMaxSim m_wheelsMotorSim =
-      new SparkMaxSim(m_wheelsMotor, AlgaeConstants.kWheelsMotorType);
 
   public Algae() {}
 
