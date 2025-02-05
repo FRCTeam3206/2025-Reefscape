@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -53,6 +54,8 @@ public class Robot extends TimedRobot {
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
+
+  private final Coral m_coral = new Coral();
 
   private double m_lastTime = 0;
   private double m_loopTime = 0;
