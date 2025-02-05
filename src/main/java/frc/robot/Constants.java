@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -146,5 +147,13 @@ public final class Constants {
     public static final int kImageCaptureFPS = 20;
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
+  }
+
+  public static final class AlgaeConstants {
+    public static final int kArmCanId = 20;
+    public static final int kWheelsCanId = 21;
+
+    public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
+    public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
   }
 }
