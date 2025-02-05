@@ -147,4 +147,9 @@ public final class Constants {
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
   }
+
+  public static final class ClimberConstants {
+    //TODO change this to the real can id
+    public static final int kCanId = 1000;
+  }
 }

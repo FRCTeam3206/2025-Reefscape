@@ -59,6 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final Vision vision;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
+  private final Climber m_climber = new Climber();
 
   final VisionSystemSim visionSim;
 
