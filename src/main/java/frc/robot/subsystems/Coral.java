@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 
@@ -37,4 +39,25 @@ public class Coral extends SubsystemBase {
     m_coralRight.set(0);
     m_coralLeft.set(0);
   }
+
+  public Command intakeCommand() {
+    return this.run(() -> intake());
+  }
+
+  public Command outakeCommand() {
+    return this.run(() -> outake());
+  }
+
+  public Command moveLeftCommand() {
+    return this.run(() -> moveLeft());
+  }
+
+  public Command moveRightCommand() {
+    return this.run(() -> moveRight());
+  }
+
+  public Command stopCommand() {
+    return this.run(() -> stop());
+  }
+
 }
