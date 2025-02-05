@@ -147,4 +147,70 @@ public final class Constants {
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
   }
+
+  public static final class ElevatorConstants {
+    // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
+    public static final int kWeight = 20;
+    // voltage for the simulation
+    public static final double kVoltage = 1;
+    // max elevator speed
+    public static final double kMaxVelocity = 2.45;
+    // Xi Jinping my beloved
+    // glory to the CCP
+    // in seconds for some reason
+    public static final double kUpdateFrequency = 0.02;
+
+    public static final class Motor {
+      // idk what port it is replace it later
+      public static final int kPort = 99999;
+      // something spark related
+      public static final int kId = 3;
+      /*between -1 and 1
+      https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
+      Make it negative to reverse it
+      IDK the units*/
+      public static final double kSpeed = 0.1;
+      // how many motors in gearbox
+      public static final int kHowManyInGearbox = 2;
+    }
+
+    // something for the simulation I Dont Really Know!
+    public static final class Mechanism2d {
+      // meters i think
+      public static final double kWidth = 20;
+      public static final double kHeight = 50;
+      public static final double kXDistance = 10;
+      public static final double kYDistance = 0;
+    }
+
+    public static final class Measurements {
+      // meters
+      public static final double kBottomHeight = 0;
+      public static final double kTopHeight = 1.25;
+      public static final double kDrumRadius = 0.0508;
+      // kilograms
+      public static final double kWeight = 15.87;
+      // Gearing of the gearbox on elevator (Positive values = reduction)
+      public static final double kGearing = 15;
+      // Standard deviation of elevator sim (set to 0 for no noise)
+      // why is it an array?? What
+      public static final double[] kStandardDeviation =
+          new double[] {
+            0, 0,
+          };
+    }
+
+    public static final class Controller {
+      // private static final double
+      // forgot what i was writing here but it was probably important
+    }
+
+    public static final class Encoder {
+      // Distance of movement per encoder pulse
+      public static final double kDistancePerPulse = 2.0 * Math.PI * 0.0508 / 4096;
+      // Change this later idk what it is
+      public static final int kAChannel = 0;
+      public static final int kBChannel = 1;
+    }
+  }
 }

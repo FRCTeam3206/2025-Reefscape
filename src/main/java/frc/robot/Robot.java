@@ -34,6 +34,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -50,6 +51,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Elevator m_elevator = new Elevator();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -98,6 +100,15 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+
+    // the pov is the little plus shaped thing on the right side
+    // WHen its going up the elevator goes up, when its down it goes down,
+    // when its doing nothing it stops
+    // TODO the simulation crashes when it goes left or right so the whole robot might crash too.
+    // Very Bad!!!
+    m_driverController.povUp().onTrue(m_elevator.up());
+    m_driverController.povDown().onTrue(m_elevator.down());
+    m_driverController.povCenter().onTrue(m_elevator.stop());
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -114,6 +125,7 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getRightX, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
+    m_elevator.setDefaultCommand(m_elevator.stop());
   }
 
   /**
