@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase implements AutoCloseable {
@@ -34,16 +35,19 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   // Standard classes for controlling our elevator
   private final ProfiledPIDController m_controller =
-      // TODO also move these magic numbers to constants
       new ProfiledPIDController(
-          10,
-          0,
-          0,
+          Constants.ElevatorConstants.Controller.Kp,
+          Constants.ElevatorConstants.Controller.Ki,
+          Constants.ElevatorConstants.Controller.Kd,
           new TrapezoidProfile.Constraints(
               ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxVelocity));
 
-  // TODO move these magic number s to constants
-  ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0, 0.762, 0.762, 0);
+  ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
+    Constants.ElevatorConstants.FeedForward.Ks, 
+    Constants.ElevatorConstants.FeedForward.Kg, 
+    Constants.ElevatorConstants.FeedForward.Kv, 
+    Constants.ElevatorConstants.FeedForward.Ka
+  );
 
   // the encoderssssss
   private final Encoder m_encoder =

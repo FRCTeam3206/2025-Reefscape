@@ -174,6 +174,24 @@ public final class Constants {
       public static final int kHowManyInGearbox = 2;
     }
 
+    public static final class Controller {
+      public static final double Kp = 10;
+      public static final double Ki = 0;
+      public static final double Kd = 0;
+    }
+
+    public static final class FeedForward {
+      // Static gain (volts)
+      public static final double Ks = 0;
+      // Gravity gain (volts)
+      public static final double Kg = 0.762;
+      // Velocity gain (volts per m/s)
+      public static final double Kv = 0.762;
+      // Acceleration gain (volts per m/s^2)
+      public static final double Ka = 0;
+    }
+
+
     // something for the simulation I Dont Really Know!
     public static final class Mechanism2d {
       // meters i think
@@ -198,11 +216,6 @@ public final class Constants {
           new double[] {
             0, 0,
           };
-    }
-
-    public static final class Controller {
-      // private static final double
-      // forgot what i was writing here but it was probably important
     }
 
     public static final class Encoder {
