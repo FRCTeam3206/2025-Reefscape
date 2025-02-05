@@ -1,31 +1,40 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj2.command.Command;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 
 public class Coral extends SubsystemBase {
-    private final SparkMax m_coralFirst = new SparkMax(CoralConstants.kFirstMotorCanId, MotorType.kBrushless);
-    private final SparkMax m_coralSecond = new SparkMax(CoralConstants.kSecondMotorCanId, MotorType.kBrushless);
-    
-    public Coral(){}
+  private final SparkMax m_coralLeft =
+      new SparkMax(CoralConstants.kFirstMotorCanId, MotorType.kBrushless);
+  private final SparkMax m_coralRight =
+      new SparkMax(CoralConstants.kSecondMotorCanId, MotorType.kBrushless);
 
-    public void setFirstSpeed(double speed){
-        m_coralFirst.set(speed);
-    }
+  public Coral() {}
 
-    public void setSecondSpeed(double speed){
-        m_coralSecond.set(speed);
-    }
+  public void intake() {
+    m_coralLeft.set(CoralConstants.kLeftIntakeSpeed);
+    m_coralRight.set(CoralConstants.kRightIntakeSpeed);
+  }
 
-    public Command setFirstSpeedCommand() {
-        return this.run();
-    }
-    
+  public void outake() {
+    m_coralLeft.set(CoralConstants.kLeftOutakeSpeed);
+    m_coralRight.set(CoralConstants.kRightOutakeSpeed);
+  }
+
+  public void moveLeft() {
+    m_coralLeft.set(CoralConstants.kLeftIntakeSpeed);
+    m_coralRight.set(0);
+  }
+
+  public void moveRight() {
+    m_coralRight.set(CoralConstants.kRightIntakeSpeed);
+    m_coralLeft.set(0);
+  }
+
+  public void stop() {
+    m_coralRight.set(0);
+    m_coralLeft.set(0);
+  }
 }
-

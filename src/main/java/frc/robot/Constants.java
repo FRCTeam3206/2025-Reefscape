@@ -155,10 +155,9 @@ public final class Constants {
     public static final int kSecondMotorCanId = 40;
     // Might not end up being "Neo550", Line 155
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
-    public static final double kFirstIntakeSpeed = 0.1;
-    public static final double kSecondIntakeSpeed = (-kFirstIntakeSpeed);
-    public static final double kFirstOutakeSpeed = -0.1;
-    public static final double kSecondOutakeSpeed = (-kFirstIntakeSpeed);
+    public static final double kLeftIntakeSpeed = 0.1;
+    public static final double kRightIntakeSpeed = (-kLeftIntakeSpeed);
+    public static final double kLeftOutakeSpeed = -0.1;
+    public static final double kRightOutakeSpeed = (-kLeftIntakeSpeed);
   }
-
 }
