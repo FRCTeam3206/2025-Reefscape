@@ -153,7 +153,7 @@ public final class Constants {
     // random numbers right now
     public static final int kFirstMotorCanId = 30;
     public static final int kSecondMotorCanId = 40;
-    // Might not end up being "Neo550", Line 155
+    // Might not end up being "Neo550", Line 157
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
     public static final double kLeftIntakeSpeed = 0.1;
     public static final double kRightIntakeSpeed = (-kLeftIntakeSpeed);
