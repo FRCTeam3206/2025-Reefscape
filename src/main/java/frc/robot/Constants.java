@@ -162,7 +162,7 @@ public final class Constants {
 
     public static final class Motor {
       // idk what port it is replace it later
-      public static final int kPort = 99999;
+      public static final int kPort = 0;
       // something spark related
       public static final int kId = 3;
       /*between -1 and 1
@@ -207,9 +207,9 @@ public final class Constants {
       public static final double kTopHeight = 1.25;
       public static final double kDrumRadius = 0.0508;
       // kilograms
-      public static final double kWeight = 15.87;
+      public static final double kWeight = 2; //15.87;
       // Gearing of the gearbox on elevator (Positive values = reduction)
-      public static final double kGearing = 15;
+      public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
       // why is it an array?? What
       public static final double[] kStandardDeviation =
