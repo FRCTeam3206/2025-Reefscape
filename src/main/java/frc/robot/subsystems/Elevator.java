@@ -18,12 +18,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SensorUtil;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -49,29 +46,30 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
           new TrapezoidProfile.Constraints(
               ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxVelocity));
 
-  ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
-    Constants.ElevatorConstants.FeedForward.Ks, 
-    Constants.ElevatorConstants.FeedForward.Kg, 
-    Constants.ElevatorConstants.FeedForward.Kv, 
-    Constants.ElevatorConstants.FeedForward.Ka
-  );
+  ElevatorFeedforward m_feedforward =
+      new ElevatorFeedforward(
+          Constants.ElevatorConstants.FeedForward.Ks,
+          Constants.ElevatorConstants.FeedForward.Kg,
+          Constants.ElevatorConstants.FeedForward.Kv,
+          Constants.ElevatorConstants.FeedForward.Ka);
 
   // the encoderssssss
   private final Encoder m_encoder =
       new Encoder(ElevatorConstants.Encoder.kAChannel, ElevatorConstants.Encoder.kBChannel);
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
-  private final SparkMax m_motor = new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
+  private final SparkMax m_motor =
+      new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
   private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
 
   // Simulation classes help us simulate what's going on, including gravity.
   // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
   private final ElevatorSim m_elevatorSim =
-  /*they should really puy the link to the docs somewhere in the class definition
-   * IDK how javadoc works but jsdoc has @see something like THHat
-   * ANWYAYS heres the link lel
-   *  https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
-   */
+      /*they should really puy the link to the docs somewhere in the class definition
+       * IDK how javadoc works but jsdoc has @see something like THHat
+       * ANWYAYS heres the link lel
+       *  https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
+       */
       new ElevatorSim(
           m_elevatorGearbox,
           ElevatorConstants.Measurements.kGearing,
@@ -95,11 +93,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       m_mech2dRoot.append(
           new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
 
-  //TODO add a sensor to change this when it camt move down
-  //somethin like.... SENSOR... event.. its really short... change one of these to false...
+  // TODO add a sensor to change this when it camt move down
+  // somethin like.... SENSOR... event.. its really short... change one of these to false...
   private boolean canMoveDown = true;
   private boolean canMoveUp = true;
-  //nowhere, up, or down
+  // nowhere, up, or down
   private WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
 
   /** Subsystem constructor. */
@@ -115,7 +113,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
-    // TODO the old one used set m_motorSim.getSpeed() but sparkmax doesnt have that soo its broke now
+    // TODO the old one used set m_motorSim.getSpeed() but sparkmax doesnt have that soo its broke
+    // now
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     // Next, we update it. The standard loop time is 20ms.
@@ -123,11 +122,9 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
     // Required to keep a SparkMax working
     m_motorSim.iterate(
-      m_elevatorSim.getVelocityMetersPerSecond(), 
-      RoboRioSim.getVInVoltage(), 
-      ElevatorConstants.kUpdateFrequency
-    );
-
+        m_elevatorSim.getVelocityMetersPerSecond(),
+        RoboRioSim.getVInVoltage(),
+        ElevatorConstants.kUpdateFrequency);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
@@ -143,10 +140,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    * So we dont break things!!!
    */
   public void periodic() {
-    //im gettin a loop overrun on this a lot. IS the computer stupid? Its like 5 logic gates and 4 memory lookups
+    // im gettin a loop overrun on this a lot. IS the computer stupid? Its like 5 logic gates and 4
+    // memory lookups
     // if (
     //   (wheresItGoin == ElevatorConstants.WaysItCanMove.up && !canMoveUp) ||
-    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) || 
+    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) ||
     //   m_elevatorSim.hasHitUpperLimit() || m_elevatorSim.hasHitLowerLimit()) {
     //   // i think the indentation is wrong but we aint got prettier so nobody ll know,...
     //     stop();
@@ -155,6 +153,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   /**
    * Run control loop to reach and maintain goal.
+   *
    * @param goal the position to maintain
    * @param speed how fast to go 0 (slow) to 1 (fast)
    */
@@ -164,22 +163,23 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     double pidOutput = m_controller.calculate(m_encoder.getDistance());
     double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
     m_motor.setVoltage(pidOutput + feedforwardOutput);
-    // //im just adding random shit at this point to get it to work 
+    // //im just adding random shit at this point to get it to work
     // m_elevatorSim.setInputVoltage(pidOutput + feedforwardOutput);
     // m_motorSim.setBusVoltage(feedforwardOutput);
-    //teto
+    // teto
     SmartDashboard.putNumber("Position meters", m_encoderSim.getDistance());
     SmartDashboard.putString("Movement", wheresItGoin.toString());
   }
 
   /**
    * Run control loop to reach and maintain goal.
+   *
    * @param goal where to go, IDK the units!!
    * @return nuthin!
    */
   public void reachGoal(double goal) {
     reachGoal(goal, 1);
-    //i hope i dont get stack overflow! !! !! I>mgiht though im stupid
+    // i hope i dont get stack overflow! !! !! I>mgiht though im stupid
   }
 
   /** makes it go up until stop() */

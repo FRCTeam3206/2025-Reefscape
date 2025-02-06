@@ -191,7 +191,6 @@ public final class Constants {
       public static final double Ka = 0;
     }
 
-
     // something for the simulation I Dont Really Know!
     public static final class Mechanism2d {
       // meters i think
@@ -207,7 +206,7 @@ public final class Constants {
       public static final double kTopHeight = 1.25;
       public static final double kDrumRadius = 0.0508;
       // kilograms
-      public static final double kWeight = 2; //15.87;
+      public static final double kWeight = 2; // 15.87;
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
@@ -219,7 +218,7 @@ public final class Constants {
     }
 
     public static final class Sensor {
-      //idk what units or whatever since idk what sensors we're using
+      // idk what units or whatever since idk what sensors we're using
       public static final double kDistanceTillItsDangerous = 2;
     }
 
@@ -231,8 +230,8 @@ public final class Constants {
       public static final int kBChannel = 1;
     }
 
-    //ways the elevator can go
-    //It aint really needed i just learned what an enum is and watned 2 use it 
+    // ways the elevator can go
+    // It aint really needed i just learned what an enum is and watned 2 use it
     public static enum WaysItCanMove {
       down,
       up,

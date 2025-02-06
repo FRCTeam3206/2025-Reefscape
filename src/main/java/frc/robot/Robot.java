@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-//import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     m_lastTime = Timer.getFPGATimestamp();
 
     DataLogManager.start();
-    //Epilogue.bind(this);
+    // Epilogue.bind(this);
   }
 
   /**
@@ -106,12 +106,12 @@ public class Robot extends TimedRobot {
     // when its doing nothing it stops
     // TODO the simulation crashes when it goes left or right so the whole robot might crash too.
     // Very Bad!!!
-    //TODO make it so you can use the joy stick and make it move slow or fast
-    //the stick
-    //Stick
-    //You see the joke funny because before
-    //4
-    //Four
+    // TODO make it so you can use the joy stick and make it move slow or fast
+    // the stick
+    // Stick
+    // You see the joke funny because before
+    // 4
+    // Four
     m_driverController.povUp().onTrue(m_elevator.up());
     m_driverController.povDown().onTrue(m_elevator.down());
     m_driverController.povCenter().onTrue(m_elevator.stop());
