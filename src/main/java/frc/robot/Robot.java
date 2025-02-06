@@ -289,7 +289,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_elevator.reachGoal(0.75);
+  }
 
   @Override
   public void testInit() {
@@ -305,7 +307,9 @@ public class Robot extends TimedRobot {
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_elevator.simulationPeriodic();
+  }
 
   public double getLoopTime() {
     return m_loopTime;

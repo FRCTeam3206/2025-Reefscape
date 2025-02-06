@@ -19,9 +19,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SensorUtil;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -59,9 +61,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       new Encoder(ElevatorConstants.Encoder.kAChannel, ElevatorConstants.Encoder.kBChannel);
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
-  // the motorsssssss
-  private final SparkMax m_motor =
-      new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
+  private final SparkMax m_motor = new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
   private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
 
   // Simulation classes help us simulate what's going on, including gravity.
@@ -121,6 +121,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(ElevatorConstants.kUpdateFrequency);
 
+    // Required to keep a SparkMax working
+    m_motorSim.iterate(
+      m_elevatorSim.getVelocityMetersPerSecond(), 
+      RoboRioSim.getVInVoltage(), 
+      ElevatorConstants.kUpdateFrequency
+    );
+
+
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
     // SimBattery estimates loaded battery voltages
@@ -136,13 +144,13 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    */
   public void periodic() {
     //im gettin a loop overrun on this a lot. IS the computer stupid? Its like 5 logic gates and 4 memory lookups
-    if (
-      (wheresItGoin == ElevatorConstants.WaysItCanMove.up && !canMoveUp) ||
-      (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) || 
-      m_elevatorSim.hasHitUpperLimit() || m_elevatorSim.hasHitLowerLimit()) {
-      // i think the indentation is wrong but we aint got prettier so nobody ll know,...
-        stop();
-    }
+    // if (
+    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.up && !canMoveUp) ||
+    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) || 
+    //   m_elevatorSim.hasHitUpperLimit() || m_elevatorSim.hasHitLowerLimit()) {
+    //   // i think the indentation is wrong but we aint got prettier so nobody ll know,...
+    //     stop();
+    // }
   }
 
   /**
@@ -156,9 +164,9 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     double pidOutput = m_controller.calculate(m_encoder.getDistance());
     double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
     m_motor.setVoltage(pidOutput + feedforwardOutput);
-    //im just adding random shit at this point to get it to work 
-    m_elevatorSim.setInputVoltage(pidOutput + feedforwardOutput);
-    m_motorSim.setBusVoltage(feedforwardOutput);
+    // //im just adding random shit at this point to get it to work 
+    // m_elevatorSim.setInputVoltage(pidOutput + feedforwardOutput);
+    // m_motorSim.setBusVoltage(feedforwardOutput);
     //teto
     SmartDashboard.putNumber("Position meters", m_encoderSim.getDistance());
     SmartDashboard.putString("Movement", wheresItGoin.toString());
