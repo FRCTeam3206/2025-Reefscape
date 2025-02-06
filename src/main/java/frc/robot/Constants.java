@@ -150,9 +150,9 @@ public final class Constants {
   }
 
   public static final class PathingConstants {
-    public static final double kRobotMassKg = 200;
+    public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthMeters = Units.inchesToMeters(35); // including bumpers
     public static final double kRobotWidthMeters = kRobotLengthMeters; // including bumpers
-    public static final Motor kDriveMotor = Motor.NEO();
+    public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
   }
 }
