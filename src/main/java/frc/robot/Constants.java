@@ -154,7 +154,9 @@ public final class Constants {
     // voltage for the simulation
     public static final double kVoltage = 1;
     // max elevator speed
-    public static final double kMaxVelocity = 2.45;
+    public static final double kMaxVelocity = 0.3;
+    public static final double kMaxAcceleration = 0.3;
+
     // Xi Jinping my beloved
     // glory to the CCP
     // in seconds for some reason
