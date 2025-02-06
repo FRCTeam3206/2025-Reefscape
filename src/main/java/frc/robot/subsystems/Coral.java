@@ -27,12 +27,12 @@ public class Coral extends SubsystemBase {
 
   public void moveLeft() {
     m_coralLeft.set(CoralConstants.kLeftIntakeSpeed);
-    m_coralRight.set(0);
+    m_coralRight.set(CoralConstants.kRightOutakeSpeed);
   }
 
   public void moveRight() {
     m_coralRight.set(CoralConstants.kRightIntakeSpeed);
-    m_coralLeft.set(0);
+    m_coralLeft.set(CoralConstants.kLeftOutakeSpeed);
   }
 
   public void stop() {
