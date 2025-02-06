@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
@@ -60,8 +61,12 @@ public class Robot extends TimedRobot {
   @NotLogged private Alliance m_prevAlliance = null;
 
   // The driver's controller
-  CommandXboxController m_driverController =
-      new CommandXboxController(OIConstants.kDriverControllerPort);
+  CommandJoystick m_driverController =
+      new CommandJoystick(OIConstants.kDriverControllerPort);
+
+  CommandXboxController m_weaponsController =
+      new CommandXboxController(OIConstants.kWeaponsControllerPort);
+
 
   public Robot() {
     if (isSimulation()) {
@@ -92,12 +97,12 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.x().whileTrue(m_robotDrive.setXCommand());
-    m_driverController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+    m_driverController.button(2).whileTrue(m_robotDrive.setXCommand());
+    m_driverController.button(7).onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
     m_driverController
-        .a()
+        .button(6)
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_driverController.button(5).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -105,14 +110,14 @@ public class Robot extends TimedRobot {
     m_robotDrive.setDefaultCommand(
         m_robotDrive.driveCommand(
             adjustJoystick(
-                m_driverController::getLeftY,
+                m_driverController::getY,
                 () -> m_speedMultiplier,
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(
-                m_driverController::getLeftX,
+                m_driverController::getX,
                 () -> m_speedMultiplier,
                 () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(m_driverController::getRightX, () -> m_speedMultiplier, () -> true),
+            adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
   }
 
