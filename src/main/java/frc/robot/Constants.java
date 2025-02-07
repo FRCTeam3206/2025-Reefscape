@@ -158,9 +158,9 @@ public final class Constants {
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
 
     public static final Transform2d kTransformLeft =
-        new Transform2d(0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(90)));
+        new Transform2d(-0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(90)));
     public static final Transform2d kTransformRight =
-        new Transform2d(-0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+        new Transform2d(0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
 
     // Measurements taken from April Tag coordinates
     // I like doing it as an enum because it makes it easy to organize.

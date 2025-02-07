@@ -20,7 +20,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.pathing.PathingCommandGenerator;
+import frc.pathing.robotprofile.RobotProfile;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
 import java.util.function.BooleanSupplier;
@@ -91,6 +95,16 @@ public class DriveSubsystem extends SubsystemBase {
 
   // @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsRequested = new ChassisSpeeds();
+
+  RobotProfile m_robotProfile =
+      new RobotProfile(
+          PathingConstants.kRobotMassKg,
+          ModuleConstants.kWheelDiameterMeters,
+          PathingConstants.kRobotLengthMeters,
+          PathingConstants.kRobotWidthMeters,
+          PathingConstants.kDriveMotor);
+  PathingCommandGenerator m_pathGen =
+      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -301,6 +315,18 @@ public class DriveSubsystem extends SubsystemBase {
                 ySpeed.getAsDouble(),
                 rot.getAsDouble(),
                 fieldRelative.getAsBoolean()));
+  }
+
+  public PathingCommandGenerator getPathingCommandGenerator() {
+    return m_pathGen;
+  }
+
+  public Command getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
+    if (right) {
+      return m_pathGen.generateToPoseCommand(reefPose.getRightPose());
+    } else {
+      return m_pathGen.generateToPoseCommand(reefPose.getLeftPose());
+    }
   }
 
   /** Command to set the wheels into an X formation to prevent movement. */

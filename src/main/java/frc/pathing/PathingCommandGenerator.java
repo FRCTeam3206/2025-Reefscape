@@ -46,7 +46,7 @@ public class PathingCommandGenerator {
       Supplier<Pose2d> robotPose,
       Consumer<ChassisSpeeds> drive,
       Subsystem subsystem) {
-    this(robotProfile, robotPose, drive, subsystem, Field.CRESCENDO_2024);
+    this(robotProfile, robotPose, drive, subsystem, Field.REEFSCAPE_2025);
   }
 
   /**

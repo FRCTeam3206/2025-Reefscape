@@ -118,4 +118,23 @@ public class AllianceUtil {
       }
     }
   }
+
+  public static Pose2d getBluePose() {
+    Pose2d bluePose = robotPose.get();
+    if (alliance.equals(AllianceColor.BLUE)) {
+      return bluePose;
+    } else if (alliance.equals(AllianceColor.RED)) {
+      return mapBluePoseToRed(bluePose);
+    } else {
+      if (robotPose.get().getTranslation().getDistance(bluePose.getTranslation())
+          < robotPose
+              .get()
+              .getTranslation()
+              .getDistance(mapBluePoseToRed(bluePose).getTranslation())) {
+        return bluePose;
+      } else {
+        return mapBluePoseToRed(bluePose);
+      }
+    }
+  }
 }
