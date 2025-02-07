@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.PathingCommandGenerator;
 import frc.pathing.robotprofile.RobotProfile;
+import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -79,6 +80,8 @@ public class Robot extends TimedRobot {
           m_robotProfile, m_robotDrive::getPose, m_robotDrive::driveSpeed, m_robotDrive);
 
   public Robot() {
+    AllianceUtil.setCustomFieldDesignType(false);
+
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
@@ -227,7 +230,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    AllianceUtil.setAlliance();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

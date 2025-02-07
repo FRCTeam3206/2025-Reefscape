@@ -8,8 +8,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -128,7 +130,7 @@ public final class Constants {
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
-        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(-15), 0));
+        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(-20), 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -154,5 +156,43 @@ public final class Constants {
     public static final double kRobotLengthMeters = Units.inchesToMeters(35); // including bumpers
     public static final double kRobotWidthMeters = kRobotLengthMeters; // including bumpers
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
+
+    public static final Transform2d kTransformLeft =
+        new Transform2d(0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(90)));
+    public static final Transform2d kTransformRight =
+        new Transform2d(-0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+
+    // Measurements taken from April Tag coordinates
+    // I like doing it as an enum because it makes it easy to organize.
+    // Question: does doing it as an enum like this make it less efficient?
+    public static enum ReefPose {
+      CLOSE(144, 158.5, 180),
+      CLOSE_LEFT(160.39, 186.83, 120),
+      CLOSE_RIGHT(160.39, 130.17, 240),
+      FAR(209.49, 158.5, 0),
+      FAR_LEFT(193.1, 186.83, 60),
+      FAR_RIGHT(193.1, 130.17, 300);
+
+      private Pose2d leftPose;
+      private Pose2d rightPose;
+
+      private ReefPose(double xInches, double yInches, double rotDegrees) {
+        Pose2d reefPose =
+            new Pose2d(
+                Units.inchesToMeters(xInches),
+                Units.inchesToMeters(yInches),
+                new Rotation2d(Math.toRadians(rotDegrees)));
+        this.leftPose = reefPose.transformBy(kTransformLeft);
+        this.rightPose = reefPose.transformBy(kTransformRight);
+      }
+
+      public Pose2d getLeftPose() {
+        return leftPose;
+      }
+
+      public Pose2d getRightPose() {
+        return rightPose;
+      }
+    }
   }
 }
