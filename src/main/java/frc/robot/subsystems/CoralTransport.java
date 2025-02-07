@@ -16,16 +16,19 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -33,68 +36,87 @@ import frc.robot.Constants.ElevatorConstants.WaysItCanMove;
 import frc.robot.Robot;
 
 public final class CoralTransport extends SubsystemBase implements AutoCloseable {
-  // This gearbox represents a gearbox containing 4 Vex 775pro motors.
-  private final DCMotor m_elevatorGearbox =
-      DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
+  /// Gearboxes
+  // This is the elevator gearbox
+  private final DCMotor m_elevatorGearbox = DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
+  // This is the arm gearbox
+  private final DCMotor m_armGearbox = DCMotor.getNEO(2);
 
+  /// Control systems
   // Standard classes for controlling our elevator
-  private final ProfiledPIDController m_controller =
-      new ProfiledPIDController(
-          Constants.ElevatorConstants.Controller.Kp,
-          Constants.ElevatorConstants.Controller.Ki,
-          Constants.ElevatorConstants.Controller.Kd,
-          new TrapezoidProfile.Constraints(
-              ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration));
+  private final ProfiledPIDController m_controller = new ProfiledPIDController(
+      Constants.ElevatorConstants.Controller.Kp,
+      Constants.ElevatorConstants.Controller.Ki,
+      Constants.ElevatorConstants.Controller.Kd,
+      new TrapezoidProfile.Constraints(
+          ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration));
 
-  ElevatorFeedforward m_feedforward =
-      new ElevatorFeedforward(
-          Constants.ElevatorConstants.FeedForward.Ks,
-          Constants.ElevatorConstants.FeedForward.Kg,
-          Constants.ElevatorConstants.FeedForward.Kv,
-          Constants.ElevatorConstants.FeedForward.Ka);
+  ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
+      Constants.ElevatorConstants.FeedForward.Ks,
+      Constants.ElevatorConstants.FeedForward.Kg,
+      Constants.ElevatorConstants.FeedForward.Kv,
+      Constants.ElevatorConstants.FeedForward.Ka);
 
+  /// Motors/encoders
   // the encoderssssss
-  private final Encoder m_encoder =
-      new Encoder(ElevatorConstants.Encoder.kAChannel, ElevatorConstants.Encoder.kBChannel);
+  private final Encoder m_encoder = new Encoder(ElevatorConstants.Encoder.kAChannel,
+      ElevatorConstants.Encoder.kBChannel);
+  private final SparkMax m_motor = new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
+  private final Encoder m_armEncoder = new Encoder(2, 3);
+  private final SparkMax m_armMotor = new SparkMax(19, MotorType.kBrushless);
+
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
-
-  private final SparkMax m_motor =
-      new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
   private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
+  private final EncoderSim m_armEncoderSim = new EncoderSim(m_armEncoder);
+  private final SparkMaxSim m_armMotorSim = new SparkMaxSim(m_armMotor, m_armGearbox);
 
+  /// Simulation classes
   // Simulation classes help us simulate what's going on, including gravity.
   // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
-  private final ElevatorSim m_elevatorSim =
-      /*they should really puy the link to the docs somewhere in the class definition
-       * IDK how javadoc works but jsdoc has @see something like THHat
-       * ANWYAYS heres the link lel
-       *  https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
-       */
-      new ElevatorSim(
-          m_elevatorGearbox,
-          ElevatorConstants.Measurements.kGearing,
-          ElevatorConstants.Measurements.kWeight,
-          ElevatorConstants.Measurements.kDrumRadius,
-          ElevatorConstants.Measurements.kBottomHeight,
-          ElevatorConstants.Measurements.kTopHeight,
-          true,
-          ElevatorConstants.Measurements.kBottomHeight,
-          ElevatorConstants.Measurements.kStandardDeviation);
+  /*
+   * they should really puy the link to the docs somewhere in the class definition
+   * IDK how javadoc works but jsdoc has @see something like THHat
+   * ANWYAYS heres the link lel
+   * https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/
+   * simulation/ElevatorSim.html
+   */
+  private final ElevatorSim m_elevatorSim = new ElevatorSim(
+      m_elevatorGearbox,
+      ElevatorConstants.Measurements.kGearing,
+      ElevatorConstants.Measurements.kWeight,
+      ElevatorConstants.Measurements.kDrumRadius,
+      ElevatorConstants.Measurements.kBottomHeight,
+      ElevatorConstants.Measurements.kTopHeight,
+      true,
+      ElevatorConstants.Measurements.kBottomHeight,
+      ElevatorConstants.Measurements.kStandardDeviation);
+
+  private final SingleJointedArmSim m_armSim = new SingleJointedArmSim(
+      m_armGearbox,
+      1,
+      2,
+      10,
+      0,
+      90,
+      true,
+      45);
 
   // Create a Mechanism2d visualization of the elevator
-  private final Mechanism2d m_mech2d =
-      new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
-  private final MechanismRoot2d m_mech2dRoot =
-      m_mech2d.getRoot(
-          "Elevator Root",
-          ElevatorConstants.Mechanism2d.kXDistance,
-          ElevatorConstants.Mechanism2d.kYDistance);
-  private final MechanismLigament2d m_elevatorMech2d =
-      m_mech2dRoot.append(
-          new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
+  private final Mechanism2d m_mech2d = new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth,
+      ElevatorConstants.Mechanism2d.kHeight);
+  private final MechanismRoot2d m_mech2dRoot = m_mech2d.getRoot(
+      "Elevator Root",
+      ElevatorConstants.Mechanism2d.kXDistance,
+      ElevatorConstants.Mechanism2d.kYDistance);
+  private final MechanismLigament2d m_elevatorMech2d = m_mech2dRoot.append(
+      new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters() * 10, 90));
+  private final MechanismLigament2d m_armMech2d = m_elevatorMech2d.append(
+      new MechanismLigament2d("Arm", 0.5 * 10, Units.radiansToDegrees(m_armSim.getAngleRads()), 6,
+          new Color8Bit("#FF0000")));
 
   // TODO add a sensor to change this when it camt move down
-  // somethin like.... SENSOR... event.. its really short... change one of these to false...
+  // somethin like.... SENSOR... event.. its really short... change one of these
+  // to false...
   private boolean canMoveDown = true;
   private boolean canMoveUp = true;
   // nowhere, up, or down
@@ -106,8 +128,9 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
 
     if (Robot.isSimulation()) {
       // Publish Mechanism2d to SmartDashboard
-      // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
-      SmartDashboard.putData("Elevator Sim", m_mech2d);
+      // To view the Elevator visualization, select Network Tables -> SmartDashboard
+      // -> Elevator Sim
+      SmartDashboard.putData("Coral Transport Sim", m_mech2d);
     }
   }
 
@@ -115,12 +138,15 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
   public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
-    // TODO the old one used set m_motorSim.getSpeed() but sparkmax doesnt have that soo its broke
-    // now
+    // TODO Convert elevatorSim iterate() and armEncoderSim.setDistance to radial
+    // and non-radial distances
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_armSim.setInput(m_armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Arm Motor Output", m_armMotorSim.getAppliedOutput());
 
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(ElevatorConstants.kUpdateFrequency);
+    m_armSim.update(ElevatorConstants.kUpdateFrequency);
 
     // Required to keep a SparkMax working
     m_motorSim.iterate(
@@ -128,11 +154,21 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
         RoboRioSim.getVInVoltage(),
         ElevatorConstants.kUpdateFrequency);
 
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
+
+    m_armMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute(m_armSim.getVelocityRadPerSec()),
+        RoboRioSim.getVInVoltage(),
+        ElevatorConstants.kUpdateFrequency);
+    SmartDashboard.putNumber("vel", Units.radiansPerSecondToRotationsPerMinute(m_armSim.getVelocityRadPerSec()));
+
+    // Finally, we set our simulated encoder's readings and simulated battery
+    // voltage
     m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
+    m_armEncoderSim.setDistance(m_armSim.getAngleRads());
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
+        BatterySim
+            .calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps() + m_armSim.getCurrentDrawAmps()));
 
     updateTelemetry();
   }
@@ -142,21 +178,23 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
    * So we dont break things!!!
    */
   public void periodic() {
-    // im gettin a loop overrun on this a lot. IS the computer stupid? Its like 5 logic gates and 4
+    // im gettin a loop overrun on this a lot. IS the computer stupid? Its like 5
+    // logic gates and 4
     // memory lookups
     // if (
-    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.up && !canMoveUp) ||
-    //   (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) ||
-    //   m_elevatorSim.hasHitUpperLimit() || m_elevatorSim.hasHitLowerLimit()) {
-    //   // i think the indentation is wrong but we aint got prettier so nobody ll know,...
-    //     stop();
+    // (wheresItGoin == ElevatorConstants.WaysItCanMove.up && !canMoveUp) ||
+    // (wheresItGoin == ElevatorConstants.WaysItCanMove.down && !canMoveDown) ||
+    // m_elevatorSim.hasHitUpperLimit() || m_elevatorSim.hasHitLowerLimit()) {
+    // // i think the indentation is wrong but we aint got prettier so nobody ll
+    // know,...
+    // stop();
     // }
   }
 
   /**
    * Run control loop to reach and maintain goal.
    *
-   * @param goal the position to maintain
+   * @param goal  the position to maintain
    * @param speed how fast to go 0 (slow) to 1 (fast)
    */
   public void reachGoal(double goal, double speed) {
@@ -171,6 +209,8 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
     // teto
     SmartDashboard.putNumber("Position meters", m_encoderSim.getDistance());
     SmartDashboard.putString("Movement", wheresItGoin.toString());
+
+    m_armMotor.setVoltage(-5);
   }
 
   /**
@@ -187,7 +227,8 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
   /** Update telemetry, including the mechanism visualization. */
   public void updateTelemetry() {
     // Update elevator visualization with position
-    m_elevatorMech2d.setLength(m_encoder.getDistance());
+    m_elevatorMech2d.setLength(m_encoder.getDistance() * 10);
+    m_armMech2d.setAngle(m_armEncoder.getDistance());
   }
 
   @Override

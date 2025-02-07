@@ -240,4 +240,8 @@ public final class Constants {
       nowhere
     }
   }
+
+  public static final class ArmConstants {
+    
+  }
 }
