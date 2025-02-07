@@ -148,7 +148,7 @@ public final class Constants {
     public static final int kStdDevLatencyMs = 5;
   }
 
-  public static final class ElevatorConstants {
+  public static final class CoralTransportConstants {
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
     public static final int kWeight = 20;
     // voltage for the simulation
@@ -161,6 +161,13 @@ public final class Constants {
     // glory to the CCP
     // in seconds for some reason
     public static final double kUpdateFrequency = 0.02;
+
+    public static final class Positions {
+      //the little tray thing it puts the corals in
+      public static final double kBottomLevel = 0.1;
+      //1st level, 2nd level, 3rd level, 4th level coral
+      public static final double[] kLevels = {0.2, 0.4, 0.6, 1};
+    }
 
     public static final class Motor {
       // idk what port it is replace it later
@@ -177,6 +184,8 @@ public final class Constants {
     }
 
     public static final class Controller {
+      //something to do with calculus
+      //Calc means calculator for those of you new in the chat
       public static final double Kp = 10;
       public static final double Ki = 0;
       public static final double Kd = 0;
@@ -239,5 +248,12 @@ public final class Constants {
       up,
       nowhere
     }
+  }
+  public static final class ControllerConstants {
+    /**
+     * how little the stick has to move before it picks up input max is 0.1
+     * @see {@link https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/button/CommandXboxController.html#rightTrigger()}
+     */
+    public static final double kStickDrift = 0.1;
   }
 }

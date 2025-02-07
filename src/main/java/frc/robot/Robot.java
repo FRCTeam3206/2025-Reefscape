@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final CoralTransport m_elevator = new CoralTransport();
+  private final CoralTransport m_coralTransport = new CoralTransport();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -100,21 +100,13 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-
-    // the pov is the little plus shaped thing on the right side
-    // WHen its going up the elevator goes up, when its down it goes down,
-    // when its doing nothing it stops
-    // TODO the simulation crashes when it goes left or right so the whole robot might crash too.
-    // Very Bad!!!
-    // TODO make it so you can use the joy stick and make it move slow or fast
-    // the stick
-    // Stick
-    // You see the joke funny because before
-    // 4
-    // Four
-    // m_driverController.povUp().onTrue(m_elevator.up());
-    // m_driverController.povDown().onTrue(m_elevator.down());
-    // m_driverController.povCenter().onTrue(m_elevator.stop());
+    // makes it so you can press the plus button to go to some positions in the constatnts
+    // TODO very repetitive fix later
+    m_driverController.povDown().onTrue(m_coralTransport.goToPlace(0));
+    m_driverController.povDownLeft().onTrue(m_coralTransport.goToPlace(1));
+    m_driverController.povLeft().onTrue(m_coralTransport.goToPlace(2));
+    m_driverController.povUpRight().onTrue(m_coralTransport.goToPlace(3));
+    m_driverController.povUp().onTrue(m_coralTransport.goToPlace(4));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -131,7 +123,7 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getRightX, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
-    // m_elevator.setDefaultCommand(m_elevator.stop());
+    m_coralTransport.setDefaultCommand(m_coralTransport.goToPlace(0));
   }
 
   /**
@@ -277,7 +269,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_elevator.reachGoal(0.75);
+    //m_coralTransport.reachGoal(0.75);
   }
 
   @Override
@@ -295,7 +287,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {
-    m_elevator.simulationPeriodic();
+    m_coralTransport.simulationPeriodic();
   }
 
   public double getLoopTime() {
