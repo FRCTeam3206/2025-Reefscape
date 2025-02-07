@@ -1,8 +1,9 @@
 package frc.pathing.utils;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.function.Supplier;
@@ -14,8 +15,10 @@ import java.util.function.Supplier;
 public class AllianceUtil {
   private static AllianceColor alliance = AllianceColor.UNKNOWN;
   private static Supplier<Pose2d> robotPose;
-  private static double fieldLength = Units.feetToMeters(54);
-  private static double fieldHeight = Units.feetToMeters(27);
+  private static double fieldLength =
+      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField).getFieldLength();
+  private static double fieldHeight =
+      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField).getFieldWidth();
   private static boolean mirroredField = true;
 
   public enum AllianceColor {

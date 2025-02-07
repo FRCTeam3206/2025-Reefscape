@@ -34,7 +34,6 @@ import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -103,7 +102,9 @@ public class Robot extends TimedRobot {
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
-    m_driverController.b().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE, true));
+    m_driverController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
+    m_driverController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
+    // m_driverController.b().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE, true));
   }
 
   /** Use this method to define default commands for subsystems. */

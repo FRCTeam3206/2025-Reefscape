@@ -22,11 +22,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.pathing.PathingCommandGenerator;
 import frc.pathing.robotprofile.RobotProfile;
+import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.photonvision.simulation.VisionSystemSim;
@@ -322,11 +324,27 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
-    if (right) {
-      return m_pathGen.generateToPoseCommand(reefPose.getRightPose());
-    } else {
-      return m_pathGen.generateToPoseCommand(reefPose.getLeftPose());
-    }
+    return m_pathGen.generateToPoseCommand(reefPose.getPose(right));
+  }
+
+  public Command getToNearestReefCommand(boolean right) {
+    Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
+    Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
+    Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
+    Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
+    Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
+    Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
+    return m_pathGen.generateToPoseSupplierCommand(
+        () -> {
+          Pose2d robotAt = AllianceUtil.getBluePose();
+          if (robotAt.getX() < PathingConstants.kReefCenterX) {
+            // Robot is at a close pose.
+            return robotAt.nearest(List.of(close, closeL, closeR));
+          } else {
+            // Robot is at a far pose.
+            return robotAt.nearest(List.of(far, farL, farR));
+          }
+        });
   }
 
   /** Command to set the wheels into an X formation to prevent movement. */

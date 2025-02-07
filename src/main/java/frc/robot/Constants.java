@@ -158,9 +158,11 @@ public final class Constants {
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
 
     public static final Transform2d kTransformLeft =
-        new Transform2d(-0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(90)));
-    public static final Transform2d kTransformRight =
         new Transform2d(0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+    public static final Transform2d kTransformRight =
+        new Transform2d(0.5, -kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+
+    public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
     // Measurements taken from April Tag coordinates
     // I like doing it as an enum because it makes it easy to organize.
@@ -186,12 +188,8 @@ public final class Constants {
         this.rightPose = reefPose.transformBy(kTransformRight);
       }
 
-      public Pose2d getLeftPose() {
-        return leftPose;
-      }
-
-      public Pose2d getRightPose() {
-        return rightPose;
+      public Pose2d getPose(boolean right) {
+        return right ? rightPose : leftPose;
       }
     }
   }

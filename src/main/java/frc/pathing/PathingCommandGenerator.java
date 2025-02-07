@@ -245,7 +245,8 @@ public class PathingCommandGenerator {
   /**
    * Generates a new PathingCommand to go to the given supplied position.
    *
-   * @param supplier The supplier of the goal position.
+   * @param supplier The supplier of the goal position. If alliance flipping is enabled, this should
+   *     be the blue position, and it will automatically be mirrored.
    * @return A new PathingCommand.
    */
   public PathingCommand generateToPoseSupplierCommand(Supplier<Pose2d> supplier) {
@@ -276,7 +277,7 @@ public class PathingCommandGenerator {
    *
    * @param x The goal x position in meters.
    * @param y The goal y position in meters.
-   * @param t The goal rotation in meters.
+   * @param t The goal rotation in radians.
    * @return A new PathingCommand.
    */
   public PathingCommand generateToPoseCommand(double x, double y, double t) {
