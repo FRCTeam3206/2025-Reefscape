@@ -164,5 +164,6 @@ public final class Constants {
     public static final double kArmIntegral = 0.0;
     public static final double kRetractPosition = 0.0;
     public static final double kExtendPosition = 0.0;
+    public static final double kAtGoalTolerance = 0.05;
   }
 }
