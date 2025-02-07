@@ -163,9 +163,9 @@ public final class Constants {
     public static final double kUpdateFrequency = 0.02;
 
     public static final class Positions {
-      //the little tray thing it puts the corals in
+      // the little tray thing it puts the corals in
       public static final double kBottomLevel = 0.1;
-      //1st level, 2nd level, 3rd level, 4th level coral
+      // 1st level, 2nd level, 3rd level, 4th level coral
       public static final double[] kLevels = {0.2, 0.4, 0.6, 1};
     }
 
@@ -184,8 +184,8 @@ public final class Constants {
     }
 
     public static final class Controller {
-      //something to do with calculus
-      //Calc means calculator for those of you new in the chat
+      // something to do with calculus
+      // Calc means calculator for those of you new in the chat
       public static final double Kp = 10;
       public static final double Ki = 0;
       public static final double Kd = 0;
@@ -249,10 +249,13 @@ public final class Constants {
       nowhere
     }
   }
+
   public static final class ControllerConstants {
     /**
      * how little the stick has to move before it picks up input max is 0.1
-     * @see {@link https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/button/CommandXboxController.html#rightTrigger()}
+     *
+     * @see {@link
+     *     https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/button/CommandXboxController.html#rightTrigger()}
      */
     public static final double kStickDrift = 0.1;
   }

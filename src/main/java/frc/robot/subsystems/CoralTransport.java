@@ -56,7 +56,8 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
 
   // the encoderssssss
   private final Encoder m_encoder =
-      new Encoder(CoralTransportConstants.Encoder.kAChannel, CoralTransportConstants.Encoder.kBChannel);
+      new Encoder(
+          CoralTransportConstants.Encoder.kAChannel, CoralTransportConstants.Encoder.kBChannel);
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
   private final SparkMax m_motor =
@@ -84,7 +85,8 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
 
   // Create a Mechanism2d visualization of the elevator
   private final Mechanism2d m_mech2d =
-      new Mechanism2d(CoralTransportConstants.Mechanism2d.kWidth, CoralTransportConstants.Mechanism2d.kHeight);
+      new Mechanism2d(
+          CoralTransportConstants.Mechanism2d.kWidth, CoralTransportConstants.Mechanism2d.kHeight);
   private final MechanismRoot2d m_mech2dRoot =
       m_mech2d.getRoot(
           "Elevator Root",
@@ -143,7 +145,7 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
    * So we dont break things!!!
    */
   public void periodic() {
-    /*im gettin a loop overrun on this a lot. IS the computer stupid? 
+    /*im gettin a loop overrun on this a lot. IS the computer stupid?
     Its like 5 logic gates and 4 memory lookups*/
     /*
     if (
@@ -158,6 +160,7 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
 
   /**
    * Run control loop to reach and maintain goal.
+   *
    * @param goal the position to maintain
    */
   public void reachGoal(double goal) {
@@ -166,25 +169,28 @@ public final class CoralTransport extends SubsystemBase implements AutoCloseable
     double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
     m_motor.setVoltage(pidOutput + feedforwardOutput * CoralTransportConstants.Motor.kSpeed);
     SmartDashboard.putNumber("Position meters", m_encoderSim.getDistance());
-    //changes it to Movement: down, Movement: nowhere, or Movement: up 
+    // changes it to Movement: down, Movement: nowhere, or Movement: up
     SmartDashboard.putString("Movement", wheresItGoin.toString());
     // teto
   }
 
   /**
    * finds the goal to go based on the stick Y
-   * @param where 0 to 5 for places it should go, 0 is the bottom level and the rest are first level, second level, until fourth
+   *
+   * @param where 0 to 5 for places it should go, 0 is the bottom level and the rest are first
+   *     level, second level, until fourth
    * @return command
    */
   public Command goToPlace(int place) {
-    return this.run(()->{
-      if (place == 0) {
-        reachGoal(CoralTransportConstants.Positions.kBottomLevel);
-      } else {
-        reachGoal(CoralTransportConstants.Positions.kLevels[place - 1]);
-      }
-      SmartDashboard.putNumber("goal", place);
-    });
+    return this.run(
+        () -> {
+          if (place == 0) {
+            reachGoal(CoralTransportConstants.Positions.kBottomLevel);
+          } else {
+            reachGoal(CoralTransportConstants.Positions.kLevels[place - 1]);
+          }
+          SmartDashboard.putNumber("goal", place);
+        });
   }
 
   /** Update telemetry, including the mechanism visualization. */
