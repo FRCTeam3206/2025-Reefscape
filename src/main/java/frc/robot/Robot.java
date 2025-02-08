@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -33,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.GameConstants.ReefLevels;
+import frc.robot.Constants.GameConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import java.util.List;
@@ -100,21 +103,7 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-
-    // the pov is the little plus shaped thing on the right side
-    // WHen its going up the elevator goes up, when its down it goes down,
-    // when its doing nothing it stops
-    // TODO the simulation crashes when it goes left or right so the whole robot might crash too.
-    // Very Bad!!!
-    //TODO make it so you can use the joy stick and make it move slow or fast
-    //the stick
-    //Stick
-    //You see the joke funny because before
-    //4
-    //Four
-    m_driverController.povUp().onTrue(m_elevator.up());
-    m_driverController.povDown().onTrue(m_elevator.down());
-    m_driverController.povCenter().onTrue(m_elevator.stop());
+    // TODO the simulation crashes when the plus shaped POV thing goes left or right so the whole robot might crash too.
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -272,12 +261,16 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
+    //im finna finna crashout on foenem
+    // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
+    m_elevator.reachGoal(1);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_elevator.reachGoal(0.75);
+    //arjun was doing something here idk im n ot gonna take it out yet
+    //m_elevator.reachGoal(0.75);
   }
 
   @Override
