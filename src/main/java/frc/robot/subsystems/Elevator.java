@@ -75,14 +75,16 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   // TODO: could be a strange way to change the elevator's setpoint, refactor if necessary
+  // TODO: implement limit switch functionality
   private void moveToSetpoint() {
     m_controller.setReference(elevatorSetpoint, ControlType.kMAXMotionPositionControl);
   }
 
-  public void teleopPeriodic() {
+  @Override
+  public void periodic() {
     moveToSetpoint();
   }
-  
+
   /** Advance the simulation. */
   public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
@@ -110,12 +112,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   public double getElevatorHeight() {
     return m_encoder.getPosition() * ElevatorConstants.Measurements.kDrumRadius;
   }
-
-  /*
-   * stops if it cant move up or it cant move down
-   * So we dont break things!!!
-   */
-  public void periodic() {}
 
   @Override
   public void close() {
