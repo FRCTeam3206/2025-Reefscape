@@ -12,30 +12,21 @@ package frc.robot.subsystems;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Robot;
 
 public final class Arm extends SubsystemBase implements AutoCloseable {
   // This is the arm gearbox
@@ -54,54 +45,44 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(m_armGearbox, 1, 2, 10, 0, 90, true, 45);
 
-  // Create a Mechanism2d visualization of the elevator
-  private final Mechanism2d m_mech2d =
-      new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
-  private final MechanismRoot2d m_mech2dRoot =
-      m_mech2d.getRoot(
-          "Arm Root",
-          ElevatorConstants.Mechanism2d.kXDistance,
-          ElevatorConstants.Mechanism2d.kYDistance);
-  private final MechanismLigament2d m_armMech2d =
-      m_mech2dRoot.append(
-          new MechanismLigament2d(
-              "Arm",
-              0.5 * 10,
-              Units.radiansToDegrees(m_armSim.getAngleRads()),
-              6,
-              new Color8Bit("#FF0000")));
+  // TODO move mech visualization to the overarching class
+  // // Create a Mechanism2d visualization of the elevator
+  // private final Mechanism2d m_mech2d =
+  //     new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
+  // private final MechanismRoot2d m_mech2dRoot =
+  //     m_mech2d.getRoot(
+  //         "Arm Root",
+  //         ElevatorConstants.Mechanism2d.kXDistance,
+  //         ElevatorConstants.Mechanism2d.kYDistance);
+  // private final MechanismLigament2d m_armMech2d;
 
   /** Subsystem constructor. */
   public Arm() {
-    m_armEncoder.setDistancePerPulse(ElevatorConstants.Encoder.kDistancePerPulse);
-
-    if (Robot.isSimulation()) {
-      // Publish Mechanism2d to SmartDashboard
-      // To view the Elevator visualization, select Network Tables -> SmartDashboard
-      // -> Elevator Sim
-      SmartDashboard.putData("Arm Sim", m_mech2d);
-    }
+    m_armMotor.configure(
+      Configs.Arm.armConfig, 
+      ResetMode.kResetSafeParameters,
+      PersistMode.kPersistParameters);
   }
 
   public void setGoalPosition(double goal) {
     m_closedLoopController.setReference(goal, ControlType.kMAXMotionVelocityControl);
   }
 
-  public Command toDefault() {
-    return this.run()
-  }
+  // public Command toDefault() {
+  //   return this.run()
+  // }
 
-  public Command toStored() {}
+  // public Command toStored() {}
 
-  public Command toFloorIntake() {}
+  // public Command toFloorIntake() {}
 
-  public Command toFeeder() {}
+  // public Command toFeeder() {}
 
-  public Command toLowCoral() {}
+  // public Command toLowCoral() {}
 
-  public Command toBranch(int level) {}
+  // public Command toBranch(int level) {}
 
-  public boolean atGoal() {}
+  // public boolean atGoal() {}
 
   /** Advance the simulation. */
   public void simulationPeriodic() {
@@ -117,7 +98,8 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
     // Required to keep a SparkMax working
     m_armMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(m_armSim.getVelocityRadPerSec()),
+        // Multiply by reduction
+        Units.radiansPerSecondToRotationsPerMinute(m_armSim.getVelocityRadPerSec() * 10),
         RoboRioSim.getVInVoltage(),
         ElevatorConstants.kUpdateFrequency);
     SmartDashboard.putNumber(
@@ -129,11 +111,11 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
-
-    updateTelemetry();
   }
 
-  public void periodic() {}
+  public void periodic() {
+
+  }
 
   /**
    * Run control loop to reach and maintain goal.
@@ -142,11 +124,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
    * @param speed how fast to go 0 (slow) to 1 (fast)
    */
   public void reachGoal(double goal, double speed) {
-    m_controller.setGoal(goal);
-    // With the setpoint value we run PID control like normal
-    double pidOutput = m_controller.calculate(m_armEncoder.getDistance());
-
-    m_armMotor.setVoltage(-5);
+    m_closedLoopController.setReference(goal, ControlType.kMAXMotionPositionControl);
   }
 
   /**
@@ -161,13 +139,13 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   }
 
   /** Update telemetry, including the mechanism visualization. */
-  public void updateTelemetry() {
+  public double returnAngle() {
     // Update elevator visualization with position
-    m_armMech2d.setAngle(m_armEncoder.getDistance());
+    return m_absoluteEncoder.getPosition() * 360;
   }
 
   @Override
   public void close() {
-    m_mech2d.close();
+    m_armMotor.close();
   }
 }

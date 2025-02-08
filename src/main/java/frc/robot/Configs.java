@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -101,6 +102,17 @@ public final class Configs {
           new TrapezoidProfile.Constraints(
               ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration)
       // We will need to make a lot more changes to the config.
+    }
+  }
+
+  public static final class Elevator {
+    public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
+
+    static {
+      // Multiply by drum radius so the encoder outputs in values of elevator height
+      elevatorConfig.encoder.positionConversionFactor(Constants.ElevatorConstants.Measurements.kDrumRadius);
+
+      
     }
   }
 }
