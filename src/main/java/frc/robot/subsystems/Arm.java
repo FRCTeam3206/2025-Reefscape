@@ -9,8 +9,12 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -27,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -34,24 +39,15 @@ import frc.robot.Robot;
 
 public final class Arm extends SubsystemBase implements AutoCloseable {
   // This is the arm gearbox
-  private final DCMotor m_armGearbox = DCMotor.getNEO(2);
-
-  /// Control systems
-  // Standard classes for controlling our elevator
-  private final ProfiledPIDController m_controller =
-      new ProfiledPIDController(
-          Constants.ElevatorConstants.Controller.Kp,
-          Constants.ElevatorConstants.Controller.Ki,
-          Constants.ElevatorConstants.Controller.Kd,
-          new TrapezoidProfile.Constraints(
-              ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration));
+  private final DCMotor m_armGearbox = DCMotor.getNEO(1);
 
   /// Motors/encoders
   // the encoderssssss
-  private final Encoder m_armEncoder = new Encoder(2, 3);
   private final SparkMax m_armMotor = new SparkMax(19, MotorType.kBrushless);
+  private final SparkClosedLoopController m_closedLoopController = m_armMotor.getClosedLoopController();
+  private final AbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
-  private final EncoderSim m_armEncoderSim = new EncoderSim(m_armEncoder);
+  // private final EncoderSim m_armEncoderSim = new EncoderSim(m_armEncoder);
   private final SparkMaxSim m_armMotorSim = new SparkMaxSim(m_armMotor, m_armGearbox);
 
   /// Simulation classes
@@ -87,6 +83,26 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     }
   }
 
+  public void setGoalPosition(double goal) {
+    m_closedLoopController.setReference(goal, ControlType.kMAXMotionVelocityControl);
+  }
+
+  public Command toDefault() {
+    return this.run()
+  }
+
+  public Command toStored() {}
+
+  public Command toFloorIntake() {}
+
+  public Command toFeeder() {}
+
+  public Command toLowCoral() {}
+
+  public Command toBranch(int level) {}
+
+  public boolean atGoal() {}
+
   /** Advance the simulation. */
   public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
@@ -109,7 +125,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
     // Finally, we set our simulated encoder's readings and simulated battery
     // voltage
-    m_armEncoderSim.setDistance(m_armSim.getAngleRads());
+    // m_armEncoderSim.setDistance(m_armSim.getAngleRads());
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
