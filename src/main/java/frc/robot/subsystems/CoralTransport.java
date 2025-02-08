@@ -1,3 +1,9 @@
+// Safe not in name of method, put in comment
+// Also coral wheels in this system
+// Bigger safe angle
+// Stored position vertical
+// Use triggers instead of boolean methods
+
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
