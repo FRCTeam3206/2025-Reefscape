@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -133,7 +134,53 @@ public class Robot extends TimedRobot {
     m_autonChooser.setDefaultOption(
         "Basic Forward",
         m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5));
+    m_autonChooser.addOption(
+        "Score two coral",
+        generateAuton(false,
+            scoreCoralCommand(ReefPose.FAR, true, 4),
+            scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, 4)));
+    m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
     SmartDashboard.putData(m_autonChooser);
+  }
+
+  public Command generateAuton(boolean right, Command... scoreCoralCommands) {
+    Command auton = robotForwardCommand().andThen(scoreCoralCommands[0]);
+    for (int i = 1; i < scoreCoralCommands.length; i++) {
+      auton = auton.andThen(pickupCoralCommand(right)).andThen(scoreCoralCommands[i]);
+    }
+    return auton;
+  }
+  /**
+   * We can run this at the begining of any autonomous routine so that we first drive forward, to
+   * make sure we don't hit the cages.
+   */
+  public Command robotForwardCommand() {
+    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
+  }
+
+  /**
+   * Pick up coral from the feeder station
+   *
+   * @param right Whether to pick up from the right or left feeder station (from driver view, since
+   *     we have a rotated field).
+   */
+  public Command pickupCoralCommand(boolean right) {
+    return m_robotDrive.getToFeederCommand(right);
+    // We can add things with mechanisms later so that it will intake.
+    // This command should stop once we see that we have the coral.
+  }
+
+  /**
+   * Score coral on the reef.
+   *
+   * @param reefPose Which location on the reef to score it on.
+   * @param right Whether it should be the right side on that face (from the robot's perspective).
+   * @param level Which level to score the coral on.
+   * @return A Command to score coral on the reef.
+   */
+  public Command scoreCoralCommand(ReefPose reefPose, boolean right, int level) {
+    return m_robotDrive.getToReefPoseCommand(reefPose, right);
+    // We can later add things with the mechanism to make it score the coral correctly.
   }
 
   /**

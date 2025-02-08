@@ -155,12 +155,17 @@ public final class Constants {
     public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthMeters = Units.inchesToMeters(35); // including bumpers
     public static final double kRobotWidthMeters = kRobotLengthMeters; // including bumpers
+    public static final double kCoralFaceOffset =
+        Units.inchesToMeters(13)
+            / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
 
     public static final Transform2d kTransformLeft =
-        new Transform2d(0.5, kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+        new Transform2d(
+            kRobotWidthMeters / 2, -kCoralFaceOffset, new Rotation2d(Math.toRadians(-90)));
     public static final Transform2d kTransformRight =
-        new Transform2d(0.5, -kRobotWidthMeters / 2, new Rotation2d(Math.toRadians(-90)));
+        new Transform2d(
+            kRobotWidthMeters / 2, kCoralFaceOffset, new Rotation2d(Math.toRadians(-90)));
 
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
@@ -183,7 +188,7 @@ public final class Constants {
             new Pose2d(
                 Units.inchesToMeters(xInches),
                 Units.inchesToMeters(yInches),
-                new Rotation2d(Math.toRadians(rotDegrees)));
+                Rotation2d.fromDegrees(rotDegrees));
         this.leftPose = reefPose.transformBy(kTransformLeft);
         this.rightPose = reefPose.transformBy(kTransformRight);
       }
@@ -192,5 +197,23 @@ public final class Constants {
         return right ? rightPose : leftPose;
       }
     }
+
+    public static Pose2d poseFromTag(
+        double xInches, double yInches, double rotDegrees, Transform2d transform) {
+      return new Pose2d(
+              Units.inchesToMeters(xInches),
+              Units.inchesToMeters(yInches),
+              Rotation2d.fromDegrees(rotDegrees))
+          .plus(transform);
+    }
+
+    public static final Transform2d kFeederTransform =
+        new Transform2d(kRobotWidthMeters / 2, 0.0, new Rotation2d());
+    public static final Pose2d kLeftFeederPose = poseFromTag(33.51, 291.20, 306, kFeederTransform);
+    public static final Pose2d kRightFeederPose = poseFromTag(33.51, 25.80, 54, kFeederTransform);
+
+    public static final Transform2d kProcessorTransform =
+        new Transform2d(kRobotWidthMeters / 2, 0.0, Rotation2d.fromDegrees(0));
+    public static final Pose2d kProcessorPose = poseFromTag(235.73, -0.15, 90, kProcessorTransform);
   }
 }

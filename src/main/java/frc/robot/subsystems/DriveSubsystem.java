@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.pathing.PathingCommand;
 import frc.pathing.PathingCommandGenerator;
 import frc.pathing.robotprofile.RobotProfile;
 import frc.pathing.utils.AllianceUtil;
@@ -327,11 +328,11 @@ public class DriveSubsystem extends SubsystemBase {
     return m_pathGen;
   }
 
-  public Command getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
+  public PathingCommand getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
     return m_pathGen.generateToPoseCommand(reefPose.getPose(right));
   }
 
-  public Command getToNearestReefCommand(boolean right) {
+  public PathingCommand getToNearestReefCommand(boolean right) {
     Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
     Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
     Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
@@ -349,6 +350,15 @@ public class DriveSubsystem extends SubsystemBase {
             return robotAt.nearest(List.of(far, farL, farR));
           }
         });
+  }
+
+  public PathingCommand getToFeederCommand(boolean right) {
+    return m_pathGen.generateToPoseCommand(
+        right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
+  }
+
+  public PathingCommand getToProcessorCommand() {
+    return m_pathGen.generateToPoseCommand(PathingConstants.kProcessorPose);
   }
 
   /** Command to set the wheels into an X formation to prevent movement. */
