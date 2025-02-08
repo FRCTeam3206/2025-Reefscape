@@ -7,6 +7,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.GameConstants;
 
 public class CoralTransport {
   /* All of these subsystems should have a command that sets them to each desired position
@@ -65,7 +66,7 @@ public class CoralTransport {
   /**
    * @param level This MUST be 2, 3, or 4
    */
-  public Command placeCoralBranch(int level) {
+  public Command placeCoralBranch(GameConstants.Levels level) {
     return moveSafeVerticalWrist()
       .andThen(m_elevator.toBranch(level)
       .andThen(m_arm.toBranch(level)));

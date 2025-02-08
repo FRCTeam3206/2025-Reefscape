@@ -98,6 +98,15 @@ public final class Constants {
         (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
   }
 
+  public static final class GameConstants {
+    // whys it string and not ints? Cause you wont do math with it
+    public static enum Levels {
+      l2,
+      l3,
+      l4,
+    }
+  }
+
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kWeaponsControllerPort = 1;
