@@ -106,6 +106,28 @@ public final class Constants {
       l3,
       l4;
     }
+    //all in meters
+    //How high up each thing is
+    public static final class Positions {
+      //Made up some numbers that sound plausible
+      public static final double feeder = 1.5;
+      public static final double floorIntake = 0.1;
+      //I aint gonna lie i do not know what the coral storage is
+      public static final double coralStorage = 0.5;
+      /* coral tree levels, dont go to 0
+       * @see {@link https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf} page 24
+       */
+      public static final double[] reefLevels = {
+        //dont use level 0!!! Theres no level 0
+        0,
+        //l1 is the trough
+        0.46,
+        //this is l2, next is l3, etc.
+        0.81,
+        1.21,
+        1.83
+      };
+    }
   }
 
   public static final class OIConstants {
@@ -168,6 +190,7 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
+    //TODO many of these arent used but java linter wont tell me... find out witch ones arent used
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
     public static final int kWeight = 20;
     // voltage for the simulation
@@ -209,7 +232,6 @@ public final class Constants {
       // Acceleration gain (volts per m/s^2)
       public static final double Ka = 0;
     }
-
 
     // something for the simulation I Dont Really Know!
     public static final class Mechanism2d {

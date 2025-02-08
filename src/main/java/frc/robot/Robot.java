@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
+import frc.robot.Constants.GameConstants.Levels;
+import frc.robot.Constants.GameConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import java.util.List;
@@ -285,12 +288,16 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
+    //im finna finna crashout on foenem
+    // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
+    m_elevator.reachGoal(1);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_elevator.reachGoal(0.75);
+    //arjun was doing something here idk im n ot gonna take it out yet
+    //m_elevator.reachGoal(0.75);
   }
 
   @Override
