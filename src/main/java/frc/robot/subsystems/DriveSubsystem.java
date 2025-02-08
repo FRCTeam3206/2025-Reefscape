@@ -319,6 +319,10 @@ public class DriveSubsystem extends SubsystemBase {
                 fieldRelative.getAsBoolean()));
   }
 
+  public Command stopCommand() {
+    return driveCommand(() -> 0.0, () -> 0.0, () -> 0.0, () -> true);
+  }
+
   public PathingCommandGenerator getPathingCommandGenerator() {
     return m_pathGen;
   }
