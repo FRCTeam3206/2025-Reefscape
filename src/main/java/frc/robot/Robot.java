@@ -135,11 +135,14 @@ public class Robot extends TimedRobot {
         "Basic Forward",
         m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5));
     m_autonChooser.addOption(
-        "Score two coral",
+        "Coral on the left",
         generateAuton(
             false,
-            scoreCoralCommand(ReefPose.FAR, true, 4),
-            scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, 4)));
+            scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
+            scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
+            scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
+            scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
+            scoreCoralCommand(ReefPose.CLOSE, false, 4)));
     m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
     SmartDashboard.putData(m_autonChooser);
   }

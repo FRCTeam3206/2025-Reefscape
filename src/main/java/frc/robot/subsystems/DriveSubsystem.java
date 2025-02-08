@@ -103,8 +103,8 @@ public class DriveSubsystem extends SubsystemBase {
       new RobotProfile(
           PathingConstants.kRobotMassKg,
           ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthMeters,
-          PathingConstants.kRobotWidthMeters,
+          PathingConstants.kRobotLengthWidthMeters,
+          PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kDriveMotor);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this);
