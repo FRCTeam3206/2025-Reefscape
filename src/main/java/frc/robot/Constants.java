@@ -130,7 +130,7 @@ public final class Constants {
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
-        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(-20), 0));
+        new Transform3d(0, 0, Units.inchesToMeters(10), new Rotation3d(0, Math.toRadians(-20), 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -141,11 +141,12 @@ public final class Constants {
   }
 
   public static final class VisionSimConstants {
-    public static final int kCameraWidth = 640;
-    public static final int kCameraHeight = 480;
-    public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(100);
+    public static final int kCameraWidth = 1200;
+    public static final int kCameraHeight = 720;
+    public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(70);
     public static final double kAvgDetectionNoisePixels = 0.25;
     public static final double kStdDevDetectionNoisePixels = 0.08;
+
     public static final int kImageCaptureFPS = 20;
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;

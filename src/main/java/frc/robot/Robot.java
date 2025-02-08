@@ -136,7 +136,8 @@ public class Robot extends TimedRobot {
         m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5));
     m_autonChooser.addOption(
         "Score two coral",
-        generateAuton(false,
+        generateAuton(
+            false,
             scoreCoralCommand(ReefPose.FAR, true, 4),
             scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, 4)));
     m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
@@ -150,6 +151,7 @@ public class Robot extends TimedRobot {
     }
     return auton;
   }
+
   /**
    * We can run this at the begining of any autonomous routine so that we first drive forward, to
    * make sure we don't hit the cages.
