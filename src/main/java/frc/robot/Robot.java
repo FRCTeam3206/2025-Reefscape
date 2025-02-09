@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-//import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -21,7 +21,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -34,8 +33,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.GameConstants.ReefLevels;
-import frc.robot.Constants.GameConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import java.util.List;
@@ -75,7 +72,7 @@ public class Robot extends TimedRobot {
     m_lastTime = Timer.getFPGATimestamp();
 
     DataLogManager.start();
-    //Epilogue.bind(this);
+    // Epilogue.bind(this);
   }
 
   /**
@@ -103,7 +100,8 @@ public class Robot extends TimedRobot {
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    // TODO the simulation crashes when the plus shaped POV thing goes left or right so the whole robot might crash too.
+    // TODO the simulation crashes when the plus shaped POV thing goes left or right so the whole
+    // robot might crash too.
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -261,7 +259,7 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
-    //im finna finna crashout on foenem
+    // im finna finna crashout on foenem
     // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
     m_elevator.reachGoal(1);
   }
@@ -269,8 +267,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    //arjun was doing something here idk im n ot gonna take it out yet
-    //m_elevator.reachGoal(0.75);
+    // arjun was doing something here idk im n ot gonna take it out yet
+    // m_elevator.reachGoal(0.75);
   }
 
   @Override

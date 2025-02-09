@@ -102,23 +102,24 @@ public final class Constants {
       l3,
       l4,
     }
-    //all in meters
-    //How high up each thing is
+
+    // all in meters
+    // How high up each thing is
     public static final class Positions {
-      //Made up some numbers that sound plausible
+      // Made up some numbers that sound plausible
       public static final double feeder = 1.5;
       public static final double floorIntake = 0.1;
-      //I aint gonna lie i do not know what the coral storage is
+      // I aint gonna lie i do not know what the coral storage is
       public static final double coralStorage = 0.5;
       /* coral tree levels, dont go to 0
        * @see {@link https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf} page 24
        */
       public static final double[] reefLevels = {
-        //dont use level 0!!! Theres no level 0
+        // dont use level 0!!! Theres no level 0
         0,
-        //l1 is the trough
+        // l1 is the trough
         0.46,
-        //this is l2, next is l3, etc.
+        // this is l2, next is l3, etc.
         0.81,
         1.21,
         1.83
@@ -180,7 +181,7 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    //TODO many of these arent used but java linter wont tell me... find out witch ones arent used
+    // TODO many of these arent used but java linter wont tell me... find out witch ones arent used
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
     public static final int kWeight = 20;
     // voltage for the simulation
@@ -238,7 +239,7 @@ public final class Constants {
       public static final double kTopHeight = 1.25;
       public static final double kDrumRadius = 0.0508;
       // kilograms
-      public static final double kWeight = 2; //15.87;
+      public static final double kWeight = 2; // 15.87;
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
@@ -250,7 +251,7 @@ public final class Constants {
     }
 
     public static final class Sensor {
-      //idk what units or whatever since idk what sensors we're using
+      // idk what units or whatever since idk what sensors we're using
       public static final double kDistanceTillItsDangerous = 2;
     }
 
@@ -262,8 +263,8 @@ public final class Constants {
       public static final int kBChannel = 1;
     }
 
-    //ways the elevator can go
-    //It aint really needed i just learned what an enum is and watned 2 use it 
+    // ways the elevator can go
+    // It aint really needed i just learned what an enum is and watned 2 use it
     public static enum WaysItCanMove {
       down,
       up,
