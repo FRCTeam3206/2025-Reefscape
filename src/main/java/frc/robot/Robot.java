@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-//import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -75,7 +74,7 @@ public class Robot extends TimedRobot {
     m_lastTime = Timer.getFPGATimestamp();
 
     DataLogManager.start();
-    //Epilogue.bind(this);
+    // Epilogue.bind(this);
   }
 
   /**
@@ -288,7 +287,7 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
-    //im finna finna crashout on foenem
+    // im finna finna crashout on foenem
     // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
     m_elevator.reachGoal(1);
   }
@@ -296,8 +295,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    //arjun was doing something here idk im n ot gonna take it out yet
-    //m_elevator.reachGoal(0.75);
+    // arjun was doing something here idk im n ot gonna take it out yet
+    // m_elevator.reachGoal(0.75);
   }
 
   @Override
