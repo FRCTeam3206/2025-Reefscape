@@ -101,9 +101,10 @@ public final class Constants {
   public static final class GameConstants {
     // whys it string and not ints? Cause you wont do math with it
     public static enum Levels {
+      l1,
       l2,
       l3,
-      l4,
+      l4;
     }
   }
 

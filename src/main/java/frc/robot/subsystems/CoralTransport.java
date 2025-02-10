@@ -1,8 +1,5 @@
-// Safe not in name of method, put in comment
 // Also coral wheels in this system
-// Bigger safe angle
-// Stored position vertical
-// Use triggers instead of boolean methods
+// Bigger safe angle (for later)
 
 package frc.robot.subsystems;
 
@@ -14,61 +11,66 @@ public class CoralTransport {
    * and ends once that position is reached (with another method with "continuous" in its name that
    * allows you to run it without stopping once the goal is reached), and then it should continue to
    * maintain this position after the command stops by setting power in periodic accoding to a saved goal.
-  */
+   */
   private final Elevator m_elevator = new Elevator();
   private final Arm m_arm = new Arm();
   private final Wrist m_wrist = new Wrist();
+  private final Coral m_coralOmnis = new Coral();
 
   public CoralTransport() {}
 
-  /** Move the arm and wrist to the default position before moving the elevator, to avoid hitting something. */
-  public Command moveSafeHorizontalWrist() {
-    return ((m_arm.toDefault())
-      .andThen(m_wrist.toHorizontalContinuous()))
-      .until(() -> m_wrist.isHorizontal());
-  }
-
-  /* If wrist is already vertical, we are good. If wrist is horizontal, we should first move the arm straight then make wrist vertical. */
-  public Command moveSafeVerticalWrist() {
-    return (m_arm.toDefault()
-      .andThen(m_wrist.toVerticalContinuous()))
-      .until(() -> m_wrist.isVertical());
-  }
-
-  /** Move the arm, wrist, and elevator so that the mechanism is in the stored position. */
-  public Command storeCommand() {
-    return moveSafeHorizontalWrist()
-      .andThen(m_elevator.toStored())
-      .alongWith(m_arm.toStored());
-  }
-
-  /** Move to intake from the floor. */
-  public Command floorIntakeCommand() {
-    return moveSafeHorizontalWrist()
-      .andThen(m_elevator.toFloorIntake()
-      .alongWith(m_arm.toFloorIntake()));
-      // The wrist should be in the default position for intaking, which was already achieved by the first command.
-  }
-
-  /** Move to intake from the feeder station. */
-  public Command feederStationCommand() {
-    return moveSafeVerticalWrist() // Verify whether it's horizontal or vertical for this; I've heard both.
-      .andThen(m_elevator.toFeeder()
-      .alongWith(m_arm.toFeeder()));
-  }
-
-  public Command placeCoralLow() {
-    return moveSafeHorizontalWrist()
-      .andThen(m_elevator.toLowCoral()
-      .alongWith(m_arm.toLowCoral()));
+  /**
+   * It can hit things if the wrist is vertical, so we can move the arm first to make sure it's
+   * safe.
+   */
+  public Command moveWristVertical() {
+    return (m_arm.toHorizontal().andThen(m_wrist.toVerticalContinuous()))
+        .until(() -> m_wrist.isVertical().getAsBoolean());
   }
 
   /**
-   * @param level This MUST be 2, 3, or 4
+   * If we're moving the wrist horizontal, it won't hit things, but we might want to make sure it's
+   * horizontal before moving the arm.
    */
-  public Command placeCoralBranch(GameConstants.Levels level) {
-    return moveSafeVerticalWrist()
-      .andThen(m_elevator.toBranch(level)
-      .andThen(m_arm.toBranch(level)));
+  public Command moveWristHorizontal() {
+    return m_wrist.toHorizontalContinuous().until(() -> m_wrist.isHorizontal().getAsBoolean());
+  }
+
+  /** Move the arm, wrist, and elevator so that the mechanism is in the stored position. */
+  public Command positionStore() {
+    return moveWristHorizontal()
+        .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
+        .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
+  }
+
+  /** Move to intake from the floor. */
+  public Command positionFloorIntake() {
+    return moveWristHorizontal().andThen(m_elevator.toFloorIntake()).andThen(m_arm.toFloorIntake());
+  }
+
+  /** Move to intake from the feeder station. */
+  public Command positionFeederStation() {
+    return moveWristHorizontal().andThen(m_elevator.toFeeder().alongWith(m_arm.toFeeder()));
+  }
+
+  /** Position to place coral on any level, including 1. */
+  public Command positionReef(GameConstants.Levels level) {
+    return moveWristVertical().andThen(m_elevator.toBranch(level).andThen(m_arm.toBranch(level)));
+  }
+
+  public Command floorIntake() {
+    return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccess());
+  }
+
+  public Command feederStation() {
+    return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccess());
+  }
+
+  public Command scoreCoral(GameConstants.Levels level) {
+    return positionReef(level).andThen(m_coralOmnis.score());
+  }
+
+  public Coral getOmnisSubsystem() {
+    return m_coralOmnis;
   }
 }
