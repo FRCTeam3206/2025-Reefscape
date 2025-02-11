@@ -24,9 +24,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,11 +49,13 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(m_armGearbox, 1, 2, 10, 0, 90, true, 45);
 
-  // TODO: Use these for sim, but right now they are using elevator constants, and we want the robot to work in real life (but it would be great to have sim too)
+  // TODO: Use these for sim, but right now they are using elevator constants, and we want the robot
+  // to work in real life (but it would be great to have sim too)
   // // TODO move mech visualization to the overarching class
   // // Create a Mechanism2d visualization of the elevator
   // private final Mechanism2d m_mech2d =
-  //     new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
+  //     new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth,
+  // ElevatorConstants.Mechanism2d.kHeight);
   // private final MechanismRoot2d m_mech2dRoot =
   //     m_mech2d.getRoot(
   //         "Arm Root",
@@ -82,15 +81,15 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   public Command toHorizontal() {
     return setGoalCommand(ArmConstants.Angles.kHorizontal);
   }
-  
+
   public Command toStored() {
     return setGoalCommand(ArmConstants.Angles.kStored);
   }
-  
+
   public Command toFloorIntake() {
     return setGoalCommand(ArmConstants.Angles.kFloorIntake);
   }
-  
+
   public Command toFeeder() {
     return setGoalCommand(ArmConstants.Angles.kFeeder);
   }
