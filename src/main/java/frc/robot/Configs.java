@@ -52,4 +52,29 @@ public final class Configs {
           .positionWrappingInputRange(0, turningFactor);
     }
   }
+
+  public static final class Wrist {
+    public static final SparkMaxConfig armConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the arm motor
+      armConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      armConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .p(0.1)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(2000)
+          .maxAcceleration(10000)
+          .allowedClosedLoopError(0.25);
+    }
+  }
 }
