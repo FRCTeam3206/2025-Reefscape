@@ -2,15 +2,13 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 
 public class Coral extends SubsystemBase {
-  private final SparkMax m_wheels =
-      new SparkMax(CoralConstants.kCANId, MotorType.kBrushless);
+  private final SparkMax m_wheels = new SparkMax(CoralConstants.kCANId, MotorType.kBrushless);
   private final DigitalInput m_coralSensor = new DigitalInput(CoralConstants.kSensorChannel);
 
   public Coral() {}
@@ -36,7 +34,8 @@ public class Coral extends SubsystemBase {
   }
 
   public Command scoreCommand() {
-    return this.run(() -> intake()).until(() -> !m_coralSensor.get())
+    return this.run(() -> intake())
+        .until(() -> !m_coralSensor.get())
         .andThen(this.run(() -> intake()).withTimeout(CoralConstants.kSafeScoreTime));
   }
 
@@ -47,5 +46,4 @@ public class Coral extends SubsystemBase {
   public Command stopCommand() {
     return this.run(() -> stop());
   }
-
 }
