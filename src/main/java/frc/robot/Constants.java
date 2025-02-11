@@ -98,32 +98,28 @@ public final class Constants {
   public static final class GameConstants {
     // whys it string and not ints? Cause you wont do math with it
     public static enum ReefLevels {
+      l1,
       l2,
       l3,
-      l4,
+      l4;
     }
 
     // all in meters
     // How high up each thing is
     public static final class Positions {
       // Made up some numbers that sound plausible
-      public static final double feeder = 1.5;
-      public static final double floorIntake = 0.1;
+      public static final double kFeeder = 1.5;
+      public static final double kFloorIntake = 0.1;
       // I aint gonna lie i do not know what the coral storage is
-      public static final double coralStorage = 0.5;
+      public static final double kCoralStorage = 0.5;
       /* coral tree levels, dont go to 0
        * @see {@link https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf} page 24
        */
-      public static final double[] reefLevels = {
-        // dont use level 0!!! Theres no level 0
-        0,
-        // l1 is the trough
-        0.46,
-        // this is l2, next is l3, etc.
-        0.81,
-        1.21,
-        1.83
-      };
+      // l1 is the trough
+      public static final double kReefL1 = 0.46;
+      public static final double kReefL2 = 0.81;
+      public static final double kReefL3 = 1.21;
+      public static final double kReefL4 = 1.83;
     }
   }
 
@@ -240,7 +236,8 @@ public final class Constants {
 
       // Radius of the drum of the elevator
       // Controls the conversion factor of the SparkMax motors
-      // This value is multiplied by 2pi for the circumference, then passed in as a factor multiplying the rotations
+      // This value is multiplied by 2pi for the circumference, then passed in as a factor
+      // multiplying the rotations
       public static final double kDrumRadius = 0.0508;
 
       // kilograms
