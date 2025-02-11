@@ -95,6 +95,16 @@ public final class Constants {
         (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
   }
 
+  public static final class GameConstants {
+    // whys it string and not ints? Cause you wont do math with it
+    public static enum Levels {
+      l1,
+      l2,
+      l3,
+      l4;
+    }
+  }
+
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
@@ -148,101 +158,19 @@ public final class Constants {
     public static final int kStdDevLatencyMs = 5;
   }
 
-  public static final class ElevatorConstants {
-    // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
-    public static final int kWeight = 20;
-    // voltage for the simulation
-    public static final double kVoltage = 1;
-    // max elevator speed
-    public static final double kMaxVelocity = 0.3;
-    public static final double kMaxAcceleration = 0.3;
-
-    // Xi Jinping my beloved
-    // glory to the CCP
-    // in seconds for some reason
-    public static final double kUpdateFrequency = 0.02;
-
-    public static final class Motor {
-      // idk what port it is replace it later
-      public static final int kPort = 0;
-      // something spark related
-      public static final int kId = 3;
-      /*between -1 and 1
-      https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
-      Make it negative to reverse it
-      IDK the units*/
-      public static final double kSpeed = 0.1;
-      // how many motors in gearbox
-      public static final int kHowManyInGearbox = 2;
-    }
-
-    public static final class Controller {
-      public static final double Kp = 10;
-      public static final double Ki = 0;
-      public static final double Kd = 0;
-    }
-
-    public static final class FeedForward {
-      // Static gain (volts)
-      public static final double Ks = 0;
-      // Gravity gain (volts)
-      public static final double Kg = 0.762;
-      // Velocity gain (volts per m/s)
-      public static final double Kv = 0.762;
-      // Acceleration gain (volts per m/s^2)
-      public static final double Ka = 0;
-    }
-
-    // something for the simulation I Dont Really Know!
-    public static final class Mechanism2d {
-      // meters i think
-      public static final double kWidth = 20;
-      public static final double kHeight = 50;
-      public static final double kXDistance = 10;
-      public static final double kYDistance = 0;
-    }
-
-    public static final class Measurements {
-      // meters
-      public static final double kBottomHeight = 0;
-      public static final double kTopHeight = 1.25;
-      public static final double kDrumRadius = 0.0508;
-      // kilograms
-      public static final double kWeight = 2; // 15.87;
-      // Gearing of the gearbox on elevator (Positive values = reduction)
-      public static final double kGearing = 10;
-      // Standard deviation of elevator sim (set to 0 for no noise)
-      // why is it an array?? What
-      public static final double[] kStandardDeviation =
-          new double[] {
-            0, 0,
-          };
-    }
-
-    public static final class Sensor {
-      // idk what units or whatever since idk what sensors we're using
-      public static final double kDistanceTillItsDangerous = 2;
-    }
-
-    public static final class Encoder {
-      // Distance of movement per encoder pulse
-      public static final double kDistancePerPulse = 2.0 * Math.PI * 0.0508 / 4096;
-      // Change this later idk what it is
-      public static final int kAChannel = 0;
-      public static final int kBChannel = 1;
-    }
-
-    // ways the elevator can go
-    // It aint really needed i just learned what an enum is and watned 2 use it
-    public static enum WaysItCanMove {
-      down,
-      up,
-      nowhere
-    }
-  }
-
   public static final class ArmConstants {
     public static final int gearing = 10;
     public static final double kUpdateFrequency = 0.02;
+
+    public static final class Angles {
+      public static final double kHorizontal = Math.PI;
+      public static final double kStored = Math.PI / 2;
+      public static final double kFloorIntake = 4.10; // This is a guess.
+      public static final double kFeeder = 2.30; // This is a guess.
+      public static final double kReefL1 = 3.0; // This is a guess.
+      public static final double kReefL2 = 2.10; // This is a guess.
+      public static final double kReefL3 = kReefL2;
+      public static final double kReefL4 = 2.50;
+    }
   }
 }
