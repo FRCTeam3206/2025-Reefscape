@@ -154,5 +154,7 @@ public final class Constants {
     public static final double kVerticalPosition = Math.PI / 2;
 
     public static final double kAtAngleTolerance = 0.05;
+
+    public static final double kConversionFactor = 0.05; // NOT correct yet.
   }
 }

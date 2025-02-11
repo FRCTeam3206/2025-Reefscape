@@ -4,6 +4,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.WristConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -75,6 +76,11 @@ public final class Configs {
           .maxVelocity(2000)
           .maxAcceleration(10000)
           .allowedClosedLoopError(0.25);
+
+      armConfig
+          .absoluteEncoder
+          .positionConversionFactor(WristConstants.kConversionFactor)
+          .velocityConversionFactor(WristConstants.kConversionFactor);
     }
   }
 }
