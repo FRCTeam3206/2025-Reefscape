@@ -2,9 +2,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AlgaeConstants;
@@ -14,11 +15,7 @@ public class Algae extends SubsystemBase {
   private final SparkAbsoluteEncoder m_armAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
   private final SparkMax m_wheelsMotor =
       new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
-  private final PIDController armPID =
-      new PIDController(
-          AlgaeConstants.kArmProportional,
-          AlgaeConstants.kArmIntegral,
-          AlgaeConstants.kArmDerivative);
+  private final SparkClosedLoopController m_armController = m_armMotor.getClosedLoopController();
 
   private final SparkMaxSim m_armMotorSim =
       new SparkMaxSim(m_armMotor, AlgaeConstants.kArmMotorType);
@@ -46,16 +43,22 @@ public class Algae extends SubsystemBase {
 
   public Command retractCommand() {
     return this.run(
-        () -> {
-          m_armMotor.set(armPID.calculate(getArmAngle(), AlgaeConstants.kRetractPosition));
-        });
+            () -> {
+              m_armController.setReference(
+                  AlgaeConstants.kRetractPosition, ControlType.kMAXMotionPositionControl);
+            })
+        .until(() -> atposGoal(AlgaeConstants.kRetractPosition))
+        .andThen(this.run(() -> m_armMotor.set(0.0)));
   }
 
   public Command extendCommand() {
     return this.run(
-        () -> {
-          m_armMotor.set(armPID.calculate(getArmAngle(), AlgaeConstants.kExtendPosition));
-        });
+            () -> {
+              m_armController.setReference(
+                  AlgaeConstants.kExtendPosition, ControlType.kMAXMotionPositionControl);
+            })
+        .until(() -> atposGoal(AlgaeConstants.kExtendPosition))
+        .andThen(this.run(() -> m_armMotor.set(0.0)));
   }
 
   public boolean atposGoal(double goal) {
