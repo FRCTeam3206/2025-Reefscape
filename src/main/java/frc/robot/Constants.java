@@ -254,7 +254,7 @@ public final class Constants {
       public static final double kDrumRadius = 0.0508;
 
       // kilograms
-      public static final double kWeight = 15.87;
+      public static final double kWeight = 1;
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)

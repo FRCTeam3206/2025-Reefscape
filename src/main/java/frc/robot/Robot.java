@@ -123,7 +123,6 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
-    m_elevator.setDefaultCommand(m_elevator.stop());
   }
 
   /**
@@ -289,7 +288,7 @@ public class Robot extends TimedRobot {
     // }
     // im finna finna crashout on foenem
     // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
-    m_elevator.reachGoal(1);
+    
   }
 
   /** This function is called periodically during operator control. */
@@ -297,6 +296,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // arjun was doing something here idk im n ot gonna take it out yet
     // m_elevator.reachGoal(0.75);
+    m_elevator.reachGoal(1);
+    m_elevator.simulationPeriodic();
   }
 
   @Override
@@ -304,17 +305,16 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
-
+  
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-
+  
   @Override
   public void simulationInit() {}
 
   @Override
   public void simulationPeriodic() {
-    m_elevator.simulationPeriodic();
   }
 
   public double getLoopTime() {

@@ -17,6 +17,8 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -32,7 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.GameConstants;
 
@@ -40,22 +42,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
   private final DCMotor m_elevatorGearbox =
       DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
-
-  // Standard classes for controlling our elevator
-  private final ProfiledPIDController m_controller =
-      new ProfiledPIDController(
-          Constants.ElevatorConstants.Controller.Kp,
-          Constants.ElevatorConstants.Controller.Ki,
-          Constants.ElevatorConstants.Controller.Kd,
-          new TrapezoidProfile.Constraints(
-              ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxVelocity));
-
-  private final ElevatorFeedforward m_feedforward =
-      new ElevatorFeedforward(
-          Constants.ElevatorConstants.FeedForward.Ks,
-          Constants.ElevatorConstants.FeedForward.Kg,
-          Constants.ElevatorConstants.FeedForward.Kv,
-          Constants.ElevatorConstants.FeedForward.Ka);
 
   // the encoderssssss
   
@@ -105,7 +91,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
           new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
 
   // nowhere, up, or down
-  private ElevatorConstants.WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
+  private ElevatorConstants.WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.up;
   // stores what reachGoal() was called with last time
   private double lastGoal = 0;
 
@@ -114,6 +100,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
     SmartDashboard.putData("Elevator Sim", m_mech2d);
+
+    m_motor.configure(
+      Configs.ElevatorConfigs.elevatorConfig, 
+      ResetMode.kResetSafeParameters, 
+      PersistMode.kPersistParameters);
   }
 
   /** Advance the simulation. */
@@ -121,7 +112,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-
+    
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(ElevatorConstants.kUpdateFrequency);
 
@@ -130,6 +121,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         m_elevatorSim.getVelocityMetersPerSecond(),
         RobotController.getBatteryVoltage(),
         ElevatorConstants.kUpdateFrequency);
+    
+    SmartDashboard.putNumber("1", m_motorSim.getAppliedOutput());
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_encoderSim.setPosition(m_elevatorSim.getPositionMeters());
@@ -158,6 +151,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
     m_closedLoopController.setReference(goal, ControlType.kMAXMotionPositionControl);
 
+
     SmartDashboard.putNumber("Position meters", m_encoder.getPosition());
     SmartDashboard.putString("Movement", wheresItGoin.toString());
   }
@@ -167,11 +161,10 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    * middle!!!
    */
   public Command stop() {
-    return this.run(
+    return this.runOnce(
         () -> {
           wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
           SmartDashboard.putString("Movement", wheresItGoin.toString());
-          m_controller.setGoal(0.0);
           m_motor.set(0.0);
           m_motor.stopMotor();
         });

@@ -64,6 +64,13 @@ public final class Configs {
       elevatorConfig
         .encoder
         .positionConversionFactor(elevatorPosFactor);
+        
+      elevatorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        // These are example gains you may need to them for your own robot!
+        .pid(10, 0, 0)
+        .outputRange(-1, 1);
     }
   }
 }
