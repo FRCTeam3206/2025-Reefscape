@@ -288,7 +288,7 @@ public class Robot extends TimedRobot {
     // }
     // im finna finna crashout on foenem
     // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
-    
+
   }
 
   /** This function is called periodically during operator control. */
@@ -305,17 +305,16 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
-  
+
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-  
+
   @Override
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 
   public double getLoopTime() {
     return m_loopTime;

@@ -9,21 +9,16 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -44,19 +39,22 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
 
   // the encoderssssss
-  
+
   /**
-   * Elevator motor module uses a conversion factor of {@link ElevatorConstants.Measurements#kDrumRadius}. 
-   * PID/encoder use meters instead of rotations.
+   * Elevator motor module uses a conversion factor of {@link
+   * ElevatorConstants.Measurements#kDrumRadius}. PID/encoder use meters instead of rotations.
    */
-  private final SparkMax m_motor = new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
+  private final SparkMax m_motor =
+      new SparkMax(ElevatorConstants.Motor.kPort, MotorType.kBrushless);
+
   private final SparkAbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
-  private final SparkClosedLoopController m_closedLoopController = m_motor.getClosedLoopController();
-  
+  private final SparkClosedLoopController m_closedLoopController =
+      m_motor.getClosedLoopController();
+
   // Sim classes
   private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
   private final SparkAbsoluteEncoderSim m_encoderSim = new SparkAbsoluteEncoderSim(m_motor);
-  
+
   // Simulation classes help us simulate what's going on, including gravity.
   // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
   private final ElevatorSim m_elevatorSim =
@@ -102,9 +100,9 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     SmartDashboard.putData("Elevator Sim", m_mech2d);
 
     m_motor.configure(
-      Configs.ElevatorConfigs.elevatorConfig, 
-      ResetMode.kResetSafeParameters, 
-      PersistMode.kPersistParameters);
+        Configs.ElevatorConfigs.elevatorConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
   }
 
   /** Advance the simulation. */
@@ -112,7 +110,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-    
+
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(ElevatorConstants.kUpdateFrequency);
 
@@ -121,7 +119,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         m_elevatorSim.getVelocityMetersPerSecond(),
         RobotController.getBatteryVoltage(),
         ElevatorConstants.kUpdateFrequency);
-    
+
     SmartDashboard.putNumber("1", m_motorSim.getAppliedOutput());
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
@@ -136,6 +134,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   /**
    * Run control loop to reach and maintain goal.
+   *
    * @param goal the position to maintain
    */
   public void reachGoal(double goal) {
@@ -150,7 +149,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     lastGoal = goal;
 
     m_closedLoopController.setReference(goal, ControlType.kMAXMotionPositionControl);
-
 
     SmartDashboard.putNumber("Position meters", m_encoder.getPosition());
     SmartDashboard.putString("Movement", wheresItGoin.toString());
@@ -180,19 +178,24 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         () -> {
           // mmmmmm switch case
           switch (level) {
+            case l1:
+              {
+                reachGoal(GameConstants.Positions.kReefL1);
+                break;
+              }
             case l2:
               {
-                reachGoal(GameConstants.Positions.reefLevels[2]);
+                reachGoal(GameConstants.Positions.kReefL2);
                 break;
               }
             case l3:
               {
-                reachGoal(GameConstants.Positions.reefLevels[3]);
+                reachGoal(GameConstants.Positions.kReefL3);
                 break;
               }
             case l4:
               {
-                reachGoal(GameConstants.Positions.reefLevels[4]);
+                reachGoal(GameConstants.Positions.kReefL4);
                 break;
               }
           }
@@ -201,22 +204,17 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   /** go to the bottomish */
   public Command toFloorIntake() {
-    return this.run(() -> reachGoal(GameConstants.Positions.floorIntake));
+    return this.run(() -> reachGoal(GameConstants.Positions.kFloorIntake));
   }
 
   /** go to human coral putting station */
   public Command toFeeder() {
-    return this.run(() -> reachGoal(GameConstants.Positions.feeder));
-  }
-
-  /** go to the coral trough */
-  public Command toLowCoral() {
-    return this.run(() -> reachGoal(GameConstants.Positions.reefLevels[1]));
+    return this.run(() -> reachGoal(GameConstants.Positions.kFeeder));
   }
 
   /** Idk what stored is ngl */
   public Command toStored() {
-    return this.run(() -> reachGoal(GameConstants.Positions.coralStorage));
+    return this.run(() -> reachGoal(GameConstants.Positions.kCoralStorage));
   }
 
   /** go to elevator upper limit */
