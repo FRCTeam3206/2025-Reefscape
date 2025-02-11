@@ -159,6 +159,10 @@ public final class Constants {
     public static final double kIntakeSpeed = 0.1;
     public static final double kExtakeSpeed = -0.1;
 
+    // Two constants: kRetractSpeed, kExtendSpeed
+    public static final double kRetractSpeed = -0.1;
+    public static final double kExtendSpeed = 0.1;
+
     public static final double kArmProportional = 0.0;
     public static final double kArmDerivative = 0.0;
     public static final double kArmIntegral = 0.0;
