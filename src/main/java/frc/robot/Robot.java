@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Arm m_elevator = new Arm();
+  private final Arm m_arm = new Arm();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -276,9 +276,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    m_elevator.reachGoal(0.75);
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
@@ -295,7 +293,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {
-    m_elevator.simulationPeriodic();
+    m_arm.simulationPeriodic();
   }
 
   public double getLoopTime() {

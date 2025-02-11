@@ -63,7 +63,7 @@ public final class Configs {
 
     static {
        armConfig.encoder
-        .positionConversionFactor(1)
+        .positionConversionFactor(360)
         .velocityConversionFactor(1);
 
     /*
@@ -96,11 +96,11 @@ public final class Configs {
         .maxVelocity(6000, ClosedLoopSlot.kSlot1)
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
   
-      Constants.ElevatorConstants.Controller.Kp,
-          Constants.ElevatorConstants.Controller.Ki,
-          Constants.ElevatorConstants.Controller.Kd,
-          new TrapezoidProfile.Constraints(
-              ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration)
+      // Constants.ElevatorConstants.Controller.Kp,
+      //     Constants.ElevatorConstants.Controller.Ki,
+      //     Constants.ElevatorConstants.Controller.Kd,
+      //     new TrapezoidProfile.Constraints(
+      //         ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration)
       // We will need to make a lot more changes to the config.
     }
   }
