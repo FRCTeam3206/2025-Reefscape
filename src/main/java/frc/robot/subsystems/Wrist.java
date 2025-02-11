@@ -17,12 +17,12 @@ import frc.robot.Constants.WristConstants;
 @Logged
 public class Wrist extends SubsystemBase {
   private boolean m_goalHorizontal = true;
-  private SparkMax m_wristMotor = new SparkMax(WristConstants.kCANId, MotorType.kBrushless);
-  private SparkClosedLoopController m_wristController = m_wristMotor.getClosedLoopController();
-  private AbsoluteEncoder m_wristEncoder = m_wristMotor.getAbsoluteEncoder();
+  private SparkMax m_motor = new SparkMax(WristConstants.kCANId, MotorType.kBrushless);
+  private SparkClosedLoopController m_controller = m_motor.getClosedLoopController();
+  private AbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
 
   public Wrist() {
-    m_wristMotor.configure(
+    m_motor.configure(
         Configs.Wrist.armConfig,
         ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
@@ -37,7 +37,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    return m_wristEncoder.getPosition();
+    return m_encoder.getPosition();
   }
 
   public Trigger isVertical() {
@@ -54,7 +54,7 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_wristController.setReference(
+    m_controller.setReference(
         m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition,
         ControlType.kMAXMotionPositionControl);
   }
