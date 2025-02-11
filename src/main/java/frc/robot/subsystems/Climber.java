@@ -1,19 +1,21 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+public final class Climber extends SubsystemBase {
+  private final SparkMax m_motor = new SparkMax(ClimberConstants.kCanId, MotorType.kBrushless);
 
-public final class Climber {
-    private final SparkMax motor = new SparkMax(ClimberConstants.kCanId, MotorType.kBrushless);
-    public Climber() {
+  public Climber() {}
 
-    }
-    public void goOut() {
+  public Command goOut() {
+    return this.run(() -> m_motor.set(ClimberConstants.kSpeed));
+  }
 
-    }
-    public void goBackIn() {
-        
-    }
+  public Command goIn() {
+    return this.run(() -> m_motor.set(-ClimberConstants.kSpeed));
+  }
 }

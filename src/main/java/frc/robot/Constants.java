@@ -149,7 +149,9 @@ public final class Constants {
   }
 
   public static final class ClimberConstants {
-    //TODO change this to the real can id
-    public static final int kCanId = 1000;
+    // TODO change this to the real can id
+    public static final int kCanId = 50;
+
+    public static final double kSpeed = 0.3;
   }
 }
