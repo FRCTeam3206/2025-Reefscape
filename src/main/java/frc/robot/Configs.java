@@ -3,6 +3,7 @@ package frc.robot;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public final class Configs {
@@ -50,6 +51,36 @@ public final class Configs {
           // longer route.
           .positionWrappingEnabled(true)
           .positionWrappingInputRange(0, turningFactor);
+    }
+  }
+
+  public static final class Algae {
+    public static final SparkMaxConfig armConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the arm motor
+      armConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      armConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .p(0.1)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(2000)
+          .maxAcceleration(10000)
+          .allowedClosedLoopError(0.25);
+
+      armConfig
+          .absoluteEncoder
+          .positionConversionFactor(AlgaeConstants.kConversionFactor)
+          .velocityConversionFactor(AlgaeConstants.kConversionFactor);
     }
   }
 }

@@ -165,5 +165,7 @@ public final class Constants {
     public static final double kRetractPosition = 0.0;
     public static final double kExtendPosition = 0.0;
     public static final double kAtGoalTolerance = 0.05;
+
+    public static final double kConversionFactor = 0.05; // This is NOT the correct value yet.
   }
 }

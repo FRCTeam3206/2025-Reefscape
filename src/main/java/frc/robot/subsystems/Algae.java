@@ -3,11 +3,14 @@ package frc.robot.subsystems;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
 import frc.robot.Constants.AlgaeConstants;
 
 public class Algae extends SubsystemBase {
@@ -20,7 +23,10 @@ public class Algae extends SubsystemBase {
   private final SparkMaxSim m_armMotorSim =
       new SparkMaxSim(m_armMotor, AlgaeConstants.kArmMotorType);
 
-  public Algae() {}
+  public Algae() {
+    m_armMotor.configure(
+        Configs.Algae.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
 
   @Override
   public void simulationPeriodic() {}
