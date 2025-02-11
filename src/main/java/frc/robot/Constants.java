@@ -151,13 +151,14 @@ public final class Constants {
 
   public static final class CoralConstants {
     // random numbers right now
-    public static final int kFirstMotorCanId = 30;
-    public static final int kSecondMotorCanId = 40;
+    public static final int kCANId = 30;
     // Might not end up being "Neo550", Line 157
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
-    public static final double kLeftIntakeSpeed = 0.1;
-    public static final double kRightIntakeSpeed = (-kLeftIntakeSpeed);
-    public static final double kLeftOutakeSpeed = -0.1;
-    public static final double kRightOutakeSpeed = (-kLeftIntakeSpeed);
+    public static final double kIntakeSpeed = 0.1;
+    public static final double kOutakeSpeed = -0.1;
+
+    public static final int kSensorChannel = 1;
+
+    public static final double kSafeScoreTime = 2;
   }
 }

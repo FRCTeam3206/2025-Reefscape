@@ -3,57 +3,45 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 
 public class Coral extends SubsystemBase {
-  private final SparkMax m_coralLeft =
-      new SparkMax(CoralConstants.kFirstMotorCanId, MotorType.kBrushless);
-  private final SparkMax m_coralRight =
-      new SparkMax(CoralConstants.kSecondMotorCanId, MotorType.kBrushless);
+  private final SparkMax m_wheels =
+      new SparkMax(CoralConstants.kCANId, MotorType.kBrushless);
+  private final DigitalInput m_coralSensor = new DigitalInput(CoralConstants.kSensorChannel);
 
   public Coral() {}
 
   public void intake() {
-    m_coralLeft.set(CoralConstants.kLeftIntakeSpeed);
-    m_coralRight.set(CoralConstants.kRightIntakeSpeed);
+    m_wheels.set(CoralConstants.kIntakeSpeed);
   }
 
   public void outake() {
-    m_coralLeft.set(CoralConstants.kLeftOutakeSpeed);
-    m_coralRight.set(CoralConstants.kRightOutakeSpeed);
-  }
-
-  public void moveLeft() {
-    m_coralLeft.set(CoralConstants.kLeftIntakeSpeed);
-    m_coralRight.set(CoralConstants.kRightOutakeSpeed);
-  }
-
-  public void moveRight() {
-    m_coralRight.set(CoralConstants.kRightIntakeSpeed);
-    m_coralLeft.set(CoralConstants.kLeftOutakeSpeed);
+    m_wheels.set(CoralConstants.kOutakeSpeed);
   }
 
   public void stop() {
-    m_coralRight.set(0);
-    m_coralLeft.set(0);
+    m_wheels.set(0);
   }
 
   public Command intakeCommand() {
     return this.run(() -> intake());
   }
 
+  public Command intakeUntilSuccessCommand() {
+    return this.run(() -> intake()).until(() -> m_coralSensor.get());
+  }
+
+  public Command scoreCommand() {
+    return this.run(() -> intake()).until(() -> !m_coralSensor.get())
+        .andThen(this.run(() -> intake()).withTimeout(CoralConstants.kSafeScoreTime));
+  }
+
   public Command outakeCommand() {
     return this.run(() -> outake());
-  }
-
-  public Command moveLeftCommand() {
-    return this.run(() -> moveLeft());
-  }
-
-  public Command moveRightCommand() {
-    return this.run(() -> moveRight());
   }
 
   public Command stopCommand() {
