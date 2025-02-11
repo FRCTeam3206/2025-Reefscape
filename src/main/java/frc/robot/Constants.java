@@ -247,9 +247,14 @@ public final class Constants {
       // meters
       public static final double kBottomHeight = 0;
       public static final double kTopHeight = 1.25;
+
+      // Radius of the drum of the elevator
+      // Controls the conversion factor of the SparkMax motors
+      // This value is multiplied by 2pi for the circumference, then passed in as a factor multiplying the rotations
       public static final double kDrumRadius = 0.0508;
+
       // kilograms
-      public static final double kWeight = 2; // 15.87;
+      public static final double kWeight = 15.87;
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
@@ -271,8 +276,6 @@ public final class Constants {
     }
 
     public static final class Encoder {
-      // Distance of movement per encoder pulse
-      public static final double kDistancePerPulse = 2.0 * Math.PI * 0.0508 / 4096;
       // Change this later idk what it is
       public static final int kAChannel = 0;
       public static final int kBChannel = 1;
