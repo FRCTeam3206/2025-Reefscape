@@ -52,4 +52,12 @@ public final class Configs {
           .positionWrappingInputRange(0, turningFactor);
     }
   }
+
+  public static final class Coral {
+    public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
+
+    static {
+      wheelsConfig.smartCurrentLimit(20);
+    }
+  }
 }
