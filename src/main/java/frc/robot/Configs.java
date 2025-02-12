@@ -59,7 +59,7 @@ public final class Configs {
 
     static {
       // Configure basic settings of the arm motor
-      armConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(20).voltageCompensation(12);
+      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the
