@@ -288,7 +288,7 @@ public class Robot extends TimedRobot {
     // }
     // im finna finna crashout on foenem
     // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
-
+    m_elevator.reachGoal(1);
   }
 
   /** This function is called periodically during operator control. */
