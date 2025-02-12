@@ -57,7 +57,7 @@ public final class Configs {
     public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.smartCurrentLimit(20);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
     }
   }
 }
