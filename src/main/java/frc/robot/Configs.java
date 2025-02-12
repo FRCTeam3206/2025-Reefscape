@@ -58,6 +58,8 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
+      armConfig.smartCurrentLimit(20);
+
       armConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 
       /*
