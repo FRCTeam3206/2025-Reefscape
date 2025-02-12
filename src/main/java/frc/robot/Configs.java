@@ -52,4 +52,12 @@ public final class Configs {
           .positionWrappingInputRange(0, turningFactor);
     }
   }
+
+  public static final class Climber {
+    public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
+    
+    static {
+      climberConfig.smartCurrentLimit(20);
+    }
+  }
 }
