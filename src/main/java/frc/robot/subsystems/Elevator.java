@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Configs.ElevatorConfigs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.GameConstants;
@@ -138,17 +137,16 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         ElevatorConstants.kUpdateFrequency);
 
     if (
-          //if its going down and its below the goal, or its going up and above the goal
-          //then it should stop
-          (wheresItGoin == ElevatorConstants.WaysItCanMove.up && 
-          m_elevatorSim.getPositionMeters() > lastGoal) ||
-          (wheresItGoin == ElevatorConstants.WaysItCanMove.down &&
-          m_elevatorSim.getPositionMeters() <= lastGoal)
-        ) {
-        // TODO find a better way to check if its at the goal
-        stopButNotCommand();
+    // if its going down and its below the goal, or its going up and above the goal
+    // then it should stop
+    (wheresItGoin == ElevatorConstants.WaysItCanMove.up
+            && m_elevatorSim.getPositionMeters() > lastGoal)
+        || (wheresItGoin == ElevatorConstants.WaysItCanMove.down
+            && m_elevatorSim.getPositionMeters() <= lastGoal)) {
+      // TODO find a better way to check if its at the goal
+      stopButNotCommand();
     }
-    
+
     SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
     SmartDashboard.putNumber("Position meters", m_elevatorSim.getPositionMeters());
 
@@ -171,12 +169,15 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     if (goal > ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight
         || goal < ElevatorConstants.Measurements.kBottomHeight) {
       throw new Error(
-          "Goal is out of range! Should be between" + 
-          ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight + 
-          "and " + ElevatorConstants.Measurements.kBottomHeight + 
-          " meters. Attempted goal: " + goal);
+          "Goal is out of range! Should be between"
+              + ElevatorConstants.Measurements.kTopHeight
+              + ArmConstants.kHeight
+              + "and "
+              + ElevatorConstants.Measurements.kBottomHeight
+              + " meters. Attempted goal: "
+              + goal);
     }
-    //TODO bad boilerplate fix later
+    // TODO bad boilerplate fix later
     if (goal < lastGoal) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
     } else if (goal > lastGoal) {
@@ -189,14 +190,13 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     m_feedForward.calculate(0.1);
 
     m_closedLoopController.setReference(
-      //If it should go up or down
-      //i aint an electrician but they got them batteries at 6 volts so that seems good
-      goal > m_elevatorSim.getPositionMeters() ? 6 : -6, 
-      ControlType.kVoltage);
-    
+        // If it should go up or down
+        // i aint an electrician but they got them batteries at 6 volts so that seems good
+        goal > m_elevatorSim.getPositionMeters() ? 6 : -6, ControlType.kVoltage);
+
     SmartDashboard.putNumber("Goal", lastGoal);
     SmartDashboard.putString("Movement", wheresItGoin.toString());
-    //record of where it was goin last time, idk if its needed anymore
+    // record of where it was goin last time, idk if its needed anymore
     lastGoal = goal;
   }
 
@@ -215,10 +215,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         });
   }
 
-  /**
-   * makes it stop  but a void and no command
-   * TODO less shitty name
-   */
+  /** makes it stop but a void and no command TODO less shitty name */
   public void stopButNotCommand() {
     wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
     SmartDashboard.putString("Movement", wheresItGoin.toString());

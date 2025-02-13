@@ -177,7 +177,7 @@ public final class Constants {
   }
 
   public class ArmConstants {
-    //height in meters it can reach above the elevator, this number is made up right now
+    // height in meters it can reach above the elevator, this number is made up right now
     public static final double kHeight = 0.8;
   }
 
