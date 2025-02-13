@@ -176,6 +176,11 @@ public final class Constants {
     public static final int kStdDevLatencyMs = 5;
   }
 
+  public class ArmConstants {
+    //height in meters it can reach above the elevator, this number is made up right now
+    public static final double kHeight = 0.8;
+  }
+
   public static final class ElevatorConstants {
     // TODO many of these arent used but java linter wont tell me... find out witch ones arent used
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
