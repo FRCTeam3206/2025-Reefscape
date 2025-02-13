@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
-import frc.robot.Constants.GameConstants.Levels;
 import frc.robot.Constants.GameConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
@@ -286,17 +285,14 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
-    // im finna finna crashout on foenem
-    // WH YDOESNT THIS WORK!!!! ! AAAAAAAAAAAAAAAHHHH
-    m_elevator.reachGoal(1);
+    m_elevator.setDefaultCommand(
+      m_elevator.toBranch(GameConstants.ReefLevels.l3)
+    );
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // arjun was doing something here idk im n ot gonna take it out yet
-    // m_elevator.reachGoal(0.75);
-    m_elevator.reachGoal(1);
     m_elevator.simulationPeriodic();
   }
 
