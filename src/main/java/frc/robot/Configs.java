@@ -60,7 +60,7 @@ public final class Configs {
     static {
       double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
 
-      elevatorConfig.smartCurrentLimit(20);
+      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
 
       elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
 
