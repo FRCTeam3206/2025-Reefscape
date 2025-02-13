@@ -154,7 +154,7 @@ public final class Constants {
 
   public static final class PathingConstants {
     public static final double kRobotMassKg = 63.5;
-    public static final double kRobotLengthWidthMeters = Units.inchesToMeters(35); // including bumpers. Length and width are the same.
+    public static final double kRobotLengthWidthMeters = Units.inchesToMeters(36); // including bumpers. Length and width are the same.
     public static final double kCoralFaceOffset =
         Units.inchesToMeters(13)
             / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
