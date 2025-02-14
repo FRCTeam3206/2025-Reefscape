@@ -55,6 +55,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   // i was readin bout elevators and it said feed forward is good, so i might try dis out...
   // Not set up yet really cause its 8:22pm on a tuesday & im finna crashout
+  //TODO corrie said we're doin this another way now so uhhh replace this eventually
   private final ElevatorFeedforward m_feedForward =
       new ElevatorFeedforward(
           ElevatorConstants.FeedForward.Ks,
@@ -100,7 +101,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
           new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
 
   // nowhere, up, or down
-  private ElevatorConstants.WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.up;
+  private ElevatorConstants.WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
   // stores what reachGoal() was called with last time
   private double lastGoal = 0;
 
@@ -118,11 +119,18 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   /** Advance the simulation. */
   public void simulationPeriodic() {
+    //dis is a variable so it dfoesnt have to be called 100 times
+    double currentPosition = m_elevatorSim.getPositionMeters();
+    //once its past the "slow down distance", how close it is to the goal
+    //0.1 is very close, 1 means its right at that distance, bigger than
+    //1 means it s not time to slow down yet
+    double percentUntilStop = Math.abs(currentPosition - lastGoal) / 
+    ElevatorConstants.Measurements.kSlowDownDistance;
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-
-    if (Math.random() < 0.005) {
+    
+    if (Math.random() < 0.001) {
       double randomThingy = Math.random() * 1.25;
       reachGoal(randomThingy);
     }
@@ -136,19 +144,37 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         RobotController.getBatteryVoltage(),
         ElevatorConstants.kUpdateFrequency);
 
-    if (
+    SmartDashboard.putNumber("percent till stop distance", percentUntilStop);
+    
     // if its going down and its below the goal, or its going up and above the goal
     // then it should stop
-    (wheresItGoin == ElevatorConstants.WaysItCanMove.up
-            && m_elevatorSim.getPositionMeters() > lastGoal)
-        || (wheresItGoin == ElevatorConstants.WaysItCanMove.down
-            && m_elevatorSim.getPositionMeters() <= lastGoal)) {
+    if (wheresItGoin == ElevatorConstants.WaysItCanMove.up) {
       // TODO find a better way to check if its at the goal
-      stopButNotCommand();
+      // TODO use feedforward and whaetever calc stuff corrie was talking about
+      //Calc means calculator for those of yall new in the chat
+      if (percentUntilStop < 0.1) {
+        //If its 1 centimeter off its fine
+        stayInPlace();
+      } else if (percentUntilStop < 1) {
+        //erm read the next comment to see wut dis does........ YEAH
+        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop);
+      }
+    } else if (wheresItGoin == ElevatorConstants.WaysItCanMove.down) {
+        if (percentUntilStop < 0.1) {
+          stayInPlace();
+        } else if (percentUntilStop < 1) {
+          //Makes it go  slower the farther it is from the goal on a striaght curve
+          //basically like feed forward but stupider
+          //wait... straight... ITS PRI DE MONTH!!! WE CANT DO THAT!!!!
+          // i need a queer to get us on some sine waves stat
+          changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop);
+        }
     }
 
     SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
     SmartDashboard.putNumber("Position meters", m_elevatorSim.getPositionMeters());
+    SmartDashboard.putNumber("Goal", lastGoal);
+    SmartDashboard.putString("Movement", wheresItGoin.toString());
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_encoderSim.setPosition(m_elevatorSim.getPositionMeters());
@@ -161,14 +187,17 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * Run control loop to reach and maintain goal.
-   *
-   * @param goal the position to maintain
+   * Goes to a place in meters
+   * @param goal where 2 go
+   * @throws Error if the goal is bigger than max heigh t plus arm height or less than 0
    */
   public void reachGoal(double goal) {
+    //Error handliong
     if (goal > ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight
         || goal < ElevatorConstants.Measurements.kBottomHeight) {
       throw new Error(
+        //Ugly-ass string concantation
+        //is like hiler... and the concantation camp... Very Bad!
           "Goal is out of range! Should be between"
               + ElevatorConstants.Measurements.kTopHeight
               + ArmConstants.kHeight
@@ -177,27 +206,42 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
               + " meters. Attempted goal: "
               + goal);
     }
-    // TODO bad boilerplate fix later
-    if (goal < lastGoal) {
+
+    //makes it go up or down or no where...
+    if (goal < m_elevatorSim.getPositionMeters()) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
-    } else if (goal > lastGoal) {
+      changeSpeed(ElevatorConstants.Voltages.kDown);
+    } else if (goal > m_elevatorSim.getPositionMeters()) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.up;
+      changeSpeed(ElevatorConstants.Voltages.kUp);
     } else {
       wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
+      stayInPlace();
     }
-    // idk what this does tbh
-    // Might not need it
-    m_feedForward.calculate(0.1);
-
-    m_closedLoopController.setReference(
-        // If it should go up or down
-        // i aint an electrician but they got them batteries at 6 volts so that seems good
-        goal > m_elevatorSim.getPositionMeters() ? 6 : -6, ControlType.kVoltage);
-
-    SmartDashboard.putNumber("Goal", lastGoal);
-    SmartDashboard.putString("Movement", wheresItGoin.toString());
-    // record of where it was goin last time, idk if its needed anymore
+    
+    // record of where it was goin last time
     lastGoal = goal;
+
+    // idk what this does tbh
+    // Corrie was sayin  its good and shes in like 15th grade math so i trust what she says
+    m_feedForward.calculate(0.1);
+  }
+
+  /**
+   * reference of the motor whatever that means
+   * @param voltage How many volts to change it to, it can be negative to😛😛😛
+   */
+  public void changeSpeed(double voltage) {
+    m_closedLoopController.setReference(voltage, ControlType.kVoltage);
+  }
+
+  /**
+   * makes the elevator motors turn go up but only a little bit so that it stays in place
+   * I just remembered we have to carry stuff which is heavy so this probly wont wokr.... goddammit...
+   */
+  public void stayInPlace() {
+    wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
+    changeSpeed(ElevatorConstants.Voltages.kStatic);
   }
 
   /**
@@ -224,9 +268,10 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     m_motor.stopMotor();
   }
 
-  /**
-   * goes either branch 2 3 or 4
-   *
+  /*
+   * GO to branch 
+   * Gun to your head name 5 numbers
+   * UHHHHHH.... A B C D E
    * @param level witch branch
    */
   public Command toBranch(GameConstants.ReefLevels level) {
@@ -288,7 +333,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // Update elevator visualization with position
     m_elevatorMech2d.setLength(m_encoder.getPosition());
   }
-
+//hey you little piss baby. You think youre so fucking cool. HUH
+// you think youre so fucking tuff HUH . Well You tlak A LOT OF biG GAMe
+// for someone with such a small chalk
+// Your arms look like ciggaretes
+// i bet i could smoke you and then roast you then youd text me i lveo you then id
+// fucking ghost you Im [incoherent] big trucks [incoherent] FEELING SO CLEAN LIKE A MONEY MACHINE YEA!
+// [more incoherent] FEELIN SO CLEAN LIEK A MONEY MACHINE YEA!
+// Is anyone gonna look at this. I really doubt it
   @Override
   public void close() {
     m_motor.close();

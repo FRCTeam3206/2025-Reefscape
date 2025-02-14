@@ -259,7 +259,6 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
-    m_elevator.setDefaultCommand(m_elevator.toBranch(GameConstants.ReefLevels.l3));
   }
 
   /** This function is called periodically during operator control. */

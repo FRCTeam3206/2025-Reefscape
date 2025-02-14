@@ -214,6 +214,18 @@ public final class Constants {
       public static final double Kd = 0;
     }
 
+    //idk much about electiribcty so this is just made up numbers
+    public static final class Voltages {
+      public static final double kDown = -2;
+      public static final double kUp = 4;
+      //voltage for it to stay in the same place and go against gravity
+      //TODO find out what this is in real life
+      //Gumball characters in real life
+      //#1 gubmall
+      //(picture of cat edited to blue)
+      public static final double kStatic = 0.5;
+    }
+
     public static final class FeedForward {
       // Static gain (volts)
       public static final double Ks = 0;
@@ -238,6 +250,9 @@ public final class Constants {
       // meters
       public static final double kBottomHeight = 0;
       public static final double kTopHeight = 1.25;
+      //how close it should be to the goal when the motors start slowing donw
+      //TODO redo this with feed forward cause its better accorfdin to corrie
+      public static final double kSlowDownDistance = 0.5;
 
       // Radius of the drum of the elevator
       // Controls the conversion factor of the SparkMax motors
@@ -255,11 +270,6 @@ public final class Constants {
           new double[] {
             0, 0,
           };
-    }
-
-    public static final class Sensor {
-      // idk what units or whatever since idk what sensors we're using
-      public static final double kDistanceTillItsDangerous = 2;
     }
 
     public static final class Encoder {
