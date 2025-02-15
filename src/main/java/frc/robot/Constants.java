@@ -131,7 +131,11 @@ public final class Constants {
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
-        new Transform3d(Units.inchesToMeters(13), Units.inchesToMeters(0), Units.inchesToMeters(10), new Rotation3d(0, Math.toRadians(-15), 0));
+        new Transform3d(
+            Units.inchesToMeters(13),
+            Units.inchesToMeters(0),
+            Units.inchesToMeters(10),
+            new Rotation3d(0, Math.toRadians(-15), 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -155,7 +159,8 @@ public final class Constants {
 
   public static final class PathingConstants {
     public static final double kRobotMassKg = 63.5;
-    public static final double kRobotLengthWidthMeters = Units.inchesToMeters(36); // including bumpers. Length and width are the same.
+    public static final double kRobotLengthWidthMeters =
+        Units.inchesToMeters(36); // including bumpers. Length and width are the same.
     public static final double kCoralFaceOffset =
         Units.inchesToMeters(13)
             / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
@@ -165,8 +170,7 @@ public final class Constants {
         new Transform2d(
             kRobotLengthWidthMeters / 2, -kCoralFaceOffset, Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
-        new Transform2d(
-            kRobotLengthWidthMeters / 2, kCoralFaceOffset, Rotation2d.fromDegrees(180));
+        new Transform2d(kRobotLengthWidthMeters / 2, kCoralFaceOffset, Rotation2d.fromDegrees(180));
 
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 

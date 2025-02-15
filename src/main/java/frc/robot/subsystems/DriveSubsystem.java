@@ -28,7 +28,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.sensors.Vision;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -114,7 +113,8 @@ public class DriveSubsystem extends SubsystemBase {
     visionSim = new VisionSystemSim("main-sim");
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
-    // vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
+    // vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1,
+    // visionSim);
   }
 
   @Override
@@ -136,7 +136,8 @@ public class DriveSubsystem extends SubsystemBase {
     //           // Change our trust in the measurement based on the tags we can see
     //           var estStdDevs = vision.getEstimationStdDevs();
 
-    //           addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+    //           addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
+    // estStdDevs);
     //         });
 
     m_statesMeasured =
