@@ -133,6 +133,7 @@ public class Robot extends TimedRobot {
   }
 
   public void autons() {
+    m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.setDefaultOption(
         "Basic Forward",
         m_robotDrive.driveCommand(() -> -0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0));
