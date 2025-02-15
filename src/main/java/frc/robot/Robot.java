@@ -135,7 +135,7 @@ public class Robot extends TimedRobot {
   public void autons() {
     m_autonChooser.setDefaultOption(
         "Basic Forward",
-        m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5));
+        m_robotDrive.driveCommand(() -> -0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0));
     m_autonChooser.addOption(
         "Coral on the left",
         generateAuton(
@@ -269,14 +269,14 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    if (!DriverStation.getAlliance().isEmpty()) {
-      var alliance = DriverStation.getAlliance().get();
-      m_invertControls = alliance.equals(Alliance.Blue);
-      if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
-        resetRobotToFieldCenter();
-        m_prevAlliance = alliance;
-      }
-    }
+    // if (!DriverStation.getAlliance().isEmpty()) {
+    //   var alliance = DriverStation.getAlliance().get();
+    //   m_invertControls = alliance.equals(Alliance.Blue);
+    //   if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
+    //     resetRobotToFieldCenter();
+    //     m_prevAlliance = alliance;
+    //   }
+    // }
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
