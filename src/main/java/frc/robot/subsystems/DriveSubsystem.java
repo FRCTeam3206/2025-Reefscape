@@ -29,7 +29,6 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
-
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -117,10 +116,14 @@ public class DriveSubsystem extends SubsystemBase {
     visionSim = new VisionSystemSim("main-sim");
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
-    vision_left = new Vision(VisionConstants.kCameraLeftName, VisionConstants.kRobotToCameraLeft,
-    visionSim);
-    vision_right = new Vision(VisionConstants.kCameraRightName, VisionConstants.kRobotToCameraRight, visionSim);
-    vision_front = new Vision(VisionConstants.kCameraFrontName, VisionConstants.kRobotToCameraFront, visionSim);
+    vision_left =
+        new Vision(VisionConstants.kCameraLeftName, VisionConstants.kRobotToCameraLeft, visionSim);
+    vision_right =
+        new Vision(
+            VisionConstants.kCameraRightName, VisionConstants.kRobotToCameraRight, visionSim);
+    vision_front =
+        new Vision(
+            VisionConstants.kCameraFrontName, VisionConstants.kRobotToCameraFront, visionSim);
   }
 
   @Override
@@ -180,8 +183,7 @@ public class DriveSubsystem extends SubsystemBase {
               // Change our trust in the measurement based on the tags we can see
               var estStdDevs = camera.getEstimationStdDevs();
 
-              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
-    estStdDevs);
+              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
             });
   }
 

@@ -136,7 +136,7 @@ public final class Constants {
             Units.inchesToMeters(10.70),
             Units.inchesToMeters(25.00),
             new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
-    
+
     public static final String kCameraRightName = "CameraRight";
     public static final Transform3d kRobotToCameraRight =
         new Transform3d(
