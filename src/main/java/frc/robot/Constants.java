@@ -129,13 +129,29 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
     // Camera 1
-    public static final String kCamera1Name = "AprilTagCamera1";
-    public static final Transform3d kRobotToCamera1 =
+    public static final String kCameraLeftName = "CameraLeft";
+    public static final Transform3d kRobotToCameraLeft =
         new Transform3d(
-            Units.inchesToMeters(13),
-            Units.inchesToMeters(0),
-            Units.inchesToMeters(10),
-            new Rotation3d(0, Math.toRadians(-15), 0));
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
+    
+    public static final String kCameraRightName = "CameraRight";
+    public static final Transform3d kRobotToCameraRight =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(215)));
+
+    public static final String kCameraFrontName = "CameraFront";
+    public static final Transform3d kRobotToCameraFront =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, 0, 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -146,8 +162,8 @@ public final class Constants {
   }
 
   public static final class VisionSimConstants {
-    public static final int kCameraWidth = 1200;
-    public static final int kCameraHeight = 720;
+    public static final int kCameraWidth = 1280;
+    public static final int kCameraHeight = 800;
     public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(70);
     public static final double kAvgDetectionNoisePixels = 0.25;
     public static final double kStdDevDetectionNoisePixels = 0.08;
