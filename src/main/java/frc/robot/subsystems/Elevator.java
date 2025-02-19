@@ -46,8 +46,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    * Elevator motor module uses a conversion factor of {@link
    * ElevatorConstants.Measurements#kDrumRadius}. PID/encoder use meters instead of rotations.
    */
-  private final SparkMax m_motor = new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
-  private final SparkMax m_motor2 = new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
+  private final SparkMax m_motor =
+      new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
+
+  private final SparkMax m_motor2 =
+      new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
   private final SparkClosedLoopController m_closedLoopController =
       m_motor.getClosedLoopController();
