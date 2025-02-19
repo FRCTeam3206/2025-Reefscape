@@ -30,15 +30,15 @@ public class Coral extends SubsystemBase {
     m_wheels.set(CoralConstants.kOutakeSpeed);
   }
 
-  /**makes the finger (whatever that is) turn to go away
-   * @param inOrOut if true it'll block the pipe, if false it'll free it
+  /**makes the finger turn to go away
+   * @param retained if true it'll block the pipe, if false it'll free it
    */
-  public Command changeDaFinger(boolean inOrOut) {
+  public Command changeFinger(boolean retained) {
     return this.runOnce(()->{
-      if (inOrOut) {
-        m_finger.set(Constants.CoralConstants.Finger.kBackPosition);
+      if (retained) {
+        m_finger.set(Constants.CoralConstants.Finger.kRetainedPosition);
       } else {
-        m_finger.set(Constants.CoralConstants.Finger.kOutPosition);
+        m_finger.set(Constants.CoralConstants.Finger.kFreePosition);
       }
     });
   }
@@ -48,27 +48,36 @@ public class Coral extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return this.run(() -> intake());
+    return this.run(() -> {
+      intake();
+      changeFinger(true);
+    });
   }
 
   public Command intakeUntilSuccessCommand() {
-    return this.run(() -> intake()).until(() -> m_coralSensor.get());
+    return intakeCommand().until(() -> m_coralSensor.get());
   }
 
   public Command scoreCommand() {
-    return this.run(() -> intake())
+    return this.run(() -> {
+      intake();
+      changeFinger(false);
+    })
         .until(() -> !m_coralSensor.get())
         .andThen(this.run(() -> intake()).withTimeout(CoralConstants.kSafeScoreTime));
   }
 
   public Command outakeCommand() {
-    return this.run(() -> outake());
+    return this.run(() -> {
+      outake();
+      changeFinger(true);
+    });
   }
 
   public Command stopCommand() {
     return this.runOnce(() -> {
       stop();
-      changeDaFinger(false);
+      changeFinger(true);
     });
   }
 }

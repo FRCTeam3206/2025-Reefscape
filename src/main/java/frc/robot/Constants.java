@@ -163,8 +163,8 @@ public final class Constants {
       //mad e up a number 
       public static final int kChannel = 99;
       //how many turns the servo is
-      public static final double kOutPosition = 0.3;
-      public static final double kBackPosition = 0;
+      public static final double kFreePosition = 0.3;
+      public static final double kRetainedPosition = 0;
 
     }
 
