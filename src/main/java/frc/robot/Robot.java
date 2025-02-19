@@ -117,6 +117,7 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getRightX, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
+    m_coral.setDefaultCommand(m_coral.stopCommand());
   }
 
   /**

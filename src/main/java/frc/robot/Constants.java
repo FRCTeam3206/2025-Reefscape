@@ -158,6 +158,15 @@ public final class Constants {
     public static final double kOutakeSpeed = -0.1;
 
     public static final int kSensorChannel = 1;
+    //why do they call it a finger what the freak
+    public class Finger {
+      //mad e up a number 
+      public static final int kChannel = 99;
+      //how many turns the servo is
+      public static final double kOutPosition = 0.3;
+      public static final double kBackPosition = 0;
+
+    }
 
     public static final double kSafeScoreTime = 2;
   }
