@@ -159,8 +159,8 @@ public final class Constants {
   }
 
   public static final class AlgaeConstants {
-    public static final int kArmCanId = 20;
-    public static final int kWheelsCanId = 21;
+    public static final int kArmCanId = 41;
+    public static final int kWheelsCanId = 42;
 
     public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
     public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
