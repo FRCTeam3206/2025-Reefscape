@@ -204,8 +204,8 @@ public final class Constants {
     public static final double kUpdateFrequency = 0.02;
 
     public static final class Motor {
-      public static final int kCanIdMotor1 = 3;
-      public static final int kCanIdMotor2 = 2;
+      public static final int kCanIdMotor1 = 21;
+      public static final int kCanIdMotor2 = 22;
       /*between -1 and 1
       https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
       Make it negative to reverse it

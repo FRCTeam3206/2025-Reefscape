@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -56,6 +57,7 @@ public final class Configs {
 
   public static final class ElevatorConfigs {
     public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig elevatorConfig2 = new SparkMaxConfig();
 
     static {
       double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
@@ -70,6 +72,8 @@ public final class Configs {
           // These are example gains you may need to them for your own robot!
           .pid(10, 0, 0)
           .outputRange(-1, 1);
+
+      elevatorConfig2.follow(ElevatorConstants.Motor.kCanIdMotor1);
     }
   }
 }
