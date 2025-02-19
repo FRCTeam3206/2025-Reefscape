@@ -10,31 +10,26 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
+import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.DriveSubsystem;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -47,6 +42,7 @@ import java.util.function.DoubleSupplier;
 @Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -60,10 +56,13 @@ public class Robot extends TimedRobot {
   @NotLogged private Alliance m_prevAlliance = null;
 
   // The driver's controller
-  CommandXboxController m_driverController =
-      new CommandXboxController(OIConstants.kDriverControllerPort);
+  CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
+  CommandXboxController m_weaponsController =
+      new CommandXboxController(OIConstants.kWeaponsControllerPort);
 
   public Robot() {
+    AllianceUtil.setCustomFieldDesignType(false);
+
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
@@ -83,6 +82,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     configureButtonBindings();
     configureDefaultCommands();
+    autons();
   }
 
   /**
@@ -92,12 +92,16 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.x().whileTrue(m_robotDrive.setXCommand());
-    m_driverController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
-    m_driverController
+    m_weaponsController.x().whileTrue(m_robotDrive.setXCommand());
+    m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+    m_weaponsController
         .a()
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_driverController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+
+    // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
+    // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
+    // m_driverController.b().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE, true));
   }
 
   /** Use this method to define default commands for subsystems. */
@@ -105,14 +109,14 @@ public class Robot extends TimedRobot {
     m_robotDrive.setDefaultCommand(
         m_robotDrive.driveCommand(
             adjustJoystick(
-                m_driverController::getLeftY,
+                m_driverController::getY,
                 () -> m_speedMultiplier,
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(
-                m_driverController::getLeftX,
+                m_driverController::getX,
                 () -> m_speedMultiplier,
                 () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(m_driverController::getRightX, () -> m_speedMultiplier, () -> true),
+            adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
   }
 
@@ -122,48 +126,69 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(DriveConstants.kDriveKinematics);
+    if (m_autonChooser.getSelected() == null) {
+      return m_robotDrive.stopCommand();
+    }
+    return m_autonChooser.getSelected();
+  }
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
-            config);
+  public void autons() {
+    m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
+    m_autonChooser.setDefaultOption(
+        "Basic Forward",
+        m_robotDrive.driveCommand(() -> -0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0));
+    m_autonChooser.addOption(
+        "Coral on the left",
+        generateAuton(
+            false,
+            scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
+            scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
+            scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
+            scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
+            scoreCoralCommand(ReefPose.CLOSE, false, 4)));
+    m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
+    SmartDashboard.putData(m_autonChooser);
+  }
 
-    var thetaController =
-        new ProfiledPIDController(
-            AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+  public Command generateAuton(boolean right, Command... scoreCoralCommands) {
+    Command auton = robotForwardCommand().andThen(scoreCoralCommands[0]);
+    for (int i = 1; i < scoreCoralCommands.length; i++) {
+      auton = auton.andThen(pickupCoralCommand(right)).andThen(scoreCoralCommands[i]);
+    }
+    return auton;
+  }
 
-    SwerveControllerCommand swerveControllerCommand =
-        new SwerveControllerCommand(
-            exampleTrajectory,
-            m_robotDrive::getPose, // Functional interface to feed supplier
-            DriveConstants.kDriveKinematics,
+  /**
+   * We can run this at the begining of any autonomous routine so that we first drive forward, to
+   * make sure we don't hit the cages.
+   */
+  public Command robotForwardCommand() {
+    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
+  }
 
-            // Position controllers
-            new PIDController(AutoConstants.kPXController, 0, 0),
-            new PIDController(AutoConstants.kPYController, 0, 0),
-            thetaController,
-            m_robotDrive::setModuleStates,
-            m_robotDrive);
+  /**
+   * Pick up coral from the feeder station
+   *
+   * @param right Whether to pick up from the right or left feeder station (from driver view, since
+   *     we have a rotated field).
+   */
+  public Command pickupCoralCommand(boolean right) {
+    return m_robotDrive.getToFeederCommand(right);
+    // We can add things with mechanisms later so that it will intake.
+    // This command should stop once we see that we have the coral.
+  }
 
-    // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+  /**
+   * Score coral on the reef.
+   *
+   * @param reefPose Which location on the reef to score it on.
+   * @param right Whether it should be the right side on that face (from the robot's perspective).
+   * @param level Which level to score the coral on.
+   * @return A Command to score coral on the reef.
+   */
+  public Command scoreCoralCommand(ReefPose reefPose, boolean right, int level) {
+    return m_robotDrive.getToReefPoseCommand(reefPose, right);
+    // We can later add things with the mechanism to make it score the coral correctly.
   }
 
   /**
@@ -210,7 +235,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    AllianceUtil.setAlliance();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -243,14 +270,14 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    if (!DriverStation.getAlliance().isEmpty()) {
-      var alliance = DriverStation.getAlliance().get();
-      m_invertControls = alliance.equals(Alliance.Blue);
-      if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
-        resetRobotToFieldCenter();
-        m_prevAlliance = alliance;
-      }
-    }
+    // if (!DriverStation.getAlliance().isEmpty()) {
+    //   var alliance = DriverStation.getAlliance().get();
+    //   m_invertControls = alliance.equals(Alliance.Blue);
+    //   if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
+    //     resetRobotToFieldCenter();
+    //     m_prevAlliance = alliance;
+    //   }
+    // }
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }

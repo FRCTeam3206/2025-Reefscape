@@ -20,9 +20,15 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.pathing.PathingCommand;
+import frc.pathing.PathingCommandGenerator;
+import frc.pathing.robotprofile.RobotProfile;
+import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.sensors.Vision;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.photonvision.simulation.VisionSystemSim;
@@ -56,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-  private final Vision vision;
+  // private final Vision vision;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
   private final Climber m_climber = new Climber();
@@ -93,12 +99,23 @@ public class DriveSubsystem extends SubsystemBase {
   // @SuppressWarnings("unused")
   private ChassisSpeeds m_speedsRequested = new ChassisSpeeds();
 
+  RobotProfile m_robotProfile =
+      new RobotProfile(
+          PathingConstants.kRobotMassKg,
+          ModuleConstants.kWheelDiameterMeters,
+          PathingConstants.kRobotLengthWidthMeters,
+          PathingConstants.kRobotLengthWidthMeters,
+          PathingConstants.kDriveMotor);
+  PathingCommandGenerator m_pathGen =
+      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this);
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     visionSim = new VisionSystemSim("main-sim");
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
-    vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
+    // vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1,
+    // visionSim);
   }
 
   @Override
@@ -113,15 +130,16 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
-    vision
-        .getEstimatedGlobalPose()
-        .ifPresent(
-            est -> {
-              // Change our trust in the measurement based on the tags we can see
-              var estStdDevs = vision.getEstimationStdDevs();
+    // vision
+    //     .getEstimatedGlobalPose()
+    //     .ifPresent(
+    //         est -> {
+    //           // Change our trust in the measurement based on the tags we can see
+    //           var estStdDevs = vision.getEstimationStdDevs();
 
-              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-            });
+    //           addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
+    // estStdDevs);
+    //         });
 
     m_statesMeasured =
         new SwerveModuleState[] {
@@ -202,6 +220,14 @@ public class DriveSubsystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     setModuleStates(swerveModuleStates);
+  }
+
+  public void driveSpeed(ChassisSpeeds speeds) {
+    drive(
+        speeds.vxMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+        speeds.vyMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+        speeds.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
+        true);
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
@@ -294,6 +320,47 @@ public class DriveSubsystem extends SubsystemBase {
                 ySpeed.getAsDouble(),
                 rot.getAsDouble(),
                 fieldRelative.getAsBoolean()));
+  }
+
+  public Command stopCommand() {
+    return driveCommand(() -> 0.0, () -> 0.0, () -> 0.0, () -> true);
+  }
+
+  public PathingCommandGenerator getPathingCommandGenerator() {
+    return m_pathGen;
+  }
+
+  public PathingCommand getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
+    return m_pathGen.generateToPoseCommand(reefPose.getPose(right));
+  }
+
+  public PathingCommand getToNearestReefCommand(boolean right) {
+    Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
+    Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
+    Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
+    Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
+    Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
+    Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
+    return m_pathGen.generateToPoseSupplierCommand(
+        () -> {
+          Pose2d robotAt = AllianceUtil.getBluePose();
+          if (robotAt.getX() < PathingConstants.kReefCenterX) {
+            // Robot is at a close pose.
+            return robotAt.nearest(List.of(close, closeL, closeR));
+          } else {
+            // Robot is at a far pose.
+            return robotAt.nearest(List.of(far, farL, farR));
+          }
+        });
+  }
+
+  public PathingCommand getToFeederCommand(boolean right) {
+    return m_pathGen.generateToPoseCommand(
+        right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
+  }
+
+  public PathingCommand getToProcessorCommand() {
+    return m_pathGen.generateToPoseCommand(PathingConstants.kProcessorPose);
   }
 
   /** Command to set the wheels into an X formation to prevent movement. */

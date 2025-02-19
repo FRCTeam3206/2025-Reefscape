@@ -8,8 +8,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.pathing.robotprofile.Motor;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -35,9 +38,9 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    public static final double kTrackWidth = Units.inchesToMeters(27.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(27.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
@@ -97,6 +100,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kWeaponsControllerPort = 1;
     public static final double kDriveDeadband = 0.05;
   }
 
@@ -127,7 +131,11 @@ public final class Constants {
     // Camera 1
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
-        new Transform3d(0.2, 0, 0.5, new Rotation3d(0, Math.toRadians(-15), 0));
+        new Transform3d(
+            Units.inchesToMeters(13),
+            Units.inchesToMeters(0),
+            Units.inchesToMeters(10),
+            new Rotation3d(0, Math.toRadians(-15), 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -138,11 +146,12 @@ public final class Constants {
   }
 
   public static final class VisionSimConstants {
-    public static final int kCameraWidth = 640;
-    public static final int kCameraHeight = 480;
-    public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(100);
+    public static final int kCameraWidth = 1200;
+    public static final int kCameraHeight = 720;
+    public static final Rotation2d kDiagonalFOV = Rotation2d.fromDegrees(70);
     public static final double kAvgDetectionNoisePixels = 0.25;
     public static final double kStdDevDetectionNoisePixels = 0.08;
+
     public static final int kImageCaptureFPS = 20;
     public static final int kAvgLatencyMs = 35;
     public static final int kStdDevLatencyMs = 5;
@@ -153,5 +162,70 @@ public final class Constants {
     public static final int kCanId = 50;
 
     public static final double kSpeed = 0.3;
+  }
+
+  public static final class PathingConstants {
+    public static final double kRobotMassKg = 63.5;
+    public static final double kRobotLengthWidthMeters =
+        Units.inchesToMeters(36); // including bumpers. Length and width are the same.
+    public static final double kCoralFaceOffset =
+        Units.inchesToMeters(13)
+            / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
+    public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
+
+    public static final Transform2d kTransformLeft =
+        new Transform2d(
+            kRobotLengthWidthMeters / 2, -kCoralFaceOffset, Rotation2d.fromDegrees(180));
+    public static final Transform2d kTransformRight =
+        new Transform2d(kRobotLengthWidthMeters / 2, kCoralFaceOffset, Rotation2d.fromDegrees(180));
+
+    public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
+
+    // Measurements taken from April Tag coordinates
+    // I like doing it as an enum because it makes it easy to organize.
+    // Question: does doing it as an enum like this make it less efficient?
+    public static enum ReefPose {
+      CLOSE(144, 158.5, 180),
+      CLOSE_LEFT(160.39, 186.83, 120),
+      CLOSE_RIGHT(160.39, 130.17, 240),
+      FAR(209.49, 158.5, 0),
+      FAR_LEFT(193.1, 186.83, 60),
+      FAR_RIGHT(193.1, 130.17, 300);
+
+      private Pose2d leftPose;
+      private Pose2d rightPose;
+
+      private ReefPose(double xInches, double yInches, double rotDegrees) {
+        Pose2d reefPose =
+            new Pose2d(
+                Units.inchesToMeters(xInches),
+                Units.inchesToMeters(yInches),
+                Rotation2d.fromDegrees(rotDegrees));
+        this.leftPose = reefPose.transformBy(kTransformLeft);
+        this.rightPose = reefPose.transformBy(kTransformRight);
+      }
+
+      public Pose2d getPose(boolean right) {
+        return right ? rightPose : leftPose;
+      }
+    }
+
+    public static Pose2d poseFromTag(
+        double xInches, double yInches, double rotDegrees, Transform2d transform) {
+      return new Pose2d(
+              Units.inchesToMeters(xInches),
+              Units.inchesToMeters(yInches),
+              Rotation2d.fromDegrees(rotDegrees))
+          .plus(transform);
+    }
+
+    public static final Transform2d kFeederTransform =
+        new Transform2d(kRobotLengthWidthMeters / 2, 0.0, new Rotation2d());
+    public static final Pose2d kLeftFeederPose = poseFromTag(33.51, 291.20, 306, kFeederTransform);
+    public static final Pose2d kRightFeederPose = poseFromTag(33.51, 25.80, 54, kFeederTransform);
+
+    public static final Transform2d kProcessorTransform =
+        new Transform2d(kRobotLengthWidthMeters / 2, 0.0, Rotation2d.fromDegrees(0));
+    public static final Pose2d kProcessorPose = poseFromTag(235.73, -0.15, 90, kProcessorTransform);
   }
 }
