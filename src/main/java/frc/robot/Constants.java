@@ -204,10 +204,8 @@ public final class Constants {
     public static final double kUpdateFrequency = 0.02;
 
     public static final class Motor {
-      // idk what port it is replace it later
-      public static final int kPort = 0;
-      // something spark related
-      public static final int kId = 3;
+      public static final int kCanIdMotor1 = 3;
+      public static final int kCanIdMotor2 = 2;
       /*between -1 and 1
       https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
       Make it negative to reverse it
