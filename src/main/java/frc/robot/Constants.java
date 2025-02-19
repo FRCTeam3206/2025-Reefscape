@@ -160,7 +160,7 @@ public final class Constants {
 
   public static final class CoralConstants {
     // random numbers right now
-    public static final int kCANId = 30;
+    public static final int kCANId = 25;
     // Might not end up being "Neo550", Line 157
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
     public static final double kIntakeSpeed = 0.1;
