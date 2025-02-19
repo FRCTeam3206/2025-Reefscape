@@ -158,7 +158,7 @@ public final class Constants {
   }
 
   public static final class WristConstants {
-    public static final int kCANId = 20;
+    public static final int kCANId = 24;
     public static final double kHorizontalPosition = 0;
     public static final double kVerticalPosition = Math.PI / 2;
 
