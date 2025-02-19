@@ -37,7 +37,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
   /// Motors/encoders
   // the encoderssssss
-  private final SparkMax m_armMotor = new SparkMax(19, MotorType.kBrushless);
+  private final SparkMax m_armMotor = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
   private final SparkClosedLoopController m_closedLoopController =
       m_armMotor.getClosedLoopController();
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
