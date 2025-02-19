@@ -15,6 +15,7 @@ public class CoralTransport {
   private final Elevator m_elevator = new Elevator();
   private final Arm m_arm = new Arm();
   private final Wrist m_wrist = new Wrist();
+  private final Coral m_coralOmnis = new Coral();
 
   public CoralTransport() {}
 
@@ -55,5 +56,21 @@ public class CoralTransport {
   /** Position to place coral on any level, including 1. */
   public Command positionReef(GameConstants.Levels level) {
     return moveWristVertical().andThen(m_elevator.toBranch(level).andThen(m_arm.toBranch(level)));
+  }
+
+  public Command floorIntake() {
+    return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccess());
+  }
+
+  public Command feederStation() {
+    return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccess());
+  }
+
+  public Command scoreCoral(GameConstants.Levels level) {
+    return positionReef(level).andThen(m_coralOmnis.score());
+  }
+
+  public Coral getOmnisSubsystem() {
+    return m_coralOmnis;
   }
 }

@@ -31,7 +31,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.Constants.GameConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Elevator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -49,7 +48,6 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Elevator m_elevator = new Elevator();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -285,16 +283,11 @@ public class Robot extends TimedRobot {
     // if (Robot.isSimulation()) {
     //   m_invertControls = true;
     // }
-    m_elevator.setDefaultCommand(
-      m_elevator.toBranch(GameConstants.ReefLevels.l3)
-    );
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    m_elevator.simulationPeriodic();
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
