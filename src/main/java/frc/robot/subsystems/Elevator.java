@@ -164,14 +164,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       // TODO use feedforward and whaetever calc stuff corrie was talking about
       // Calc means calculator for those of yall new in the chat
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop);
+        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop + 0.1146);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kUp);
       }
     } else if (lastGoal < currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop);
+        changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop - 0.1146);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kDown);
       }
@@ -203,9 +203,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     if (goal > ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight
         || goal < ElevatorConstants.Measurements.kBottomHeight) {
       throw new Error(
-          // Ugly-ass string concantation
-          // is like hiler... and the concantation camp... Very Bad!
-          "Goal is out of range! Should be between"
+           "Goal is out of range! Should be between"
               + ElevatorConstants.Measurements.kTopHeight
               + ArmConstants.kHeight
               + "and "
@@ -232,20 +230,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * makes the elevator motors turn go up but only a little bit so that it stays in place I just
-   * remembered we have to carry stuff which is heavy so this probly wont wokr.... goddammit...
-   */
-  public void stayInPlace() {
-    wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-    //it can just take a seat down if its that low
-    if (lastGoal <= 0.1) {
-      changeSpeed(0);
-    } else {
-      changeSpeed(ElevatorConstants.Voltages.kStatic);
-    }
-  }
-
-  /**
    * Stop the control loop and motor output. WARNIG if you called a method before it'll stop in the
    * middle!!!
    */
@@ -260,7 +244,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         });
   }
 
-  /** makes it stop but a void and no command TODO less shitty name */
+  /** makes it stop but a void and no command TODO better  name */
   public void stopButNotCommand() {
     wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
     SmartDashboard.putString("Movement", wheresItGoin.toString());
