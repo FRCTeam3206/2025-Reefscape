@@ -23,6 +23,8 @@ public class Algae extends SubsystemBase {
   public Algae() {
     m_armMotor.configure(
         Configs.Algae.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_wheelsMotor.configure(
+        Configs.Algae.wheelsConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

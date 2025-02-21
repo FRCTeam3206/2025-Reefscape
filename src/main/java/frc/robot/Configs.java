@@ -55,9 +55,12 @@ public final class Configs {
   }
 
   public static final class Algae {
+    public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+
       // Configure basic settings of the arm motor
       armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
 
