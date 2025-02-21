@@ -164,14 +164,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       // TODO use feedforward and whaetever calc stuff corrie was talking about
       // Calc means calculator for those of yall new in the chat
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop + 0.1146);
+        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop + ElevatorConstants.Voltages.kMagicNumber);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kUp);
       }
     } else if (lastGoal < currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop - 0.1146);
+        changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop - ElevatorConstants.Voltages.kMagicNumber);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kDown);
       }
