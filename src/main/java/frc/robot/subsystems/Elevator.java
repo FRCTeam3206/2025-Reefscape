@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Configs.ElevatorConfigs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.GameConstants;
@@ -93,6 +94,15 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // Create a Mechanism2d visualization of the elevator
   private final Mechanism2d m_mech2d =
       new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
+  //dude... this room STINKS... like actually...
+  //Everyone NEEDS TO TAKE A SHOWER!!!!
+  //I cant take it with r*botics kids anymore
+  //And to think im gonna be sharing a hotel room with these stinky chuds in like a week
+  //Sorry! My bad! That wuz rude
+  //JUST REMEMBER to take a SHOWER
+  //TODO YOU should wear some damned deoderant! Stinky !!! P.U.
+  //UPDATE 10 minutes later it smells like dead fish What is going on
+  //Does the janitor come into this room 
   private final MechanismRoot2d m_mech2dRoot =
       m_mech2d.getRoot(
           "Elevator Root",
@@ -123,11 +133,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   public void simulationPeriodic() {
     // dis is a variable so it dfoesnt have to be called 100 times
     double currentPosition = m_elevatorSim.getPositionMeters();
-    // once its past the "slow down distance", how close it is to the goal
-    // 0.1 is very close, 1 means its right at that distance, bigger than
-    // 1 means it s not time to slow down yet
-    double percentUntilStop =
-        Math.abs(currentPosition - lastGoal) / ElevatorConstants.Measurements.kSlowDownDistance;
+    //once its past the "slow down distance", how close it is to the goal
+    //0.1 is very close, 0 means its right at that distance, bigger than
+    //0.1 means it s not time to slow down yet
+    double percentUntilStop = Math.abs(currentPosition - lastGoal) / 
+    ElevatorConstants.Measurements.kSlowDownDistance;
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
@@ -148,38 +158,32 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
     SmartDashboard.putNumber("percent till stop distance", percentUntilStop);
 
-    // if its going down and its below the goal, or its going up and above the goal
-    // then it should stop
-    if (wheresItGoin == ElevatorConstants.WaysItCanMove.up) {
+    if (lastGoal > currentPosition) {
+      wheresItGoin = ElevatorConstants.WaysItCanMove.up;
       // TODO find a better way to check if its at the goal
       // TODO use feedforward and whaetever calc stuff corrie was talking about
       // Calc means calculator for those of yall new in the chat
       if (percentUntilStop < 0.1) {
-        // If its 1 centimeter off its fine
-        stayInPlace();
-      } else if (percentUntilStop < 1) {
-        // erm read the next comment to see wut dis does........ YEAH
         changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop);
+      } else {
+        changeSpeed(ElevatorConstants.Voltages.kUp);
       }
-    } else if (wheresItGoin == ElevatorConstants.WaysItCanMove.down) {
+    } else if (lastGoal < currentPosition) {
+      wheresItGoin = ElevatorConstants.WaysItCanMove.down;
       if (percentUntilStop < 0.1) {
-        stayInPlace();
-      } else if (percentUntilStop < 1) {
-        // Makes it go  slower the farther it is from the goal on a striaght curve
-        // basically like feed forward but stupider
-        // wait... straight... ITS PRI DE MONTH!!! WE CANT DO THAT!!!!
-        // i need a queer to get us on some sine waves stat
         changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop);
+      } else {
+        changeSpeed(ElevatorConstants.Voltages.kDown);
       }
     }
-
+    
     SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
-    SmartDashboard.putNumber("Position meters", m_elevatorSim.getPositionMeters());
+    SmartDashboard.putNumber("Position meters", currentPosition);
     SmartDashboard.putNumber("Goal", lastGoal);
     SmartDashboard.putString("Movement", wheresItGoin.toString());
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_encoderSim.setPosition(m_elevatorSim.getPositionMeters());
+    m_encoderSim.setPosition(currentPosition);
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
@@ -209,19 +213,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
               + " meters. Attempted goal: "
               + goal);
     }
-
-    // makes it go up or down or no where...
-    if (goal < m_elevatorSim.getPositionMeters()) {
-      wheresItGoin = ElevatorConstants.WaysItCanMove.down;
-      changeSpeed(ElevatorConstants.Voltages.kDown);
-    } else if (goal > m_elevatorSim.getPositionMeters()) {
-      wheresItGoin = ElevatorConstants.WaysItCanMove.up;
-      changeSpeed(ElevatorConstants.Voltages.kUp);
-    } else {
-      wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-      stayInPlace();
-    }
-
+    
     // record of where it was goin last time
     lastGoal = goal;
 
@@ -245,7 +237,12 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    */
   public void stayInPlace() {
     wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-    changeSpeed(ElevatorConstants.Voltages.kStatic);
+    //it can just take a seat down if its that low
+    if (lastGoal <= 0.1) {
+      changeSpeed(0);
+    } else {
+      changeSpeed(ElevatorConstants.Voltages.kStatic);
+    }
   }
 
   /**
