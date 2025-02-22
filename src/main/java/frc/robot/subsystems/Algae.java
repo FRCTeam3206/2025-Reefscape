@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkRelativeEncoder;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,10 +17,9 @@ import frc.robot.Constants.AlgaeConstants;
 @Logged
 public class Algae extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(AlgaeConstants.kArmCanId, MotorType.kBrushless);
-  // private final SparkAbsoluteEncoder m_armAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
+  private final RelativeEncoder m_armEncoder = m_armMotor.getAlternateEncoder();
   private final SparkMax m_wheelsMotor =
       new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
-  // private final SparkClosedLoopController m_armController = m_armMotor.getClosedLoopController();
 
   private final SparkMaxSim m_armMotorSim =
       new SparkMaxSim(m_armMotor, AlgaeConstants.kArmMotorType);
@@ -33,28 +34,36 @@ public class Algae extends SubsystemBase {
   @Override
   public void simulationPeriodic() {}
 
-  public void setWheelSpeed(double speed) {
-    m_wheelsMotor.set(speed);
+  public double getArmAngle() {
+    return m_armEncoder.getPosition();
   }
 
   public Command intakeCommand() {
-    return this.run(() -> setWheelSpeed(AlgaeConstants.kIntakeSpeed));
+    return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kIntakeSpeed));
   }
 
   public Command extakeCommand() {
-    return this.run(() -> setWheelSpeed(AlgaeConstants.kExtakeSpeed));
+    return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kExtakeSpeed));
   }
   
   public Command stopIntakeCommand() {
-    return this.run(() -> setWheelSpeed(0));
+    return this.run(() -> m_wheelsMotor.set(0));
   }
 
-  public Command retractCommand() {
+  public Command retractCommandContinuous() {
     return this.run(() -> m_armMotor.set(AlgaeConstants.kRetractSpeed));
   }
 
-  public Command extendCommand() {
+  public Command retractCommand() {
+    return retractCommandContinuous().until(() -> getArmAngle() < AlgaeConstants.kRetractedAngle);
+  }
+
+  public Command extendCommandContinuous() {
     return this.run(() -> m_armMotor.set(AlgaeConstants.kExtendSpeed));
+  }
+
+  public Command extendCommand() {
+    return extendCommandContinuous().until(() -> getArmAngle() > AlgaeConstants.kExtendedAngle);
   }
 
   public Command stopArmCommand() {

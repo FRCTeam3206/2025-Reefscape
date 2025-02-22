@@ -101,8 +101,8 @@ public class Robot extends TimedRobot {
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
-    m_weaponsController.povUp().whileTrue(m_algae.extendCommand());
-    m_weaponsController.povDown().whileTrue(m_algae.retractCommand());
+    m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
+    m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
