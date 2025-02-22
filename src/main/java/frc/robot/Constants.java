@@ -361,6 +361,16 @@ public final class Constants {
     }
   }
 
+  public static final class WristConstants {
+    public static final int kCANId = 24;
+    public static final double kHorizontalPosition = 0;
+    public static final double kVerticalPosition = Math.PI / 2;
+
+    public static final double kAtAngleTolerance = 0.05;
+
+    public static final double kConversionFactor = 0.05; // NOT correct yet.
+  }
+
   public static final class PathingConstants {
     public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthWidthMeters =

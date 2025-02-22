@@ -7,6 +7,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.WristConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -162,6 +163,36 @@ public final class Configs {
           .outputRange(-1, 1);
 
       elevatorConfig2.follow(ElevatorConstants.Motor.kCanIdMotor1);
+    }
+  }
+
+  public static final class Wrist {
+    public static final SparkMaxConfig wristConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the arm motor
+      wristConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      wristConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .p(0.1)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(2000)
+          .maxAcceleration(10000)
+          .allowedClosedLoopError(0.25);
+
+      wristConfig
+          .absoluteEncoder
+          .positionConversionFactor(WristConstants.kConversionFactor)
+          .velocityConversionFactor(WristConstants.kConversionFactor);
     }
   }
 }
