@@ -1,13 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,7 +42,7 @@ public class Algae extends SubsystemBase {
   public Command extakeCommand() {
     return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kExtakeSpeed));
   }
-  
+
   public Command stopIntakeCommand() {
     return this.run(() -> m_wheelsMotor.set(0));
   }
@@ -71,10 +68,11 @@ public class Algae extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return this.run(() -> {
-      m_armMotor.set(0);
-      m_wheelsMotor.set(0);
-    });
+    return this.run(
+        () -> {
+          m_armMotor.set(0);
+          m_wheelsMotor.set(0);
+        });
   }
 
   // public double getArmAngle() {

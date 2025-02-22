@@ -28,13 +28,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
-import frc.robot.subsystems.Algae;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
+import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Elevator;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -134,7 +133,7 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
-    
+
     m_algae.setDefaultCommand(m_algae.stopCommand());
 
     m_arm.setDefaultCommand(m_arm.setVoltageCommand(() -> .1 * m_weaponsController.getLeftY()));

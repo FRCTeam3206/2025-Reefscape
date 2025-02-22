@@ -212,7 +212,7 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    //public static final int gearing = 10;
+    // public static final int gearing = 10;
     // public static final double kUpdateFrequency = 0.02;
 
     public static final int kArmCANId = 23;

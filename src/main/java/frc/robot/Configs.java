@@ -97,7 +97,6 @@ public final class Configs {
 
       coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 
-
       coralArmConfig
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -143,7 +142,7 @@ public final class Configs {
       wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
     }
   }
-  
+
   public static final class ElevatorConfigs {
     public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
     public static final SparkMaxConfig elevatorConfig2 = new SparkMaxConfig();

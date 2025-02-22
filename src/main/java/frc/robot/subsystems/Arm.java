@@ -6,49 +6,24 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GameConstants;
-import frc.robot.Robot;
+import java.util.function.DoubleSupplier;
 
 @Logged
 public final class Arm extends SubsystemBase implements AutoCloseable {
@@ -66,8 +41,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
           new TrapezoidProfile.Constraints(
               ArmConstants.kMaxVelocity, ArmConstants.kMaxAcceleration));
   private final ArmFeedforward feedforward =
-      new ArmFeedforward(
-          ArmConstants.kS, ArmConstants.kG, ArmConstants.kG, ArmConstants.kA);
+      new ArmFeedforward(ArmConstants.kS, ArmConstants.kG, ArmConstants.kG, ArmConstants.kA);
 
   double ff = 0.0;
 
@@ -81,7 +55,6 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   private final SparkMax m_armMotor = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
-  
   // // TODO: Simulation
   // private final PWMSparkMax motorSim;
   // private final DutyCycleEncoder dcEncoder;
@@ -123,36 +96,38 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
   public Arm() {
     m_armMotor.configure(
-        Configs.CoralArm.coralArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    
+        Configs.CoralArm.coralArmConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
     // if (Robot.isReal()) {
     //   motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     //   motor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
 
-      // encoder = motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-      // encoder.setZeroOffset(ArmSubConstants.kArmZeroRads);
-      // encoder.setPositionConversionFactor(ArmSubConstants.kPositionConversionFactor);
-      // encoder.setAverageDepth(16);
+    // encoder = motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    // encoder.setZeroOffset(ArmSubConstants.kArmZeroRads);
+    // encoder.setPositionConversionFactor(ArmSubConstants.kPositionConversionFactor);
+    // encoder.setAverageDepth(16);
 
-      // TODO: simulation
-      // // not used for real robot
-      // motorSim = null;
-      // dcEncoder = null;
-      // dcEncoderSim = null;
+    // TODO: simulation
+    // // not used for real robot
+    // motorSim = null;
+    // dcEncoder = null;
+    // dcEncoderSim = null;
     // } else {
-      // TODO: simulation
-      // motorSim = new PWMSparkMax(5);
-      // dcEncoder = new DutyCycleEncoder(5);
-      // dcEncoderSim = new DutyCycleEncoderSim(dcEncoder);
+    // TODO: simulation
+    // motorSim = new PWMSparkMax(5);
+    // dcEncoder = new DutyCycleEncoder(5);
+    // dcEncoderSim = new DutyCycleEncoderSim(dcEncoder);
 
-      // // seed the encoder to have the correct sim arm starting position
-      // armSim.update(0.020);
-      // dcEncoderSim.setAbsolutePosition(armSim.getAngleRads());
+    // // seed the encoder to have the correct sim arm starting position
+    // armSim.update(0.020);
+    // dcEncoderSim.setAbsolutePosition(armSim.getAngleRads());
 
-      // // not used for simulation
-      // motor = null;
-      // encoder = null;
-    //}
+    // // not used for simulation
+    // motor = null;
+    // encoder = null;
+    // }
 
     feedback.enableContinuousInput(0, 2 * Math.PI);
 
@@ -191,7 +166,8 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     //     "Voltage",
     //     ((Robot.isReal()) ? motor.getAppliedOutput() : motorSim.get())
     //         * RobotController.getBatteryVoltage());
-    // this.log("Current", (Robot.isReal()) ? motor.getOutputCurrent() : armSim.getCurrentDrawAmps());
+    // this.log("Current", (Robot.isReal()) ? motor.getOutputCurrent() :
+    // armSim.getCurrentDrawAmps());
   }
 
   public double getAngle() {
