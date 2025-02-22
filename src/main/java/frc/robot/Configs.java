@@ -60,7 +60,7 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
 
       // Configure basic settings of the arm motor
       armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25).voltageCompensation(12);
@@ -91,7 +91,7 @@ public final class Configs {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(5);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 

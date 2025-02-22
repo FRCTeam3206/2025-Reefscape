@@ -6,6 +6,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -69,7 +71,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   double ff = 0.0;
 
   private final PIDController feedback =
-      new PIDController(ArmConstants.kP, 0, ArmConstants.kD);
+      new PIDController(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD);
 
   double fb = 0.0;
 
@@ -159,6 +161,14 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     this.setpoint = new TrapezoidProfile.State(angle, 0);
   }
 
+  public Command setVoltageCommand(DoubleSupplier voltage) {
+    return this.run(() -> m_armMotor.set(voltage.getAsDouble()));
+  }
+
+  public Command stopCommand() {
+    return this.run(() -> m_armMotor.set(0));
+  }
+
   @Override
   public void periodic() {
     super.periodic();
@@ -184,7 +194,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   }
 
   public double getAngle() {
-    return m_absoluteEncoder.getPosition();
+    return ((2 * Math.PI * (m_absoluteEncoder.getPosition())) + Math.PI) % (2 * Math.PI);
   }
 
   public void moveToGoal(double goal) {
@@ -194,7 +204,15 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     ff = feedforward.calculate(setpoint.position, setpoint.velocity);
     fb = feedback.calculate(getAngle(), setpoint.position);
 
-    m_armMotor.set(fb + ff);
+    m_armMotor.set(ff + fb);
+  }
+
+  public double getVoltage() {
+    return m_armMotor.getAppliedOutput();
+  }
+
+  public double getCurrent() {
+    return m_armMotor.getOutputCurrent();
   }
 
   public void reset() {

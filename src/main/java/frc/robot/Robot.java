@@ -108,6 +108,8 @@ public class Robot extends TimedRobot {
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
+    m_weaponsController.a().whileTrue(m_arm.moveToGoalCommand(Math.PI));
+
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
     // m_driverController.b().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE, true));
@@ -129,6 +131,8 @@ public class Robot extends TimedRobot {
             () -> m_fieldRelative));
     
     m_algae.setDefaultCommand(m_algae.stopCommand());
+
+    m_arm.setDefaultCommand(m_arm.setVoltageCommand(() -> .1 * m_weaponsController.getLeftY()));
   }
 
   /**

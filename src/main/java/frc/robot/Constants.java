@@ -175,7 +175,7 @@ public final class Constants {
     public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
     public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
 
-    public static final double kIntakeSpeed = 0.5;
+    public static final double kIntakeSpeed = .5;
     public static final double kExtakeSpeed = -0.5;
 
     public static final double kRetractSpeed = -0.6;
@@ -204,15 +204,15 @@ public final class Constants {
     public static final double kMaxAcceleration = 8.0; // radians/second^2
 
     // Feedforward constants
-    public static final double kS = 0.0; // volts
-    public static final double kG = 0.8; // volts
-    public static final double kV = 0.8; // volts*second/radian
-    public static final double kA = 0.08; // volts*second^2/radian
+    public static final double kS = 0; // volts
+    public static final double kG = .05; // volts
+    public static final double kV = 0; // volts*second/radian
+    public static final double kA = 0; // volts*second^2/radian
 
     // Feedback constants
-    public static final double kP = 6.5;
+    public static final double kP = 0;
     public static final double kI = 0;
-    public static final double kD = 0.3;
+    public static final double kD = 0;
 
     public static final double kAtAngleTolerance = Units.degreesToRadians(2);
     public static final double kAtVelocityTolerance = Units.degreesToRadians(2);
