@@ -165,8 +165,8 @@ public final class Constants {
     public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
     public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
 
-    public static final double kIntakeSpeed = 0.1;
-    public static final double kExtakeSpeed = -0.1;
+    public static final double kIntakeSpeed = 0.25;
+    public static final double kExtakeSpeed = -0.5;
 
     public static final double kRetractSpeed = -0.6;
     public static final double kExtendSpeed = 0.05;

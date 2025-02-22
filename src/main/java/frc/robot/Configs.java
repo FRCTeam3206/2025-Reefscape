@@ -59,7 +59,7 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(5);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25);
 
       // Configure basic settings of the arm motor
       armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25).voltageCompensation(12);

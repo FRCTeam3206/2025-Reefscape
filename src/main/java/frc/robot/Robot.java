@@ -103,6 +103,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
+    m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
+    m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
@@ -124,7 +126,7 @@ public class Robot extends TimedRobot {
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
     
-    m_algae.setDefaultCommand(m_algae.stopArmCommand());
+    m_algae.setDefaultCommand(m_algae.stopCommand());
   }
 
   /**

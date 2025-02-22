@@ -17,7 +17,7 @@ import frc.robot.Constants.AlgaeConstants;
 @Logged
 public class Algae extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(AlgaeConstants.kArmCanId, MotorType.kBrushless);
-  private final RelativeEncoder m_armEncoder = m_armMotor.getAlternateEncoder();
+  // private final RelativeEncoder m_armEncoder = m_armMotor.getAlternateEncoder();
   private final SparkMax m_wheelsMotor =
       new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
 
@@ -35,7 +35,7 @@ public class Algae extends SubsystemBase {
   public void simulationPeriodic() {}
 
   public double getArmAngle() {
-    return m_armEncoder.getPosition();
+    return 0; // m_armEncoder.getPosition();
   }
 
   public Command intakeCommand() {
@@ -68,6 +68,13 @@ public class Algae extends SubsystemBase {
 
   public Command stopArmCommand() {
     return this.run(() -> m_armMotor.set(0));
+  }
+
+  public Command stopCommand() {
+    return this.run(() -> {
+      m_armMotor.set(0);
+      m_wheelsMotor.set(0);
+    });
   }
 
   // public double getArmAngle() {
