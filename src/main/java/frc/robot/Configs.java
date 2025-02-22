@@ -87,11 +87,11 @@ public final class Configs {
     }
   }
 
-  public static final class Arm {
+  public static final class CoralArm {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(5);
 
       coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 

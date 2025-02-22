@@ -194,10 +194,28 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int gearing = 10;
-    public static final double kUpdateFrequency = 0.02;
+    //public static final int gearing = 10;
+    // public static final double kUpdateFrequency = 0.02;
 
     public static final int kArmCANId = 23;
+
+    // Trapezoid profile constraints
+    public static final double kMaxVelocity = 8.0; // raidans/second
+    public static final double kMaxAcceleration = 8.0; // radians/second^2
+
+    // Feedforward constants
+    public static final double kS = 0.0; // volts
+    public static final double kG = 0.8; // volts
+    public static final double kV = 0.8; // volts*second/radian
+    public static final double kA = 0.08; // volts*second^2/radian
+
+    // Feedback constants
+    public static final double kP = 6.5;
+    public static final double kI = 0;
+    public static final double kD = 0.3;
+
+    public static final double kAtAngleTolerance = Units.degreesToRadians(2);
+    public static final double kAtVelocityTolerance = Units.degreesToRadians(2);
 
     public static final class Angles {
       public static final double kHorizontal = Math.PI;

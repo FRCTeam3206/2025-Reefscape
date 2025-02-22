@@ -14,81 +14,247 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GameConstants;
+import frc.robot.Robot;
 
+@Logged
 public final class Arm extends SubsystemBase implements AutoCloseable {
-  // This is the arm gearbox
-  private final DCMotor m_armGearbox = DCMotor.getNEO(1);
+  private double angle = 0.0;
+  private double lastAngle = 0.0;
+  private double velocity = 0.0;
+
+  private LinearFilter velocitySmoother = LinearFilter.singlePoleIIR(0.080, 0.020);
+
+  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
+
+  private final TrapezoidProfile profile =
+      new TrapezoidProfile(
+          new TrapezoidProfile.Constraints(
+              ArmConstants.kMaxVelocity, ArmConstants.kMaxAcceleration));
+  private final ArmFeedforward feedforward =
+      new ArmFeedforward(
+          ArmConstants.kS, ArmConstants.kG, ArmConstants.kG, ArmConstants.kA);
+
+  double ff = 0.0;
+
+  private final PIDController feedback =
+      new PIDController(ArmConstants.kP, 0, ArmConstants.kD);
+
+  double fb = 0.0;
 
   /// Motors/encoders
   // the encoderssssss
   private final SparkMax m_armMotor = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
-  private final SparkClosedLoopController m_closedLoopController =
-      m_armMotor.getClosedLoopController();
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
-  private final SparkAbsoluteEncoderSim m_armEncoderSim = new SparkAbsoluteEncoderSim(m_armMotor);
-  private final SparkMaxSim m_armMotorSim = new SparkMaxSim(m_armMotor, m_armGearbox);
+  
+  // // TODO: Simulation
+  // private final PWMSparkMax motorSim;
+  // private final DutyCycleEncoder dcEncoder;
+  // private final DutyCycleEncoderSim dcEncoderSim;
 
-  /// Simulation classes
-  private final SingleJointedArmSim m_armSim =
-      new SingleJointedArmSim(m_armGearbox, 1, 2, 10, 0, 90, true, 45);
+  // private final SingleJointedArmSim armSim =
+  //     new SingleJointedArmSim(
+  //         DCMotor.getNEO(1),
+  //         ArmSubConstants.kArmReduction,
+  //         ArmSubConstants.kArmMOI,
+  //         ArmSubConstants.kArmLength,
+  //         ArmSubConstants.kMinAngleRads,
+  //         ArmSubConstants.kMaxAngleRads,
+  //         true,
+  //         ArmSubConstants.kMinAngleRads);
 
-  // TODO: Use these for sim, but right now they are using elevator constants, and we want the robot
-  // to work in real life (but it would be great to have sim too)
-  // // TODO move mech visualization to the overarching class
-  // // Create a Mechanism2d visualization of the elevator
-  // private final Mechanism2d m_mech2d =
-  //     new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth,
-  // ElevatorConstants.Mechanism2d.kHeight);
-  // private final MechanismRoot2d m_mech2dRoot =
-  //     m_mech2d.getRoot(
-  //         "Arm Root",
-  //         ElevatorConstants.Mechanism2d.kXDistance,
-  //         ElevatorConstants.Mechanism2d.kYDistance);
-  // private final MechanismLigament2d m_armMech2d =
-  //     m_mech2dRoot.append(new MechanismLigament2d("Arm", m_armSim.getAngleRads(), 90));
+  // @Log
+  // private final Mechanism2d mech2d =
+  //     new Mechanism2d(3 * ArmSubConstants.kArmRealLength, 3 * ArmSubConstants.kArmRealLength);
 
-  /** Subsystem constructor. */
+  // private final MechanismRoot2d mechArmPivot =
+  //     mech2d.getRoot(
+  //         "Pivot", 1.5 * ArmSubConstants.kArmRealLength, ArmSubConstants.kArmPivotHeight);
+
+  // @SuppressWarnings("unused")
+  // private final MechanismLigament2d mechArmTower =
+  //     mechArmPivot.append(
+  //         new MechanismLigament2d(
+  //             "Tower", 1.5 * ArmConstants.kArmPivotHeight, -90, 12, new Color8Bit(Color.kBlue)));
+
+  // private final MechanismLigament2d mechArm =
+  //     mechArmPivot.append(
+  //         new MechanismLigament2d(
+  //             "Arm",
+  //             ArmSubConstants.kArmRealLength,
+  //             Units.radiansToDegrees(armSim.getAngleRads()),
+  //             6,
+  //             new Color8Bit(Color.kYellow)));
+
   public Arm() {
     m_armMotor.configure(
-        Configs.Arm.coralArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Configs.CoralArm.coralArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
+    // if (Robot.isReal()) {
+    //   motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    //   motor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+
+      // encoder = motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+      // encoder.setZeroOffset(ArmSubConstants.kArmZeroRads);
+      // encoder.setPositionConversionFactor(ArmSubConstants.kPositionConversionFactor);
+      // encoder.setAverageDepth(16);
+
+      // TODO: simulation
+      // // not used for real robot
+      // motorSim = null;
+      // dcEncoder = null;
+      // dcEncoderSim = null;
+    // } else {
+      // TODO: simulation
+      // motorSim = new PWMSparkMax(5);
+      // dcEncoder = new DutyCycleEncoder(5);
+      // dcEncoderSim = new DutyCycleEncoderSim(dcEncoder);
+
+      // // seed the encoder to have the correct sim arm starting position
+      // armSim.update(0.020);
+      // dcEncoderSim.setAbsolutePosition(armSim.getAngleRads());
+
+      // // not used for simulation
+      // motor = null;
+      // encoder = null;
+    //}
+
+    feedback.enableContinuousInput(0, 2 * Math.PI);
+
+    angle = getAngle();
+    lastAngle = angle;
+    this.goal = new TrapezoidProfile.State(angle, 0);
+    this.setpoint = new TrapezoidProfile.State(angle, 0);
   }
 
-  public void setGoalPosition(double goal) {
-    m_closedLoopController.setReference(goal, ControlType.kMAXMotionVelocityControl);
+  @Override
+  public void periodic() {
+    super.periodic();
+    angle = getAngle();
+    velocity = velocitySmoother.calculate((angle - lastAngle) / 0.020);
+    // velocity = (angle - lastAngle) / 0.020;
+    lastAngle = angle;
+
+    // the mechanism should track the real or simulated arm position
+    // TODO: sim
+    // mechArm.setAngle(Units.radiansToDegrees(angle));
+
+    // log items that can't be annotated
+    // this.log("Setpoint Position", setpoint.position);
+    // this.log("Setpoint Velocity", setpoint.velocity);
+    // this.log("Goal", this.goal.position);
+    // this.log("Error", this.setpoint.position - angle);
+    // this.log(
+    //     "Voltage",
+    //     ((Robot.isReal()) ? motor.getAppliedOutput() : motorSim.get())
+    //         * RobotController.getBatteryVoltage());
+    // this.log("Current", (Robot.isReal()) ? motor.getOutputCurrent() : armSim.getCurrentDrawAmps());
   }
 
-  public Command setGoalCommand(double goal) {
-    return this.run(() -> setGoalPosition(goal));
+  public double getAngle() {
+    return m_absoluteEncoder.getPosition();
+  }
+
+  public void moveToGoal(double goal) {
+    this.goal =
+        new TrapezoidProfile.State(goal, 0); // goal is the desired endpoint with zero velocity
+    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    fb = feedback.calculate(getAngle(), setpoint.position);
+
+    m_armMotor.set(fb + ff);
+  }
+
+  public void reset() {
+    setpoint = new TrapezoidProfile.State(getAngle(), velocity);
+    feedback.reset();
+  }
+
+  /**
+   * Creates a command that will move the arm from its current location to the desired goal and hold
+   * it there. This command doesn't exit.
+   *
+   * @param goal the target angle (radians)
+   * @return Command that moves the arm and holds it at goal
+   */
+  public Command moveToGoalCommand(double goal) {
+    return runOnce(this::reset).andThen(run(() -> moveToGoal(goal)));
+  }
+
+  /**
+   * Creates a command that will move the arm from its current location to the desired goal. This
+   * command ends when the arm reaches the goal.
+   *
+   * @param goal the target angle (radians)
+   * @return Command that moves the arm and ends when it reaches the goal
+   */
+  public Command moveToGoalAndStopCommand(double goal) {
+    return moveToGoalCommand(goal).until(this::atGoal);
+  }
+
+  /**
+   * Returns true when the arm is at its current goal and not moving. Tolerances for position and
+   * velocity are set in ArmConnstants.
+   *
+   * @return at goal and not moving
+   */
+  public boolean atGoal() {
+    return MathUtil.isNear(
+            this.goal.position, getAngle(), ArmConstants.kAtAngleTolerance, 0, 2 * Math.PI)
+        && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+  }
+
+  public double getVelocity() {
+    // double velocity = (Robot.isReal()) ? encoder.getVelocity() : armSim.getVelocityRadPerSec();
+    return velocity;
   }
 
   public Command toHorizontal() {
-    return setGoalCommand(ArmConstants.Angles.kHorizontal);
+    return moveToGoalCommand(ArmConstants.Angles.kHorizontal);
   }
 
   public Command toStored() {
-    return setGoalCommand(ArmConstants.Angles.kStored);
+    return moveToGoalCommand(ArmConstants.Angles.kStored);
   }
 
   public Command toFloorIntake() {
-    return setGoalCommand(ArmConstants.Angles.kFloorIntake);
+    return moveToGoalCommand(ArmConstants.Angles.kFloorIntake);
   }
 
   public Command toFeeder() {
-    return setGoalCommand(ArmConstants.Angles.kFeeder);
+    return moveToGoalCommand(ArmConstants.Angles.kFeeder);
   }
 
   public Command toBranch(GameConstants.Levels level) {
@@ -107,50 +273,41 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
         goal = ArmConstants.Angles.kReefL4;
         break;
     }
-    return setGoalCommand(goal);
+    return moveToGoalCommand(goal);
   }
 
-  /** Advance the simulation. */
-  public void simulationPeriodic() {
-    // In this method, we update our simulation of what our elevator is doing
-    // First, we set our "inputs" (voltages)
-    // and non-radial distances
-    m_armSim.setInput(m_armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("Arm Motor Output", m_armMotorSim.getAppliedOutput());
+  // /** Advance the simulation. */
+  // public void simulationPeriodic() {
+  //   // In this method, we update our simulation of what our elevator is doing
+  //   // First, we set our "inputs" (voltages)
+  //   // and non-radial distances
+  //   m_armSim.setInput(m_armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+  //   SmartDashboard.putNumber("Arm Motor Output", m_armMotorSim.getAppliedOutput());
 
-    // Next, we update it. The standard loop time is 20ms.
-    m_armSim.update(ArmConstants.kUpdateFrequency);
+  //   // Next, we update it. The standard loop time is 20ms.
+  //   m_armSim.update(ArmConstants.kUpdateFrequency);
 
-    // Required to keep a SparkMax working
-    m_armMotorSim.iterate(
-        // Multiply by reduction
-        Units.radiansPerSecondToRotationsPerMinute(
-            m_armSim.getVelocityRadPerSec() * ArmConstants.gearing),
-        RoboRioSim.getVInVoltage(),
-        ArmConstants.kUpdateFrequency);
+  //   // Required to keep a SparkMax working
+  //   m_armMotorSim.iterate(
+  //       // Multiply by reduction
+  //       Units.radiansPerSecondToRotationsPerMinute(
+  //           m_armSim.getVelocityRadPerSec() * ArmConstants.gearing),
+  //       RoboRioSim.getVInVoltage(),
+  //       ArmConstants.kUpdateFrequency);
 
-    // Finally, we set our simulated encoder's readings and simulated battery
-    // voltage
-    m_armEncoderSim.setPosition(m_armSim.getAngleRads());
+  //   // Finally, we set our simulated encoder's readings and simulated battery
+  //   // voltage
+  //   m_armEncoderSim.setPosition(m_armSim.getAngleRads());
 
-    // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
-  }
+  //   // SimBattery estimates loaded battery voltages
+  //   RoboRioSim.setVInVoltage(
+  //       BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
+  // }
 
-  // Update telemetry
-  public void periodic() {
-    // m_armMech2d.setAngle(m_absoluteEncoder.getPosition());
-  }
-
-  /**
-   * Run control loop to reach and maintain goal.
-   *
-   * @param goal the position to maintain
-   */
-  public void reachGoal(double goal) {
-    m_closedLoopController.setReference(goal, ControlType.kMAXMotionPositionControl);
-  }
+  // // Update telemetry
+  // public void periodic() {
+  //   // m_armMech2d.setAngle(m_absoluteEncoder.getPosition());
+  // }
 
   @Override
   public void close() {
