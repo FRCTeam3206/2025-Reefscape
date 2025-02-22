@@ -59,15 +59,20 @@ public final class Configs {
 
     static {
       // Configure basic settings of the arm motor
-      wristConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+      wristConfig.
+      
+      
+      
+      idleMode    (IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
       wristConfig
-          .closedLoop
-          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          
+                      .closedLoop
+      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
           .p(0.1)
           .outputRange(-1, 1)
@@ -78,7 +83,7 @@ public final class Configs {
           .allowedClosedLoopError(0.25);
 
       wristConfig
-          .absoluteEncoder
+.absoluteEncoder
           .positionConversionFactor(WristConstants.kConversionFactor)
           .velocityConversionFactor(WristConstants.kConversionFactor);
     }
