@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
+import frc.robot.subsystems.Algae;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.DriveSubsystem;
@@ -46,6 +47,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Algae m_algae = new Algae();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -99,6 +101,9 @@ public class Robot extends TimedRobot {
         .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
+    m_weaponsController.povUp().whileTrue(m_algae.extendCommand());
+    m_weaponsController.povDown().whileTrue(m_algae.retractCommand());
+
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
     // m_driverController.b().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE, true));
@@ -118,6 +123,8 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
+    
+    m_algae.setDefaultCommand(m_algae.stopArmCommand());
   }
 
   /**

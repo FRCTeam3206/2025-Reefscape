@@ -59,10 +59,10 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(5);
 
       // Configure basic settings of the arm motor
-      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25).voltageCompensation(12);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the

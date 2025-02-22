@@ -5,11 +5,14 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.AlgaeConstants;
 
+@Logged
 public class Algae extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(AlgaeConstants.kArmCanId, MotorType.kBrushless);
   // private final SparkAbsoluteEncoder m_armAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
@@ -35,11 +38,15 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return this.run(() -> setWheelSpeed(0.1));
+    return this.run(() -> setWheelSpeed(AlgaeConstants.kIntakeSpeed));
   }
 
   public Command extakeCommand() {
-    return this.run(() -> setWheelSpeed(-0.1));
+    return this.run(() -> setWheelSpeed(AlgaeConstants.kExtakeSpeed));
+  }
+  
+  public Command stopIntakeCommand() {
+    return this.run(() -> setWheelSpeed(0));
   }
 
   public Command retractCommand() {
@@ -48,6 +55,10 @@ public class Algae extends SubsystemBase {
 
   public Command extendCommand() {
     return this.run(() -> m_armMotor.set(AlgaeConstants.kExtendSpeed));
+  }
+
+  public Command stopArmCommand() {
+    return this.run(() -> m_armMotor.set(0));
   }
 
   // public double getArmAngle() {
