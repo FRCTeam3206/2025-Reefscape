@@ -55,7 +55,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       m_motor.getClosedLoopController();
 
   // i was readin bout elevators and it said feed forward is good, so i might try dis out...
-  // Not set up yet really cause its 8:22pm on a tuesday & im finna crashout
   // TODO corrie said we're doin this another way now so uhhh replace this eventually
   private final ElevatorFeedforward m_feedForward =
       new ElevatorFeedforward(
@@ -85,8 +84,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
           ElevatorConstants.Measurements.kDrumRadius,
           ElevatorConstants.Measurements.kBottomHeight,
           ElevatorConstants.Measurements.kTopHeight,
-          // this spacing is so bad. Every time I see it i go blind
-          // BUT spotless apply is just gonna put it back to being ugly... smh...
           true,
           ElevatorConstants.Measurements.kBottomHeight,
           ElevatorConstants.Measurements.kStandardDeviation);
@@ -94,15 +91,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // Create a Mechanism2d visualization of the elevator
   private final Mechanism2d m_mech2d =
       new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
-  //dude... this room STINKS... like actually...
-  //Everyone NEEDS TO TAKE A SHOWER!!!!
-  //I cant take it with r*botics kids anymore
-  //And to think im gonna be sharing a hotel room with these stinky chuds in like a week
-  //Sorry! My bad! That wuz rude
-  //JUST REMEMBER to take a SHOWER
-  //TODO YOU should wear some damned deoderant! Stinky !!! P.U.
-  //UPDATE 10 minutes later it smells like dead fish What is going on
-  //Does the janitor come into this room 
   private final MechanismRoot2d m_mech2dRoot =
       m_mech2d.getRoot(
           "Elevator Root",
@@ -133,11 +121,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   public void simulationPeriodic() {
     // dis is a variable so it dfoesnt have to be called 100 times
     double currentPosition = m_elevatorSim.getPositionMeters();
-    //once its past the "slow down distance", how close it is to the goal
-    //0.1 is very close, 0 means its right at that distance, bigger than
-    //0.1 means it s not time to slow down yet
-    double percentUntilStop = Math.abs(currentPosition - lastGoal) / 
-    ElevatorConstants.Measurements.kSlowDownDistance;
+    // once its past the "slow down distance", how close it is to the goal
+    // 0.1 is very close, 0 means its right at that distance, bigger than
+    // 0.1 means it s not time to slow down yet
+    double percentUntilStop =
+        Math.abs(currentPosition - lastGoal) / ElevatorConstants.Measurements.kSlowDownDistance;
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
@@ -162,7 +150,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     } else if (lastGoal < currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
     }
-    
+
     SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
     SmartDashboard.putNumber("Position meters", currentPosition);
     SmartDashboard.putNumber("Goal", lastGoal);
@@ -182,14 +170,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
    * Goes to a place in meters
    *
    * @param goal where 2 go
-   * @throws Error if the goal is bigger than max heigh t plus arm height or less than 0
+   * @throws Error if the goal is bigger than max height plus arm height or less than 0
    */
   public void reachGoal(double goal) {
-    // Error handliong
+    // Error handling
     if (goal > ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight
         || goal < ElevatorConstants.Measurements.kBottomHeight) {
       throw new Error(
-           "Goal is out of range! Should be between"
+          "Goal is out of range! Should be between"
               + ElevatorConstants.Measurements.kTopHeight
               + ArmConstants.kHeight
               + "and "
@@ -200,9 +188,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     // record of where it was goin last time
     lastGoal = goal;
     m_closedLoopController.setReference(
-      m_pid.calculate(m_elevatorSim.getPositionMeters(), goal), 
-      ControlType.kPosition
-    );
+        m_pid.calculate(m_elevatorSim.getPositionMeters(), goal), ControlType.kPosition);
   }
 
   /**
@@ -220,7 +206,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
         });
   }
 
-  /** makes it stop but a void and no command TODO better  name */
+  /** makes it stop but a void and no command TODO better name */
   public void stopButNotCommand() {
     wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
     SmartDashboard.putString("Movement", wheresItGoin.toString());
@@ -229,11 +215,10 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     m_motor.stopMotor();
   }
 
-  /*
+  /**
    * GO to branch
-   * Gun to your head name 5 numbers
-   * UHHHHHH.... A B C D E
-   * @param level witch branch
+   *
+   * @param level which branch
    */
   public Command toBranch(GameConstants.ReefLevels level) {
     return this.runOnce(
