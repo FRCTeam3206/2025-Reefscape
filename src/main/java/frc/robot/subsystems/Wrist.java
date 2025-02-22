@@ -23,7 +23,7 @@ public class Wrist extends SubsystemBase {
 
   public Wrist() {
     m_motor.configure(
-        Configs.Wrist.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Configs.Wrist.wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public Command toVerticalContinuous() {
