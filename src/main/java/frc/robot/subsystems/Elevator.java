@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Configs.ElevatorConfigs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.GameConstants;
@@ -81,7 +80,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       new ElevatorSim(
           m_elevatorGearbox,
           ElevatorConstants.Measurements.kGearing,
-          ElevatorConstants.Measurements.kWeight,
+          ElevatorConstants.kWeight,
           ElevatorConstants.Measurements.kDrumRadius,
           ElevatorConstants.Measurements.kBottomHeight,
           ElevatorConstants.Measurements.kTopHeight,
@@ -143,8 +142,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     if (Math.random() < 0.001) {
-      double randomThingy = Math.random() * 1.25;
-      reachGoal(randomThingy);
+      reachGoal(Math.random() * ElevatorConstants.Measurements.kTopHeight);
     }
 
     // Next, we update it. The standard loop time is 20ms.
@@ -164,14 +162,14 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
       // TODO use feedforward and whaetever calc stuff corrie was talking about
       // Calc means calculator for those of yall new in the chat
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kUp * percentUntilStop + ElevatorConstants.Voltages.kMagicNumber);
+        changeSpeed((ElevatorConstants.Voltages.kUp * percentUntilStop) + ElevatorConstants.Voltages.kMagicNumber);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kUp);
       }
     } else if (lastGoal < currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
       if (percentUntilStop < 0.1) {
-        changeSpeed(ElevatorConstants.Voltages.kDown * percentUntilStop - ElevatorConstants.Voltages.kMagicNumber);
+        changeSpeed((ElevatorConstants.Voltages.kDown * percentUntilStop) - ElevatorConstants.Voltages.kMagicNumber);
       } else {
         changeSpeed(ElevatorConstants.Voltages.kDown);
       }
@@ -211,7 +209,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
               + " meters. Attempted goal: "
               + goal);
     }
-    
     // record of where it was goin last time
     lastGoal = goal;
 

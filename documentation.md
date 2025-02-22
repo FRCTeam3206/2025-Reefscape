@@ -1,0 +1,2 @@
+# How did we do programming for a robot before the robot existed?
+Ms Davis asked me that and asked me to write about that. We mostly used the simulations. That's all there is to it! People who know these things more than I do told me what motors we'd probably be using, so we could set that up in the programming. Then, we imported some 

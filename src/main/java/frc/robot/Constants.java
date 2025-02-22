@@ -193,7 +193,7 @@ public final class Constants {
   public static final class ElevatorConstants {
     // TODO many of these arent used but java linter wont tell me... find out witch ones arent used
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
-    public static final int kWeight = 20;
+    public static final double kWeight = 2;
     // voltage for the simulation
     public static final double kVoltage = 1;
     // max elevator speed
@@ -225,15 +225,12 @@ public final class Constants {
     public static final class Voltages {
       //i found this through brute force, if you add or subtract it it makes the voltage accurate and
       //not too far down or far up
-      public static final double kMagicNumber = 0.1146;
-      public static final double kDown = -2;
-      public static final double kUp = 4;
-      // voltage for it to stay in the same place and go against gravity
-      // TODO find out what this is in real life
+      public static final double kMagicNumber = 0.1 * (kWeight / 2);
+      public static final double kDown = -5;
+      public static final double kUp = 100;
       // Gumball characters in real life
       // #1 gubmall
       // (picture of cat edited to blue)
-      public static final double kStatic = 0.5;
     }
 
     public static final class FeedForward {
@@ -269,9 +266,6 @@ public final class Constants {
       // This value is multiplied by 2pi for the circumference, then passed in as a factor
       // multiplying the rotations
       public static final double kDrumRadius = 0.0508;
-
-      // kilograms
-      public static final double kWeight = 1;
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
