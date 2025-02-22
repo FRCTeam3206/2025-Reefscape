@@ -99,6 +99,16 @@ public final class Constants {
         (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
   }
 
+  public static final class GameConstants {
+    // whys it string and not ints? Cause you wont do math with it
+    public static enum Levels {
+      l1,
+      l2,
+      l3,
+      l4;
+    }
+  }
+
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kWeaponsControllerPort = 1;
@@ -181,6 +191,24 @@ public final class Constants {
     public static final double kAtGoalTolerance = 0.05;
 
     public static final double kConversionFactor = 0.05; // This is NOT the correct value yet.
+  }
+
+  public static final class ArmConstants {
+    public static final int gearing = 10;
+    public static final double kUpdateFrequency = 0.02;
+
+    public static final int kArmCANId = 23;
+
+    public static final class Angles {
+      public static final double kHorizontal = Math.PI;
+      public static final double kStored = Math.PI / 2;
+      public static final double kFloorIntake = 4.10; // This is a guess.
+      public static final double kFeeder = 2.30; // This is a guess.
+      public static final double kReefL1 = 3.0; // This is a guess.
+      public static final double kReefL2 = 2.10; // This is a guess.
+      public static final double kReefL3 = kReefL2;
+      public static final double kReefL4 = 2.50;
+    }
   }
 
   public static final class PathingConstants {

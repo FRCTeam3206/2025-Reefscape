@@ -30,6 +30,7 @@ import frc.pathing.utils.AllianceUtil;
 import frc.robot.subsystems.Algae;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -48,6 +49,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
+  private final Arm m_arm = new Arm();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -310,7 +312,9 @@ public class Robot extends TimedRobot {
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_arm.simulationPeriodic();
+  }
 
   public double getLoopTime() {
     return m_loopTime;
