@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-// import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
     m_lastTime = Timer.getFPGATimestamp();
 
     DataLogManager.start();
-    // Epilogue.bind(this);
+    Epilogue.bind(this);
   }
 
   /**
@@ -120,7 +120,6 @@ public class Robot extends TimedRobot {
                 () -> m_invertControls || !m_fieldRelative),
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
-    // m_elevator.setDefaultCommand(m_elevator.stop());
   }
 
   /**
