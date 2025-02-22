@@ -55,18 +55,18 @@ public final class Configs {
   }
 
   public static final class Arm {
-    public static final SparkMaxConfig armConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
 
-      armConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
+      coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
-      armConfig
+      coralArmConfig
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control. We don't need to pass a closed
@@ -82,7 +82,7 @@ public final class Configs {
           .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
           .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
-      armConfig
+      coralArmConfig
           .closedLoop
           .maxMotion
           // Set MAXMotion parameters for position control. We don't need to pass

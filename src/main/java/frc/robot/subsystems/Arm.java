@@ -64,7 +64,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   /** Subsystem constructor. */
   public Arm() {
     m_armMotor.configure(
-        Configs.Arm.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Configs.Arm.coralArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void setGoalPosition(double goal) {
