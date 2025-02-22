@@ -133,4 +133,12 @@ public final class Configs {
       // We will need to make a lot more changes to the config.
     }
   }
+
+  public static final class Coral {
+    public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
+
+    static {
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+    }
+  }
 }

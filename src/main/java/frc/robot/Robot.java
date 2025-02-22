@@ -31,6 +31,7 @@ import frc.robot.subsystems.Algae;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -53,6 +54,8 @@ public class Robot extends TimedRobot {
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
+
+  private final Coral m_coral = new Coral();
 
   private double m_lastTime = 0;
   private double m_loopTime = 0;
@@ -133,6 +136,7 @@ public class Robot extends TimedRobot {
     m_algae.setDefaultCommand(m_algae.stopCommand());
 
     m_arm.setDefaultCommand(m_arm.setVoltageCommand(() -> .1 * m_weaponsController.getLeftY()));
+    m_coral.setDefaultCommand(m_coral.stopCommand());
   }
 
   /**
