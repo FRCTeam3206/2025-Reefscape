@@ -54,20 +54,20 @@ public class CoralTransport {
   }
 
   /** Position to place coral on any level, including 1. */
-  public Command positionReef(GameConstants.Levels level) {
+  public Command positionReef(GameConstants.ReefLevels level) {
     return moveWristVertical().andThen(m_elevator.toBranch(level).andThen(m_arm.toBranch(level)));
   }
 
   public Command floorIntake() {
-    return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccess());
+    return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
   public Command feederStation() {
-    return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccess());
+    return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
-  public Command scoreCoral(GameConstants.Levels level) {
-    return positionReef(level).andThen(m_coralOmnis.score());
+  public Command scoreCoral(GameConstants.ReefLevels level) {
+    return positionReef(level).andThen(m_coralOmnis.scoreCommand());
   }
 
   public Coral getOmnisSubsystem() {
