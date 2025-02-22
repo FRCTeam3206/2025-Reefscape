@@ -275,7 +275,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     return moveToGoalCommand(ArmConstants.Angles.kFeeder);
   }
 
-  public Command toBranch(GameConstants.Levels level) {
+  public Command toBranch(GameConstants.ReefLevels level) {
     double goal = 0.0;
     switch (level) {
       case l1:

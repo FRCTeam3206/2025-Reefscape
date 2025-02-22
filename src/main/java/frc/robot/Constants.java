@@ -101,11 +101,29 @@ public final class Constants {
 
   public static final class GameConstants {
     // whys it string and not ints? Cause you wont do math with it
-    public static enum Levels {
+    public static enum ReefLevels {
       l1,
       l2,
       l3,
       l4;
+    }
+
+    // all in meters
+    // How high up each thing is
+    public static final class Positions {
+      // Made up some numbers that sound plausible
+      public static final double kFeeder = 1.5;
+      public static final double kFloorIntake = 0.1;
+      // I aint gonna lie i do not know what the coral storage is
+      public static final double kCoralStorage = 0.5;
+      /* coral tree levels, dont go to 0
+       * @see {@link https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf} page 24
+       */
+      // l1 is the trough
+      public static final double kReefL1 = 0.46;
+      public static final double kReefL2 = 0.81;
+      public static final double kReefL3 = 1.21;
+      public static final double kReefL4 = 1.83;
     }
   }
 
@@ -249,6 +267,98 @@ public final class Constants {
     }
 
     public static final double kSafeScoreTime = 2;
+  }
+
+  public static final class ElevatorConstants {
+    // TODO many of these arent used but java linter wont tell me... find out witch ones arent used
+    // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
+    public static final double kWeight = 2;
+    // voltage for the simulation
+    public static final double kVoltage = 1;
+    // max elevator speed
+    public static final double kMaxVelocity = 2.45;
+    // Xi Jinping my beloved
+    // glory to the CCP
+    // in seconds for some reason
+    public static final double kUpdateFrequency = 0.02;
+
+    public static final class Motor {
+      public static final int kCanIdMotor1 = 21;
+      public static final int kCanIdMotor2 = 22;
+      /*between -1 and 1
+      https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
+      Make it negative to reverse it
+      IDK the units*/
+      public static final double kSpeed = 0.1;
+      // how many motors in gearbox
+      public static final int kHowManyInGearbox = 2;
+    }
+
+    // idk much about electiribcty so this is just made up numbers
+    public static final class Voltages {
+      public static final double kDown = -5;
+      public static final double kUp = 40;
+      // Gumball characters in real life
+      // #1 gubmall
+      // (picture of cat edited to blue)
+    }
+
+    public static final class FeedForward {
+      // Static gain (volts)
+      public static final double Ks = 0;
+      // Gravity gain (volts)
+      public static final double Kg = 0.762;
+      // Velocity gain (volts per m/s)
+      public static final double Kv = 0.762;
+      // Acceleration gain (volts per m/s^2)
+      public static final double Ka = 0;
+    }
+
+    // something for the simulation I Dont Really Know!
+    public static final class Mechanism2d {
+      // meters i think
+      public static final double kWidth = 20;
+      public static final double kHeight = 50;
+      public static final double kXDistance = 10;
+      public static final double kYDistance = 0;
+    }
+
+    public static final class Measurements {
+      // meters
+      public static final double kBottomHeight = 0;
+      public static final double kTopHeight = 1.25;
+      // how close it should be to the goal when the motors start slowing donw
+      // TODO redo this with feed forward cause its better accorfdin to corrie
+      public static final double kSlowDownDistance = 0.5;
+
+      // Radius of the drum of the elevator
+      // Controls the conversion factor of the SparkMax motors
+      // This value is multiplied by 2pi for the circumference, then passed in as a factor
+      // multiplying the rotations
+      public static final double kDrumRadius = 0.0508;
+      // Gearing of the gearbox on elevator (Positive values = reduction)
+      public static final double kGearing = 10;
+      // Standard deviation of elevator sim (set to 0 for no noise)
+      // why is it an array?? What
+      public static final double[] kStandardDeviation =
+          new double[] {
+            0, 0,
+          };
+    }
+
+    public static final class Encoder {
+      // Change this later idk what it is
+      public static final int kAChannel = 0;
+      public static final int kBChannel = 1;
+    }
+
+    // ways the elevator can go
+    // It aint really needed i just learned what an enum is and watned 2 use it
+    public static enum WaysItCanMove {
+      down,
+      up,
+      nowhere
+    }
   }
 
   public static final class PathingConstants {

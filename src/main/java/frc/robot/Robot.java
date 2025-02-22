@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -33,6 +34,7 @@ import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
