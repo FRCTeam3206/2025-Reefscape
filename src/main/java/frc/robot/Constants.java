@@ -223,11 +223,8 @@ public final class Constants {
 
     // idk much about electiribcty so this is just made up numbers
     public static final class Voltages {
-      //i found this through brute force, if you add or subtract it it makes the voltage accurate and
-      //not too far down or far up
-      public static final double kMagicNumber = 0.1 * (kWeight / 2);
       public static final double kDown = -5;
-      public static final double kUp = 100;
+      public static final double kUp = 40;
       // Gumball characters in real life
       // #1 gubmall
       // (picture of cat edited to blue)

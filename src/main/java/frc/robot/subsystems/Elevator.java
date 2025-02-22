@@ -19,6 +19,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -39,8 +40,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
   private final DCMotor m_elevatorGearbox =
       DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
-
-  // the encoderssssss
 
   /**
    * Elevator motor module uses a conversion factor of {@link
@@ -68,6 +67,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // Sim classes
   private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
   private final SparkAbsoluteEncoderSim m_encoderSim = new SparkAbsoluteEncoderSim(m_motor);
+
+  private final PIDController m_pid = new PIDController(10, 2.5, 0);
 
   // Simulation classes help us simulate what's going on, including gravity.
   // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
@@ -158,21 +159,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
     if (lastGoal > currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.up;
-      // TODO find a better way to check if its at the goal
-      // TODO use feedforward and whaetever calc stuff corrie was talking about
-      // Calc means calculator for those of yall new in the chat
-      if (percentUntilStop < 0.1) {
-        changeSpeed((ElevatorConstants.Voltages.kUp * percentUntilStop) + ElevatorConstants.Voltages.kMagicNumber);
-      } else {
-        changeSpeed(ElevatorConstants.Voltages.kUp);
-      }
     } else if (lastGoal < currentPosition) {
       wheresItGoin = ElevatorConstants.WaysItCanMove.down;
-      if (percentUntilStop < 0.1) {
-        changeSpeed((ElevatorConstants.Voltages.kDown * percentUntilStop) - ElevatorConstants.Voltages.kMagicNumber);
-      } else {
-        changeSpeed(ElevatorConstants.Voltages.kDown);
-      }
     }
     
     SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
@@ -211,19 +199,10 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     }
     // record of where it was goin last time
     lastGoal = goal;
-
-    // idk what this does tbh
-    // Corrie was sayin  its good and shes in like 15th grade math so i trust what she says
-    m_feedForward.calculate(0.1);
-  }
-
-  /**
-   * reference of the motor whatever that means
-   *
-   * @param voltage How many volts to change it to, it can be negative to😛😛😛
-   */
-  public void changeSpeed(double voltage) {
-    m_closedLoopController.setReference(voltage, ControlType.kVoltage);
+    m_closedLoopController.setReference(
+      m_pid.calculate(m_elevatorSim.getPositionMeters(), goal), 
+      ControlType.kPosition
+    );
   }
 
   /**
