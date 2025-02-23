@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -90,41 +89,43 @@ public final class Configs {
   }
 
   public static final class CoralArm {
+    public static final double kG = 2.5;
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
+      double armFactor = 2 * Math.PI;
+      double armKv = 0.5; // V*s/radian
+
       coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
 
-      coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
+      coralArmConfig
+          .absoluteEncoder
+          // Invert the turning encoder, since the output shaft rotates in the opposite
+          // direction of the steering motor in the MAXSwerve Module.
+          .inverted(false)
+          .positionConversionFactor(armFactor) // radians
+          .velocityConversionFactor(armFactor / 60.0); // radians per second
+
+      coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
 
       coralArmConfig
           .closedLoop
-          .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control. We don't need to pass a closed
           // loop slot, as it will default to slot 0.
-          .p(0.4)
-          .i(0)
-          .d(0)
+          .pidf(0.4, 0, 0, 1 / armKv)
           .outputRange(-1, 1)
-          // Set PID values for velocity control in slot 1
-          .p(0.0001, ClosedLoopSlot.kSlot1)
-          .i(0, ClosedLoopSlot.kSlot1)
-          .d(0, ClosedLoopSlot.kSlot1)
-          .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-          .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+          .positionWrappingEnabled(true)
+          .positionWrappingInputRange(0, armFactor);
 
       coralArmConfig
           .closedLoop
           .maxMotion
           // Set MAXMotion parameters for position control. We don't need to pass
           // a closed loop slot, as it will default to slot 0.
-          .maxVelocity(1000)
-          .maxAcceleration(1000)
-          .allowedClosedLoopError(1)
-          // Set MAXMotion parameters for velocity control in slot 1
-          .maxAcceleration(500, ClosedLoopSlot.kSlot1)
-          .maxVelocity(6000, ClosedLoopSlot.kSlot1)
-          .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
+          .maxVelocity(30) // radians/minute
+          .maxAcceleration(30) // radians/minute/second
+          .allowedClosedLoopError(1);
 
       // Constants.ElevatorConstants.Controller.Kp,
       //     Constants.ElevatorConstants.Controller.Ki,

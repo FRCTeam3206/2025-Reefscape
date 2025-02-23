@@ -6,9 +6,12 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
+import frc.robot.Configs.CoralArm;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GameConstants;
 import java.util.function.DoubleSupplier;
@@ -45,6 +49,8 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
   double ff = 0.0;
 
+  double arbFF = 0.0;
+
   private final PIDController feedback =
       new PIDController(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD);
 
@@ -54,6 +60,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   // the encoderssssss
   private final SparkMax m_armMotor = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
+  private final SparkClosedLoopController m_controller = m_armMotor.getClosedLoopController();
 
   // // TODO: Simulation
   // private final PWMSparkMax motorSim;
@@ -171,7 +178,8 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   }
 
   public double getAngle() {
-    return ((2 * Math.PI * (m_absoluteEncoder.getPosition())) + Math.PI) % (2 * Math.PI);
+    // return ((2 * Math.PI * (m_absoluteEncoder.getPosition())) + Math.PI) % (2 * Math.PI);
+    return m_absoluteEncoder.getPosition();
   }
 
   public void moveToGoal(double goal) {
@@ -184,8 +192,14 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     m_armMotor.set(ff + fb);
   }
 
+  public void moveToGoalMax(double goal) {
+    arbFF = CoralArm.kG * Math.cos(getAngle());
+    m_controller.setReference(
+        goal, SparkBase.ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, arbFF);
+  }
+
   public double getVoltage() {
-    return m_armMotor.getAppliedOutput();
+    return m_armMotor.getAppliedOutput() * m_armMotor.getBusVoltage();
   }
 
   public double getCurrent() {
