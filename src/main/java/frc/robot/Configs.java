@@ -93,7 +93,7 @@ public final class Configs {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
 
       coralArmConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
 
@@ -139,7 +139,7 @@ public final class Configs {
     public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
     }
   }
 
