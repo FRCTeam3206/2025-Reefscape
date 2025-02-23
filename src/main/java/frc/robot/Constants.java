@@ -252,8 +252,8 @@ public final class Constants {
     public static final int kCANId = 25;
     // Might not end up being "Neo550", Line 157
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
-    public static final double kIntakeSpeed = -0.1;
-    public static final double kOutakeSpeed = 0.5;
+    public static final double kIntakeSpeed = -1;
+    public static final double kOutakeSpeed = 1;
 
     public static final int kSensorChannel = 1;
 

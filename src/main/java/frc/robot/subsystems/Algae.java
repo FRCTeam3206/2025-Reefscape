@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -14,7 +15,7 @@ import frc.robot.Constants.AlgaeConstants;
 @Logged
 public class Algae extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(AlgaeConstants.kArmCanId, MotorType.kBrushless);
-  // private final RelativeEncoder m_armEncoder = m_armMotor.getAlternateEncoder();
+  private final AbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();
   private final SparkMax m_wheelsMotor =
       new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
 
@@ -32,7 +33,7 @@ public class Algae extends SubsystemBase {
   public void simulationPeriodic() {}
 
   public double getArmAngle() {
-    return 0; // m_armEncoder.getPosition();
+    return m_armEncoder.getPosition();
   }
 
   public Command intakeCommand() {
