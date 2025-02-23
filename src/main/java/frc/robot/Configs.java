@@ -113,7 +113,7 @@ public final class Configs {
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control. We don't need to pass a closed
           // loop slot, as it will default to slot 0.
-          .pidf(0.4, 0, 0, 1 / armKv)
+          .pid(0.4, 0, 0)
           .outputRange(-1, 1)
           .positionWrappingEnabled(true)
           .positionWrappingInputRange(0, armFactor);
