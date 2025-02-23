@@ -56,8 +56,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
 
   double fb = 0.0;
 
-  /// Motors/encoders
-  // the encoderssssss
+  // Motors/encoders
   private final SparkMax m_armMotor = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
   private final SparkClosedLoopController m_controller = m_armMotor.getClosedLoopController();
@@ -182,15 +181,15 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
     return m_absoluteEncoder.getPosition();
   }
 
-  public void moveToGoal(double goal) {
-    this.goal =
-        new TrapezoidProfile.State(goal, 0); // goal is the desired endpoint with zero velocity
-    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
-    fb = feedback.calculate(getAngle(), setpoint.position);
+  // public void moveToGoal(double goal) {
+  //   this.goal =
+  //       new TrapezoidProfile.State(goal, 0); // goal is the desired endpoint with zero velocity
+  //   this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+  //   ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+  //   fb = feedback.calculate(getAngle(), setpoint.position);
 
-    m_armMotor.set(ff + fb);
-  }
+  //   m_armMotor.set(ff + fb);
+  // }
 
   public void moveToGoalMax(double goal) {
     arbFF = CoralArm.kG * Math.cos(getAngle());
@@ -219,7 +218,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
    * @return Command that moves the arm and holds it at goal
    */
   public Command moveToGoalCommand(double goal) {
-    return runOnce(this::reset).andThen(run(() -> moveToGoal(goal)));
+    return runOnce(this::reset).andThen(run(() -> moveToGoalMax(goal)));
   }
 
   /**

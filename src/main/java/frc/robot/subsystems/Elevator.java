@@ -18,6 +18,8 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -35,6 +37,7 @@ import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.GameConstants;
 
+@Logged
 public final class Elevator extends SubsystemBase implements AutoCloseable {
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
   private final DCMotor m_elevatorGearbox =
@@ -53,8 +56,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   private final SparkClosedLoopController m_closedLoopController =
       m_motor.getClosedLoopController();
 
-  // i was readin bout elevators and it said feed forward is good, so i might try dis out...
-  // TODO corrie said we're doin this another way now so uhhh replace this eventually
   private final ElevatorFeedforward m_feedForward =
       new ElevatorFeedforward(
           ElevatorConstants.FeedForward.Ks,
@@ -71,11 +72,7 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   // Simulation classes help us simulate what's going on, including gravity.
   // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
   private final ElevatorSim m_elevatorSim =
-      /*they should really puy the link to the docs somewhere in the class definition
-       * IDK how javadoc works but jsdoc has @see something like THHat
-       * ANWYAYS heres the link lel
-       *  https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
-       */
+      // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
       new ElevatorSim(
           m_elevatorGearbox,
           ElevatorConstants.Measurements.kGearing,
@@ -118,11 +115,11 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
 
   /** Advance the simulation. */
   public void simulationPeriodic() {
-    // dis is a variable so it dfoesnt have to be called 100 times
+    // This is a variable so it doesn't have to be called too often
     double currentPosition = m_elevatorSim.getPositionMeters();
     // once its past the "slow down distance", how close it is to the goal
     // 0.1 is very close, 0 means its right at that distance, bigger than
-    // 0.1 means it s not time to slow down yet
+    // 0.1 means it's not time to slow down yet
     double percentUntilStop =
         Math.abs(currentPosition - lastGoal) / ElevatorConstants.Measurements.kSlowDownDistance;
     // In this method, we update our simulation of what our elevator is doing
@@ -191,8 +188,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * Stop the control loop and motor output. WARNIG if you called a method before it'll stop in the
-   * middle!!!
+   * Stop the control loop and motor output. WARNING if you called a method before it will stop in the
+   * middle.
    */
   public Command stop() {
     return this.runOnce(
@@ -222,7 +219,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   public Command toBranch(GameConstants.ReefLevels level) {
     return this.runOnce(
         () -> {
-          // mmmmmm switch case
           switch (level) {
             case l1:
               {
@@ -258,7 +254,6 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
     return this.runOnce(() -> reachGoal(GameConstants.Positions.kFeeder));
   }
 
-  /** Idk what stored is ngl */
   public Command toStored() {
     return this.runOnce(() -> reachGoal(GameConstants.Positions.kCoralStorage));
   }

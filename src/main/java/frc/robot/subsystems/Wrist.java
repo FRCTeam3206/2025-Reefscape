@@ -4,6 +4,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -20,6 +21,7 @@ public class Wrist extends SubsystemBase {
   private SparkMax m_motor = new SparkMax(WristConstants.kCANId, MotorType.kBrushless);
   private SparkClosedLoopController m_controller = m_motor.getClosedLoopController();
   private AbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
+  private double m_arbFF = 0.0;
 
   public Wrist() {
     m_motor.configure(
@@ -39,21 +41,24 @@ public class Wrist extends SubsystemBase {
   }
 
   public Trigger isVertical() {
-    return new Trigger(() -> atAngle(getAngle(), WristConstants.kVerticalPosition));
+    return new Trigger(() -> atAngle(WristConstants.kVerticalPosition));
   }
 
   public Trigger isHorizontal() {
-    return new Trigger(() -> atAngle(getAngle(), WristConstants.kHorizontalPosition));
+    return new Trigger(() -> atAngle(WristConstants.kHorizontalPosition));
   }
 
-  public boolean atAngle(double currentAngle, double desiredAngle) {
-    return Math.abs(currentAngle - desiredAngle) < WristConstants.kAtAngleTolerance;
+  public boolean atAngle(double desiredAngle) {
+    return Math.abs(getAngle() - desiredAngle) < WristConstants.kAtAngleTolerance;
   }
 
   @Override
   public void periodic() {
+    m_arbFF = Math.cos(getAngle()) * Configs.Wrist.kG;
     m_controller.setReference(
         m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition,
-        ControlType.kMAXMotionPositionControl);
+        ControlType.kMAXMotionPositionControl,
+        ClosedLoopSlot.kSlot0,
+        m_arbFF);
   }
 }

@@ -6,7 +6,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.Constants.WristConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -140,7 +139,7 @@ public final class Configs {
     public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
     }
   }
 
@@ -168,31 +167,41 @@ public final class Configs {
 
   public static final class Wrist {
     public static final SparkMaxConfig wristConfig = new SparkMaxConfig();
+    public static final double kG = 0.01;
 
     static {
+      double wristFactor = 2 * Math.PI;
       // Configure basic settings of the arm motor
-      wristConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
-
-      /*
-       * Configure the closed loop controller. We want to make sure we set the
-       * feedback sensor as the primary encoder.
-       */
-      wristConfig
-          .closedLoop
-          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-          // Set PID values for position control
-          .p(0.1)
-          .outputRange(-1, 1)
-          .maxMotion
-          // Set MAXMotion parameters for position control
-          .maxVelocity(2000)
-          .maxAcceleration(10000)
-          .allowedClosedLoopError(0.25);
+      wristConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
 
       wristConfig
           .absoluteEncoder
-          .positionConversionFactor(WristConstants.kConversionFactor)
-          .velocityConversionFactor(WristConstants.kConversionFactor);
+          // Invert the turning encoder, since the output shaft rotates in the opposite
+          // direction of the steering motor in the MAXSwerve Module.
+          .inverted(false)
+          .positionConversionFactor(wristFactor) // radians
+          .velocityConversionFactor(wristFactor / 60.0); // radians per second
+
+      wristConfig.signals.absoluteEncoderPositionPeriodMs(20);
+
+      wristConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control. We don't need to pass a closed
+          // loop slot, as it will default to slot 0.
+          .pid(0.4, 0, 0)
+          .outputRange(-1, 1)
+          .positionWrappingEnabled(true)
+          .positionWrappingInputRange(0, wristFactor);
+
+      wristConfig
+          .closedLoop
+          .maxMotion
+          // Set MAXMotion parameters for position control. We don't need to pass
+          // a closed loop slot, as it will default to slot 0.
+          .maxVelocity(30) // radians/minute
+          .maxAcceleration(30) // radians/minute/second
+          .allowedClosedLoopError(1);
     }
   }
 }

@@ -100,7 +100,6 @@ public final class Constants {
   }
 
   public static final class GameConstants {
-    // whys it string and not ints? Cause you wont do math with it
     public static enum ReefLevels {
       l1,
       l2,
@@ -114,11 +113,7 @@ public final class Constants {
       // Made up some numbers that sound plausible
       public static final double kFeeder = 1.5;
       public static final double kFloorIntake = 0.1;
-      // I aint gonna lie i do not know what the coral storage is
       public static final double kCoralStorage = 0.5;
-      /* coral tree levels, dont go to 0
-       * @see {@link https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf} page 24
-       */
       // l1 is the trough
       public static final double kReefL1 = 0.46;
       public static final double kReefL2 = 0.81;
@@ -248,7 +243,7 @@ public final class Constants {
   }
 
   public static final class CoralConstants {
-    // random numbers right now
+    // Random numbers right now
     public static final int kCANId = 25;
     // Might not end up being "Neo550", Line 157
     public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
@@ -257,11 +252,10 @@ public final class Constants {
 
     public static final int kSensorChannel = 1;
 
-    // why do they call it a finger what the freak
     public class Finger {
-      // mad e up a number
+      // Made up a number
       public static final int kChannel = 0;
-      // how many turns the servo is
+      // How many turns the servo is
       public static final double kFreePosition = 0.3;
       public static final double kRetainedPosition = 0;
     }
@@ -270,16 +264,14 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    // TODO many of these arent used but java linter wont tell me... find out witch ones arent used
+    // TODO many of these arent used
     // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
     public static final double kWeight = 2;
     // voltage for the simulation
     public static final double kVoltage = 1;
     // max elevator speed
     public static final double kMaxVelocity = 2.45;
-    // Xi Jinping my beloved
-    // glory to the CCP
-    // in seconds for some reason
+    // in seconds
     public static final double kUpdateFrequency = 0.02;
 
     public static final class Motor {
@@ -287,20 +279,16 @@ public final class Constants {
       public static final int kCanIdMotor2 = 22;
       /*between -1 and 1
       https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
-      Make it negative to reverse it
-      IDK the units*/
+      Make it negative to reverse it*/
       public static final double kSpeed = 0.1;
       // how many motors in gearbox
       public static final int kHowManyInGearbox = 2;
     }
 
-    // idk much about electiribcty so this is just made up numbers
+    // idk much about electricity so this is just made up numbers
     public static final class Voltages {
       public static final double kDown = -5;
       public static final double kUp = 40;
-      // Gumball characters in real life
-      // #1 gubmall
-      // (picture of cat edited to blue)
     }
 
     public static final class FeedForward {
@@ -314,7 +302,7 @@ public final class Constants {
       public static final double Ka = 0;
     }
 
-    // something for the simulation I Dont Really Know!
+    // something for the simulation
     public static final class Mechanism2d {
       // meters i think
       public static final double kWidth = 20;
@@ -327,8 +315,8 @@ public final class Constants {
       // meters
       public static final double kBottomHeight = 0;
       public static final double kTopHeight = 1.25;
-      // how close it should be to the goal when the motors start slowing donw
-      // TODO redo this with feed forward cause its better accorfdin to corrie
+      // how close it should be to the goal when the motors start slowing down
+      // TODO redo this with feed forward because it's better
       public static final double kSlowDownDistance = 0.5;
 
       // Radius of the drum of the elevator
@@ -339,7 +327,6 @@ public final class Constants {
       // Gearing of the gearbox on elevator (Positive values = reduction)
       public static final double kGearing = 10;
       // Standard deviation of elevator sim (set to 0 for no noise)
-      // why is it an array?? What
       public static final double[] kStandardDeviation =
           new double[] {
             0, 0,
@@ -363,12 +350,10 @@ public final class Constants {
 
   public static final class WristConstants {
     public static final int kCANId = 24;
-    public static final double kHorizontalPosition = 0;
+    public static final double kHorizontalPosition = Math.PI;
     public static final double kVerticalPosition = Math.PI / 2;
 
     public static final double kAtAngleTolerance = 0.05;
-
-    public static final double kConversionFactor = 0.05; // NOT correct yet.
   }
 
   public static final class PathingConstants {
@@ -389,8 +374,6 @@ public final class Constants {
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
     // Measurements taken from April Tag coordinates
-    // I like doing it as an enum because it makes it easy to organize.
-    // Question: does doing it as an enum like this make it less efficient?
     public static enum ReefPose {
       CLOSE(144, 158.5, 180),
       CLOSE_LEFT(160.39, 186.83, 120),

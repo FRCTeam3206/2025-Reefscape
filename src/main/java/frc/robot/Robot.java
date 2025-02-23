@@ -32,7 +32,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
   private final Arm m_arm = new Arm();
-  private final Coral m_coralIntake = new Coral();
+  private final CoralIntake m_coralIntake = new CoralIntake();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
