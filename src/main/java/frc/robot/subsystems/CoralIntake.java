@@ -90,4 +90,12 @@ public class CoralIntake extends SubsystemBase {
           changeFinger(true);
         });
   }
+
+  public double getVoltage() {
+    return m_wheels.getAppliedOutput() * m_wheels.getBusVoltage();
+  }
+
+  public double getCurrent() {
+    return m_wheels.getOutputCurrent();
+  }
 }

@@ -213,12 +213,12 @@ public final class Constants {
     public static final int kArmCANId = 23;
 
     // Trapezoid profile constraints
-    public static final double kMaxVelocity = 8.0; // raidans/second
-    public static final double kMaxAcceleration = 8.0; // radians/second^2
+    public static final double kMaxVelocity = 1.0; // raidans/second
+    public static final double kMaxAcceleration = 1.0; // radians/second^2
 
     // Feedforward constants
     public static final double kS = 0; // volts
-    public static final double kG = .05; // volts
+    public static final double kG = .5; // volts
     public static final double kV = 0; // volts*second/radian
     public static final double kA = 0; // volts*second^2/radian
 

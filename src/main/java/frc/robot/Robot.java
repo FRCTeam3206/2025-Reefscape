@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
   private final Algae m_algae = new Algae();
   private final Arm m_arm = new Arm();
   private final CoralIntake m_coralIntake = new CoralIntake();
+
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = 0.5;
@@ -101,9 +102,9 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     m_weaponsController.x().whileTrue(m_robotDrive.setXCommand());
     m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
-    m_weaponsController
-        .a()
-        .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+    // m_weaponsController
+    //     .a()
+    //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
@@ -111,7 +112,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    m_weaponsController.a().whileTrue(m_arm.moveToGoalCommand(Math.PI));
+    m_weaponsController.a().whileTrue(m_arm.moveToGoalCommand(Math.toRadians(180)));
     m_weaponsController.y().whileTrue(m_coralIntake.intakeCommand());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
@@ -136,7 +137,7 @@ public class Robot extends TimedRobot {
 
     m_algae.setDefaultCommand(m_algae.stopCommand());
 
-    m_arm.setDefaultCommand(m_arm.setVoltageCommand(() -> .5 * m_weaponsController.getLeftY()));
+    m_arm.setDefaultCommand(m_arm.stopCommand());
     m_coralIntake.setDefaultCommand(m_coralIntake.stopCommand());
   }
 

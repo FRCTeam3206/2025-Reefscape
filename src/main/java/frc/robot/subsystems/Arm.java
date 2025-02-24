@@ -31,6 +31,7 @@ import java.util.function.DoubleSupplier;
 
 @Logged
 public final class Arm extends SubsystemBase implements AutoCloseable {
+
   private double angle = 0.0;
   private double lastAngle = 0.0;
   private double velocity = 0.0;
@@ -99,6 +100,10 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   //             Units.radiansToDegrees(armSim.getAngleRads()),
   //             6,
   //             new Color8Bit(Color.kYellow)));
+
+  public double getGoal() {
+    return goal.position;
+  }
 
   public Arm() {
     m_armMotor.configure(
@@ -177,25 +182,26 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
   }
 
   public double getAngle() {
-    // return ((2 * Math.PI * (m_absoluteEncoder.getPosition())) + Math.PI) % (2 * Math.PI);
-    return m_absoluteEncoder.getPosition();
+    return ((m_absoluteEncoder.getPosition()) + Math.PI);
+    // return m_absoluteEncoder.getPosition();
   }
 
-  // public void moveToGoal(double goal) {
-  //   this.goal =
-  //       new TrapezoidProfile.State(goal, 0); // goal is the desired endpoint with zero velocity
-  //   this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-  //   ff = feedforward.calculate(setpoint.position, setpoint.velocity);
-  //   fb = feedback.calculate(getAngle(), setpoint.position);
+  public void moveToGoal(double goal) {
+    this.goal =
+        new TrapezoidProfile.State(goal, 0); // goal is the desired endpoint with zero velocity
+    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    fb = feedback.calculate(getAngle(), setpoint.position);
 
-  //   m_armMotor.set(ff + fb);
+    m_armMotor.set(ff + fb);
+  }
+
+  // public void moveToGoalMax(double goal) {
+  //   maxGoal = goal;
+  //   arbFF = -CoralArm.kG * Math.sin(getAngle());
+  //   m_controller.setReference(
+  //       goal, SparkBase.ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, arbFF);
   // }
-
-  public void moveToGoalMax(double goal) {
-    arbFF = CoralArm.kG * Math.cos(getAngle());
-    m_controller.setReference(
-        goal, SparkBase.ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, arbFF);
-  }
 
   public double getVoltage() {
     return m_armMotor.getAppliedOutput() * m_armMotor.getBusVoltage();
@@ -218,7 +224,7 @@ public final class Arm extends SubsystemBase implements AutoCloseable {
    * @return Command that moves the arm and holds it at goal
    */
   public Command moveToGoalCommand(double goal) {
-    return runOnce(this::reset).andThen(run(() -> moveToGoalMax(goal)));
+    return runOnce(this::reset).andThen(run(() -> moveToGoal(goal)));
   }
 
   /**

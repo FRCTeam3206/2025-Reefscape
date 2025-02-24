@@ -60,7 +60,7 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
+      wheelsConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(60);
 
       // Configure basic settings of the arm motor
       armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25).voltageCompensation(12);
@@ -88,12 +88,12 @@ public final class Configs {
   }
 
   public static final class CoralArm {
-    public static final double kG = 2.5;
+    public static final double kG = 0;
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
       double armFactor = 2 * Math.PI;
-      double armKv = 0.5; // V*s/radian
+      // double armKv = 0.5; // V*s/radian
 
       coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
 
@@ -112,7 +112,7 @@ public final class Configs {
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control. We don't need to pass a closed
           // loop slot, as it will default to slot 0.
-          .pid(0.4, 0, 0)
+          .pid(8, 0, 0)
           .outputRange(-1, 1)
           .positionWrappingEnabled(true)
           .positionWrappingInputRange(0, armFactor);
@@ -139,7 +139,7 @@ public final class Configs {
     public static final SparkMaxConfig wheelsConfig = new SparkMaxConfig();
 
     static {
-      wheelsConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
+      wheelsConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(20);
     }
   }
 

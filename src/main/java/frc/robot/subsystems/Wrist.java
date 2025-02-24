@@ -52,6 +52,14 @@ public class Wrist extends SubsystemBase {
     return Math.abs(getAngle() - desiredAngle) < WristConstants.kAtAngleTolerance;
   }
 
+  public double getVoltage() {
+    return m_motor.getAppliedOutput() * m_motor.getBusVoltage();
+  }
+
+  public double getCurrent() {
+    return m_motor.getOutputCurrent();
+  }
+
   @Override
   public void periodic() {
     m_arbFF = Math.cos(getAngle()) * Configs.Wrist.kG;
