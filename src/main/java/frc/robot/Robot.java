@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Epilogue;
-// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
@@ -115,7 +114,7 @@ public class Robot extends TimedRobot {
 
     m_weaponsController
         .a()
-        .whileTrue(m_arm.moveToGoalCommand(new Rotation2d(Units.degreesToRadians(0))));
+        .whileTrue(m_arm.moveToGoalCommand(new Rotation2d(Units.degreesToRadians(45))));
     m_weaponsController.y().whileTrue(m_coralIntake.intakeCommand());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
@@ -325,9 +324,7 @@ public class Robot extends TimedRobot {
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {
-    m_arm.simulationPeriodic();
-  }
+  public void simulationPeriodic() {}
 
   public double getLoopTime() {
     return m_loopTime;

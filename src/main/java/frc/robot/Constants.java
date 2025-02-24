@@ -420,21 +420,25 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
+    public static final double kMaxVelocity = 1;
+    public static final double kMaxAcceleration = 1;
+
     public static final double kS = 0.0;
     public static final double kG = 0.5;
-    public static final double kV = 0.0;
+    public static final double kV = 0.1;
+    public static final double kA = 0.0;
 
-    public static final double kP = 1;
+    public static final double kP = 2;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final double kMaxAngle = Units.degreesToRadians(90);
-    public static final double kMinAngle = Units.degreesToRadians(-20);
+    public static final double kMaxAngle = Units.degreesToRadians(150);
+    public static final double kMinAngle = Units.degreesToRadians(30);
 
     public static final double kArmReduction = 25;
     public static final double kArmPivotHeight = Units.inchesToMeters(10.5);
     public static final double kArmLength = Units.inchesToMeters(13.5);
     public static final double kArmMass = 2.78; // kg
-    public static final double kArmMOI = 0.395; // kg*m² - estimated from CAD
+    public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
   }
 }

@@ -28,9 +28,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
+import frc.robot.Robot;
 
 @Logged
 public class ArmSubsystem extends SubsystemBase {
+  private double simVoltage = 0;
   private final SparkMax m_max = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
   private final AbsoluteEncoder m_encoder = m_max.getAbsoluteEncoder();
 
@@ -40,13 +42,14 @@ public class ArmSubsystem extends SubsystemBase {
   private final TrapezoidProfile profile =
       new TrapezoidProfile(
           new TrapezoidProfile.Constraints(
-              ArmConstants.kMaxVelocity, ArmConstants.kMaxAcceleration));
+              ArmSubConstants.kMaxVelocity, ArmSubConstants.kMaxAcceleration));
 
   private final ArmFeedforward feedforward =
-      new ArmFeedforward(ArmConstants.kS, ArmConstants.kG, ArmConstants.kA);
+      new ArmFeedforward(ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kA);
   double ff = 0.0;
 
-  private final PIDController feedback = new PIDController(ArmConstants.kP, 0, ArmConstants.kD);
+  private final PIDController feedback =
+      new PIDController(ArmSubConstants.kP, 0, ArmSubConstants.kD);
   double fb = 0.0;
 
   // Simulation
@@ -56,14 +59,14 @@ public class ArmSubsystem extends SubsystemBase {
 
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(
-          DCMotor.getNEO(1),
+          m_armGearbox,
           ArmSubConstants.kArmReduction,
           ArmSubConstants.kArmMOI,
           ArmSubConstants.kArmLength,
-          ArmSubConstants.kMinAngle,
-          ArmSubConstants.kMaxAngle,
+          -Math.PI/6,
+          Math.PI/2-0.1,
           true,
-          ArmSubConstants.kMinAngle);
+          0);
 
   private final Mechanism2d mech2d =
       new Mechanism2d(3 * ArmSubConstants.kArmLength, 3 * ArmSubConstants.kArmLength);
@@ -102,23 +105,53 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     super.simulationPeriodic();
-    m_armSim.setInput(m_maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    simVoltage = RoboRioSim.getVInVoltage();
+
+    m_armSim.setInputVoltage(m_maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     m_armSim.update(0.02);
 
-    m_maxSim.iterate(m_armSim.getVelocityRadPerSec(), RoboRioSim.getVInVoltage(), 0.02);
+    m_maxSim.iterate(m_armSim.getVelocityRadPerSec()*60/(2*Math.PI), RoboRioSim.getVInVoltage(), 0.02);
+    m_encoderSim.iterate(m_armSim.getVelocityRadPerSec()*60/(2*Math.PI)/ArmSubConstants.kArmReduction, 0.02);
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
 
-    mechArm.setAngle(getAngle());
+    mechArm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
   }
 
   public Rotation2d getAngle() {
+    if (Robot.isSimulation()) {
+      return new Rotation2d(m_encoderSim.getPosition());
+    }
     return new Rotation2d(m_encoder.getPosition());
   }
 
   public double getVelocity() {
     return m_encoder.getVelocity();
+  }
+
+  public double getAppliedVoltage() {
+    return m_max.getAppliedOutput() * m_max.getBusVoltage();
+  }
+
+  public double getCurrent() {
+    return m_max.getOutputCurrent();
+  }
+
+  public double getSetPoint() {
+    return setpoint.position;
+  }
+
+  public double getGoal() {
+    return goal.position;
+  }
+
+  public double getArmSimAngle() {
+    return m_armSim.getAngleRads();
+  }
+
+  public double getArmSimVelocity() {
+    return m_armSim.getVelocityRadPerSec();
   }
 
   public void moveToGoal(Rotation2d goal) {
