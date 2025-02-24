@@ -13,6 +13,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,7 +32,7 @@ import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
@@ -51,7 +52,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
-  private final Arm m_arm = new Arm();
+  private final ArmSubsystem m_arm = new ArmSubsystem();
   private final CoralIntake m_coralIntake = new CoralIntake();
 
   private boolean m_fieldRelative = true;
@@ -112,7 +113,9 @@ public class Robot extends TimedRobot {
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    m_weaponsController.a().whileTrue(m_arm.moveToGoalCommand(Math.toRadians(180)));
+    m_weaponsController
+        .a()
+        .whileTrue(m_arm.moveToGoalCommand(new Rotation2d(Units.degreesToRadians(0))));
     m_weaponsController.y().whileTrue(m_coralIntake.intakeCommand());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));

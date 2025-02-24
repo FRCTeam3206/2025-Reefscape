@@ -18,7 +18,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -188,8 +187,8 @@ public final class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * Stop the control loop and motor output. WARNING if you called a method before it will stop in the
-   * middle.
+   * Stop the control loop and motor output. WARNING if you called a method before it will stop in
+   * the middle.
    */
   public Command stop() {
     return this.runOnce(

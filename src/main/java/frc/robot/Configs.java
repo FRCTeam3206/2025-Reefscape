@@ -3,6 +3,7 @@ package frc.robot;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -132,6 +133,20 @@ public final class Configs {
       //     new TrapezoidProfile.Constraints(
       //         ElevatorConstants.kMaxVelocity, ElevatorConstants.kMaxAcceleration)
       // We will need to make a lot more changes to the config.
+    }
+  }
+
+  public static final class CoralArmSubsystem {
+    public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
+
+    static {
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50);
+      coralArmConfig
+          .absoluteEncoder
+          .inverted(false)
+          .positionConversionFactor(Units.rotationsToRadians(1))
+          .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
+      coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
     }
   }
 

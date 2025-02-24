@@ -418,4 +418,23 @@ public final class Constants {
         new Transform2d(kRobotLengthWidthMeters / 2, 0.0, Rotation2d.fromDegrees(0));
     public static final Pose2d kProcessorPose = poseFromTag(235.73, -0.15, 90, kProcessorTransform);
   }
+
+  public static final class ArmSubConstants {
+    public static final double kS = 0.0;
+    public static final double kG = 0.5;
+    public static final double kV = 0.0;
+
+    public static final double kP = 1;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
+    public static final double kMaxAngle = Units.degreesToRadians(90);
+    public static final double kMinAngle = Units.degreesToRadians(-20);
+
+    public static final double kArmReduction = 25;
+    public static final double kArmPivotHeight = Units.inchesToMeters(10.5);
+    public static final double kArmLength = Units.inchesToMeters(13.5);
+    public static final double kArmMass = 2.78; // kg
+    public static final double kArmMOI = 0.395; // kg*m² - estimated from CAD
+  }
 }
