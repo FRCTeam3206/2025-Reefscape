@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
+import frc.robot.Constants.GameConstants;
 import frc.robot.Robot;
 
 @Logged
@@ -121,9 +123,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Rotation2d getAngle() {
     if (Robot.isSimulation()) {
-      return new Rotation2d(m_encoderSim.getPosition());
+      return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
     }
-    return new Rotation2d(m_encoder.getPosition());
+    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
   }
 
   public double getVelocity() {
@@ -163,6 +165,18 @@ public class ArmSubsystem extends SubsystemBase {
     m_max.setVoltage(fb + ff);
   }
 
+  /**
+   * Returns true when the arm is at its current goal and not moving. Tolerances for position and
+   * velocity are set in ArmConnstants.
+   *
+   * @return at goal and not moving
+   */
+  public boolean atGoal() {
+    return MathUtil.isNear(
+            this.goal.position, getAngle().getRadians(), ArmConstants.kAtAngleTolerance, 0, 2 * Math.PI)
+        && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+  }
+
   public void stop() {
     m_max.setVoltage(0);
   }
@@ -175,7 +189,46 @@ public class ArmSubsystem extends SubsystemBase {
     return runOnce(this::reset).andThen(run(() -> moveToGoal(goal)));
   }
 
+  public Command moveToGoalCommand(double goal) {
+    return moveToGoalCommand(new Rotation2d(goal));
+  }
+
   public Command stopCommand() {
     return this.run(this::stop);
+  }
+
+  public Command toHorizontal() {
+    return moveToGoalCommand(ArmConstants.Angles.kHorizontal);
+  }
+
+  public Command toStored() {
+    return moveToGoalCommand(ArmConstants.Angles.kStored);
+  }
+
+  public Command toFloorIntake() {
+    return moveToGoalCommand(ArmConstants.Angles.kFloorIntake).until(() -> atGoal()).andThen(stopCommand());
+  }
+
+  public Command toFeeder() {
+    return moveToGoalCommand(ArmConstants.Angles.kFeeder);
+  }
+
+  public Command toBranch(GameConstants.ReefLevels level) {
+    double goal = 0.0;
+    switch (level) {
+      case l1:
+        goal = ArmConstants.Angles.kReefL1;
+        break;
+      case l2:
+        goal = ArmConstants.Angles.kReefL2;
+        break;
+      case l3:
+        goal = ArmConstants.Angles.kReefL3;
+        break;
+      case l4:
+        goal = ArmConstants.Angles.kReefL4;
+        break;
+    }
+    return moveToGoalCommand(goal);
   }
 }

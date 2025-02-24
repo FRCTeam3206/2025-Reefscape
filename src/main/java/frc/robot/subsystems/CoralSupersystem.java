@@ -15,19 +15,25 @@ public class CoralSupersystem {
    * maintain this position after the command stops by setting power in periodic accoding to a saved goal.
    */
   private final Elevator m_elevator = new Elevator();
-  private final Arm m_arm = new Arm();
+  private final ArmSubsystem m_arm = new ArmSubsystem();
   private final Wrist m_wrist = new Wrist();
   private final CoralIntake m_coralOmnis = new CoralIntake();
 
-  public CoralSupersystem() {}
+  public CoralSupersystem() {
+    //m_arm.setDefaultCommand(m_arm.toStored());
+    m_arm.setDefaultCommand(m_arm.moveToGoalCommand(Math.PI));
+    m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
+    m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
+  }
 
   /**
    * It can hit things if the wrist is vertical, so we can move the arm first to make sure it's
    * safe.
    */
   public Command moveWristVertical() {
-    return (m_arm.toHorizontal().andThen(m_wrist.toVerticalContinuous()))
-        .until(() -> m_wrist.isVertical().getAsBoolean());
+    return m_wrist.toVerticalContinuous();
+    // return (m_arm.toHorizontal().andThen(m_wrist.toVerticalContinuous()))
+        // .until(() -> m_wrist.isVertical().getAsBoolean());
   }
 
   /**
@@ -40,9 +46,10 @@ public class CoralSupersystem {
 
   /** Move the arm, wrist, and elevator so that the mechanism is in the stored position. */
   public Command positionStore() {
-    return moveWristHorizontal()
-        .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
-        .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
+    return m_arm.toStored().alongWith(m_coralOmnis.stopCommand());
+    // return moveWristHorizontal()
+        // .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
+        // .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
   }
 
   /** Move to intake from the floor. */
@@ -61,7 +68,8 @@ public class CoralSupersystem {
   }
 
   public Command floorIntake() {
-    return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
+    return m_arm.toFloorIntake().alongWith(m_coralOmnis.intakeCommand());
+    // return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
   public Command feederStation() {

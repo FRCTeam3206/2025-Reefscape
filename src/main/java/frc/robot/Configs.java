@@ -140,10 +140,10 @@ public final class Configs {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(true);
       coralArmConfig
           .absoluteEncoder
-          .inverted(false)
+          .inverted(true)
           .positionConversionFactor(Units.rotationsToRadians(1))
           .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
@@ -199,24 +199,24 @@ public final class Configs {
 
       wristConfig.signals.absoluteEncoderPositionPeriodMs(20);
 
-      wristConfig
-          .closedLoop
-          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-          // Set PID values for position control. We don't need to pass a closed
-          // loop slot, as it will default to slot 0.
-          .pid(0.4, 0, 0)
-          .outputRange(-1, 1)
-          .positionWrappingEnabled(true)
-          .positionWrappingInputRange(0, wristFactor);
+      // wristConfig
+      //     .closedLoop
+      //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+      //     // Set PID values for position control. We don't need to pass a closed
+      //     // loop slot, as it will default to slot 0.
+      //     .pid(0.4, 0, 0)
+      //     .outputRange(-1, 1)
+      //     .positionWrappingEnabled(true)
+      //     .positionWrappingInputRange(0, wristFactor);
 
-      wristConfig
-          .closedLoop
-          .maxMotion
-          // Set MAXMotion parameters for position control. We don't need to pass
-          // a closed loop slot, as it will default to slot 0.
-          .maxVelocity(30) // radians/minute
-          .maxAcceleration(30) // radians/minute/second
-          .allowedClosedLoopError(1);
+      // wristConfig
+      //     .closedLoop
+      //     .maxMotion
+      //     // Set MAXMotion parameters for position control. We don't need to pass
+      //     // a closed loop slot, as it will default to slot 0.
+      //     .maxVelocity(30) // radians/minute
+      //     .maxAcceleration(30) // radians/minute/second
+      //     .allowedClosedLoopError(1);
     }
   }
 }

@@ -33,6 +33,7 @@ import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CoralIntake;
+import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -51,8 +52,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
-  private final ArmSubsystem m_arm = new ArmSubsystem();
-  private final CoralIntake m_coralIntake = new CoralIntake();
+  private final CoralSupersystem m_coral = new CoralSupersystem();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -114,8 +114,9 @@ public class Robot extends TimedRobot {
 
     m_weaponsController
         .a()
-        .whileTrue(m_arm.moveToGoalCommand(new Rotation2d(Units.degreesToRadians(45))));
-    m_weaponsController.y().whileTrue(m_coralIntake.intakeCommand());
+        .whileTrue(m_coral.floorIntake());
+    
+    m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
@@ -138,9 +139,6 @@ public class Robot extends TimedRobot {
             () -> m_fieldRelative));
 
     m_algae.setDefaultCommand(m_algae.stopCommand());
-
-    m_arm.setDefaultCommand(m_arm.stopCommand());
-    m_coralIntake.setDefaultCommand(m_coralIntake.stopCommand());
   }
 
   /**

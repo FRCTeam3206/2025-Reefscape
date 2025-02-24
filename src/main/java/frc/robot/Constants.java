@@ -232,8 +232,8 @@ public final class Constants {
 
     public static final class Angles {
       public static final double kHorizontal = Math.PI;
-      public static final double kStored = Math.PI / 2;
-      public static final double kFloorIntake = 4.10; // This is a guess.
+      public static final double kStored = 1.6; // Works in real life.
+      public static final double kFloorIntake = 3.4; // Works in real life.
       public static final double kFeeder = 2.30; // This is a guess.
       public static final double kReefL1 = 3.0; // This is a guess.
       public static final double kReefL2 = 2.10; // This is a guess.
@@ -351,9 +351,13 @@ public final class Constants {
   public static final class WristConstants {
     public static final int kCANId = 24;
     public static final double kHorizontalPosition = Math.PI;
-    public static final double kVerticalPosition = Math.PI / 2;
+    public static final double kVerticalPosition = 3 * Math.PI / 2;
 
     public static final double kAtAngleTolerance = 0.05;
+
+    public static final double kP = 0.125;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
   }
 
   public static final class PathingConstants {
@@ -420,15 +424,15 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
-    public static final double kMaxVelocity = 1;
-    public static final double kMaxAcceleration = 1;
+    public static final double kMaxVelocity = 8;
+    public static final double kMaxAcceleration = 8;
 
     public static final double kS = 0.0;
-    public static final double kG = 0.5;
-    public static final double kV = 0.1;
+    public static final double kG = 1;
+    public static final double kV = 0.0;
     public static final double kA = 0.0;
 
-    public static final double kP = 2;
+    public static final double kP = 8;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
