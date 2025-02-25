@@ -190,6 +190,7 @@ public final class Constants {
 
     public static final double kIntakeSpeed = .5;
     public static final double kExtakeSpeed = -0.5;
+    public static final double kHoldPercentSpeed = -.0125;
 
     public static final double kRetractSpeed = -0.6;
     public static final double kExtendSpeed = 0.05;
@@ -295,9 +296,9 @@ public final class Constants {
       // Static gain (volts)
       public static final double Ks = 0;
       // Gravity gain (volts)
-      public static final double Kg = 0.762;
+      public static final double Kg = 0.5;
       // Velocity gain (volts per m/s)
-      public static final double Kv = 0.762;
+      public static final double Kv = 0;
       // Acceleration gain (volts per m/s^2)
       public static final double Ka = 0;
     }
@@ -438,6 +439,29 @@ public final class Constants {
 
     public static final double kMaxAngle = Units.degreesToRadians(150);
     public static final double kMinAngle = Units.degreesToRadians(30);
+
+    public static final double kArmReduction = 25;
+    public static final double kArmPivotHeight = Units.inchesToMeters(10.5);
+    public static final double kArmLength = Units.inchesToMeters(13.5);
+    public static final double kArmMass = 2.78; // kg
+    public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
+  }
+
+  public static class ElevatorSubConstants {
+    public static final double kMaxVelocity = 1;
+    public static final double kMaxAcceleration = 1;
+
+    public static final double kS = 0.0;
+    public static final double kG = 1;
+    public static final double kV = 0.0;
+    public static final double kA = 0.0;
+
+    public static final double kP = 8;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
+    public static final double kMaxHeight = 1;
+    public static final double kMinHeight = 0;
 
     public static final double kArmReduction = 25;
     public static final double kArmPivotHeight = Units.inchesToMeters(10.5);

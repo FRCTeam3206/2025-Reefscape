@@ -1,281 +1,259 @@
-/**
- * @fileoverview the elevator, it has 1 motor
- */
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-// Also credit to this repo here most of it is copied n pasted from this
-// https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/elevatorsimulation/subsystems/Elevator.java
-
 package frc.robot.subsystems;
 
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.GameConstants;
+import frc.robot.Constants.ElevatorSubConstants;
+import java.util.function.DoubleSupplier;
+
+/* Follower
+
+ * Voltage command
+*/
 
 @Logged
-public final class Elevator extends SubsystemBase implements AutoCloseable {
-  // This gearbox represents a gearbox containing 4 Vex 775pro motors.
-  private final DCMotor m_elevatorGearbox =
-      DCMotor.getNEO(ElevatorConstants.Motor.kHowManyInGearbox);
-
-  /**
-   * Elevator motor module uses a conversion factor of {@link
-   * ElevatorConstants.Measurements#kDrumRadius}. PID/encoder use meters instead of rotations.
-   */
-  private final SparkMax m_motor =
+public class Elevator extends SubsystemBase {
+  private double simVoltage = 0;
+  private final SparkMax m_max =
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
-
-  private final SparkMax m_motor2 =
+  private final SparkMax m_max2 =
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
-  private final SparkAbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
-  private final SparkClosedLoopController m_closedLoopController =
-      m_motor.getClosedLoopController();
+  private final RelativeEncoder m_encoder = m_max.getEncoder();
 
-  private final ElevatorFeedforward m_feedForward =
-      new ElevatorFeedforward(
-          ElevatorConstants.FeedForward.Ks,
-          ElevatorConstants.FeedForward.Kg,
-          ElevatorConstants.FeedForward.Kv,
-          ElevatorConstants.FeedForward.Ka);
+  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
-  // Sim classes
-  private final SparkMaxSim m_motorSim = new SparkMaxSim(m_motor, m_elevatorGearbox);
-  private final SparkAbsoluteEncoderSim m_encoderSim = new SparkAbsoluteEncoderSim(m_motor);
+  private final TrapezoidProfile profile =
+      new TrapezoidProfile(
+          new TrapezoidProfile.Constraints(
+              ElevatorSubConstants.kMaxVelocity, ElevatorSubConstants.kMaxAcceleration));
 
-  private final PIDController m_pid = new PIDController(10, 2.5, 0);
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(0, 0, 0, 0);
+  double ff = 0.0;
 
-  // Simulation classes help us simulate what's going on, including gravity.
-  // Tentative values for all from CAD. drumRadiusMeters/minmax height is off.
-  private final ElevatorSim m_elevatorSim =
-      // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/simulation/ElevatorSim.html
-      new ElevatorSim(
-          m_elevatorGearbox,
-          ElevatorConstants.Measurements.kGearing,
-          ElevatorConstants.kWeight,
-          ElevatorConstants.Measurements.kDrumRadius,
-          ElevatorConstants.Measurements.kBottomHeight,
-          ElevatorConstants.Measurements.kTopHeight,
-          true,
-          ElevatorConstants.Measurements.kBottomHeight,
-          ElevatorConstants.Measurements.kStandardDeviation);
+  private final PIDController feedback =
+      new PIDController(ElevatorSubConstants.kP, 0, ElevatorSubConstants.kD);
+  double fb = 0.0;
 
-  // Create a Mechanism2d visualization of the elevator
-  private final Mechanism2d m_mech2d =
-      new Mechanism2d(ElevatorConstants.Mechanism2d.kWidth, ElevatorConstants.Mechanism2d.kHeight);
-  private final MechanismRoot2d m_mech2dRoot =
-      m_mech2d.getRoot(
-          "Elevator Root",
-          ElevatorConstants.Mechanism2d.kXDistance,
-          ElevatorConstants.Mechanism2d.kYDistance);
-  private final MechanismLigament2d m_elevatorMech2d =
-      m_mech2dRoot.append(
-          new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
+  // Simulation
+  // private final DCMotor m_armGearbox = DCMotor.getNEO(1);
+  // private final SparkMaxSim m_maxSim = new SparkMaxSim(m_max, m_armGearbox);
+  // private final SparkAbsoluteEncoderSim m_encoderSim = m_maxSim.getAbsoluteEncoderSim();
 
-  // nowhere, up, or down
-  private ElevatorConstants.WaysItCanMove wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-  // stores what reachGoal() was called with last time
-  private double lastGoal = 0;
+  // private final SingleJointedArmSim m_armSim =
+  //     new SingleJointedArmSim(
+  //         m_armGearbox,
+  //         ElevatorSubConstants.kArmReduction,
+  //         ElevatorSubConstants.kArmMOI,
+  //         ElevatorSubConstants.kArmLength,
+  //         -Math.PI / 6,
+  //         Math.PI / 2 - 0.1,
+  //         true,
+  //         0);
 
-  /** Subsystem constructor. */
+  // private final Mechanism2d mech2d =
+  //     new Mechanism2d(3 * ElevatorSubConstants.kArmLength, 3 * ElevatorSubConstants.kArmLength);
+
+  // private final MechanismRoot2d mechArmPivot =
+  //     mech2d.getRoot("Pivot", 1.5 * ElevatorSubConstants.kArmLength,
+  // ElevatorSubConstants.kArmPivotHeight);
+
+  // private final MechanismLigament2d mechArmTower =
+  //     mechArmPivot.append(
+  //         new MechanismLigament2d(
+  //             "Elevator", 1.5 * ElevatorSubConstants.kArmLength, -90, 12, new
+  // Color8Bit(Color.kBlue)));
+
+  // private final MechanismLigament2d mechArm =
+  //     mechArmPivot.append(
+  //         new MechanismLigament2d(
+  //             "Arm",
+  //             ElevatorSubConstants.kArmLength,
+  //             Units.radiansToDegrees(m_armSim.getAngleRads()),
+  //             6,
+  //             new Color8Bit(Color.kYellow)));
+
   public Elevator() {
-    // Publish Mechanism2d to SmartDashboard
-    // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
-    SmartDashboard.putData("Elevator Sim", m_mech2d);
-
-    m_motor.configure(
+    m_max.configure(
         Configs.ElevatorConfigs.elevatorConfig,
         ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
-  }
-
-  /** Advance the simulation. */
-  public void simulationPeriodic() {
-    // This is a variable so it doesn't have to be called too often
-    double currentPosition = m_elevatorSim.getPositionMeters();
-    // once its past the "slow down distance", how close it is to the goal
-    // 0.1 is very close, 0 means its right at that distance, bigger than
-    // 0.1 means it's not time to slow down yet
-    double percentUntilStop =
-        Math.abs(currentPosition - lastGoal) / ElevatorConstants.Measurements.kSlowDownDistance;
-    // In this method, we update our simulation of what our elevator is doing
-    // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-
-    if (Math.random() < 0.001) {
-      reachGoal(Math.random() * ElevatorConstants.Measurements.kTopHeight);
-    }
-
-    // Next, we update it. The standard loop time is 20ms.
-    m_elevatorSim.update(ElevatorConstants.kUpdateFrequency);
-
-    // Required to keep a SparkMax working
-    m_motorSim.iterate(
-        m_elevatorSim.getVelocityMetersPerSecond(),
-        RobotController.getBatteryVoltage(),
-        ElevatorConstants.kUpdateFrequency);
-
-    SmartDashboard.putNumber("percent till stop distance", percentUntilStop);
-
-    if (lastGoal > currentPosition) {
-      wheresItGoin = ElevatorConstants.WaysItCanMove.up;
-    } else if (lastGoal < currentPosition) {
-      wheresItGoin = ElevatorConstants.WaysItCanMove.down;
-    }
-
-    SmartDashboard.putNumber("Motor output", m_motorSim.getAppliedOutput());
-    SmartDashboard.putNumber("Position meters", currentPosition);
-    SmartDashboard.putNumber("Goal", lastGoal);
-    SmartDashboard.putString("Movement", wheresItGoin.toString());
-
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_encoderSim.setPosition(currentPosition);
-
-    // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
-
-    updateTelemetry();
-  }
-
-  /**
-   * Goes to a place in meters
-   *
-   * @param goal where 2 go
-   * @throws Error if the goal is bigger than max height plus arm height or less than 0
-   */
-  public void reachGoal(double goal) {
-    // Error handling
-    // if (goal > ElevatorConstants.Measurements.kTopHeight + ArmConstants.kHeight
-    //     || goal < ElevatorConstants.Measurements.kBottomHeight) {
-    //   throw new Error(
-    //       "Goal is out of range! Should be between"
-    //           + ElevatorConstants.Measurements.kTopHeight
-    //           + ArmConstants.kHeight
-    //           + "and "
-    //           + ElevatorConstants.Measurements.kBottomHeight
-    //           + " meters. Attempted goal: "
-    //           + goal);
-    // }
-    // record of where it was goin last time
-    lastGoal = goal;
-    m_closedLoopController.setReference(
-        m_pid.calculate(m_elevatorSim.getPositionMeters(), goal), ControlType.kPosition);
-  }
-
-  /**
-   * Stop the control loop and motor output. WARNING if you called a method before it will stop in
-   * the middle.
-   */
-  public Command stop() {
-    return this.runOnce(
-        () -> {
-          wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-          SmartDashboard.putString("Movement", wheresItGoin.toString());
-          m_closedLoopController.setReference(0, ControlType.kMAXMotionPositionControl);
-          m_motor.set(0.0);
-          m_motor.stopMotor();
-        });
-  }
-
-  /** makes it stop but a void and no command TODO better name */
-  public void stopButNotCommand() {
-    wheresItGoin = ElevatorConstants.WaysItCanMove.nowhere;
-    SmartDashboard.putString("Movement", wheresItGoin.toString());
-    m_closedLoopController.setReference(0, ControlType.kMAXMotionPositionControl);
-    m_motor.set(0.0);
-    m_motor.stopMotor();
-  }
-
-  /**
-   * GO to branch
-   *
-   * @param level which branch
-   */
-  public Command toBranch(GameConstants.ReefLevels level) {
-    return this.runOnce(
-        () -> {
-          switch (level) {
-            case l1:
-              {
-                reachGoal(GameConstants.Positions.kReefL1);
-                break;
-              }
-            case l2:
-              {
-                reachGoal(GameConstants.Positions.kReefL2);
-                break;
-              }
-            case l3:
-              {
-                reachGoal(GameConstants.Positions.kReefL3);
-                break;
-              }
-            case l4:
-              {
-                reachGoal(GameConstants.Positions.kReefL4);
-                break;
-              }
-          }
-        });
-  }
-
-  /** go to the bottomish */
-  public Command toFloorIntake() {
-    return this.runOnce(() -> reachGoal(GameConstants.Positions.kFloorIntake));
-  }
-
-  /** go to human coral putting station */
-  public Command toFeeder() {
-    return this.runOnce(() -> reachGoal(GameConstants.Positions.kFeeder));
-  }
-
-  public Command toStored() {
-    return this.runOnce(() -> reachGoal(GameConstants.Positions.kCoralStorage));
-  }
-
-  /** go to elevator upper limit */
-  public Command toTop() {
-    return this.runOnce(() -> reachGoal(ElevatorConstants.Measurements.kTopHeight));
-  }
-
-  /** go to elevator lower limit */
-  public Command toBottom() {
-    return this.runOnce(() -> reachGoal(ElevatorConstants.Measurements.kBottomHeight));
-  }
-
-  /** Update telemetry, including the mechanism visualization. */
-  public void updateTelemetry() {
-    // Update elevator visualization with position
-    m_elevatorMech2d.setLength(m_encoder.getPosition());
+    m_max2.configure(
+        Configs.ElevatorConfigs.elevatorConfig2,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    // SmartDashboard.putData("Arm", mech2d);
   }
 
   @Override
-  public void close() {
-    m_motor.close();
-    m_mech2d.close();
+  public void periodic() {
+    super.periodic();
   }
+
+  // @Override
+  // public void simulationPeriodic() {
+  //   super.simulationPeriodic();
+  //   simVoltage = RoboRioSim.getVInVoltage();
+
+  //   m_armSim.setInputVoltage(m_maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+  //   m_armSim.update(0.02);
+
+  //   m_maxSim.iterate(
+  //       m_armSim.getVelocityRadPerSec() * 60 / (2 * Math.PI), RoboRioSim.getVInVoltage(), 0.02);
+  //   m_encoderSim.iterate(
+  //       m_armSim.getVelocityRadPerSec() * 60 / (2 * Math.PI) /
+  // ElevatorSubConstants.kArmReduction, 0.02);
+
+  //   RoboRioSim.setVInVoltage(
+  //       BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
+
+  //   mechArm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
+  // }
+
+  public Rotation2d getAngle() {
+    // if (Robot.isSimulation()) {
+    //   return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
+    // }
+    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+  }
+
+  public double getVelocity() {
+    return m_encoder.getVelocity();
+  }
+
+  public double getAppliedVoltage() {
+    return m_max.getAppliedOutput() * m_max.getBusVoltage();
+  }
+
+  public double getCurrent() {
+    return m_max.getOutputCurrent();
+  }
+
+  public double getSetPoint() {
+    return setpoint.position;
+  }
+
+  public double getGoal() {
+    return goal.position;
+  }
+
+  // public double getArmSimAngle() {
+  //   return m_armSim.getAngleRads();
+  // }
+
+  // public double getArmSimVelocity() {
+  //   return m_armSim.getVelocityRadPerSec();
+  // }
+
+  public Command setVoltage(DoubleSupplier volts) {
+    return run(() -> m_max.setVoltage(6 * volts.getAsDouble()));
+  }
+
+  public void moveToGoal(Rotation2d goal) {
+    this.goal = new TrapezoidProfile.State(goal.getRadians(), 0);
+    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    fb = feedback.calculate(getAngle().getRadians(), setpoint.position);
+
+    m_max.setVoltage(fb + ff);
+  }
+
+  /**
+   * Returns true when the arm is at its current goal and not moving. Tolerances for position and
+   * velocity are set in ArmConstants.
+   *
+   * @return at goal and not moving
+   */
+  public boolean atGoal(double goal) {
+    return Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    // return MathUtil.isNear(
+    //         this.goal.position,
+    //         getAngle().getRadians(),
+    //         ArmConstants.kAtAngleTolerance,
+    //         0,
+    //         2 * Math.PI)
+    //     && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+  }
+
+  public void stop() {
+    m_max.setVoltage(0);
+  }
+
+  /*
+    public void reset() {
+      setpoint = new TrapezoidProfile.State(getAngle().getRadians(), getVelocity());
+    }
+
+    public Command moveToGoalCommand(Rotation2d goal) {
+      return runOnce(this::reset).andThen(run(() -> moveToGoal(goal)));
+    }
+
+    public Command moveToGoalCommand(double goal) {
+      return moveToGoalCommand(new Rotation2d(goal));
+    }
+
+    public Command moveToGoalAndStopCommand(double goal) {
+      return moveToGoalCommand(goal).until(() -> atGoal(goal));
+    }
+
+    public Command stopCommand() {
+      return this.run(this::stop);
+    }
+
+    public Command toHorizontal() {
+      return moveToGoalCommand(ArmConstants.Angles.kHorizontal);
+    }
+
+    public Command toStored() {
+      return moveToGoalCommand(ArmConstants.Angles.kStored);
+    }
+
+    public Command toFloorIntakeStop() {
+      return moveToGoalAndStopCommand(ArmConstants.Angles.kFloorIntake).andThen(stopCommand());
+          //.until(() -> atGoal())
+          //.andThen(stopCommand());
+    }
+
+    public Command toFeeder() {
+      return moveToGoalCommand(ArmConstants.Angles.kFeeder);
+    }
+
+    public Command toL1() {
+      return moveToGoalCommand(ArmConstants.Angles.kReefL1);
+    }
+
+    public Command toL1Stop() {
+      return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL1);
+    }
+
+    public Command toBranch(GameConstants.ReefLevels level) {
+      double goal = 0.0;
+      switch (level) {
+        case l1:
+          return toL1();
+        case l2:
+          goal = ArmConstants.Angles.kReefL2;
+          break;
+        case l3:
+          goal = ArmConstants.Angles.kReefL3;
+          break;
+        case l4:
+          goal = ArmConstants.Angles.kReefL4;
+          break;
+      }
+      return moveToGoalCommand(goal);
+    }
+  */
 }

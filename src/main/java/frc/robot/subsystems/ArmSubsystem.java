@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -218,8 +217,8 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Command toFloorIntakeStop() {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kFloorIntake).andThen(stopCommand());
-        //.until(() -> atGoal())
-        //.andThen(stopCommand());
+    // .until(() -> atGoal())
+    // .andThen(stopCommand());
   }
 
   public Command toFeeder() {

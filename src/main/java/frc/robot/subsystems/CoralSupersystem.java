@@ -5,7 +5,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.GameConstants;
 
 @Logged
 public class CoralSupersystem {
@@ -14,7 +13,7 @@ public class CoralSupersystem {
    * allows you to run it without stopping once the goal is reached), and then it should continue to
    * maintain this position after the command stops by setting power in periodic accoding to a saved goal.
    */
-  private final Elevator m_elevator = new Elevator();
+  // private final Elevator m_elevator = new Elevator();
   private final ArmSubsystem m_arm = new ArmSubsystem();
   private final Wrist m_wrist = new Wrist();
   private final CoralIntake m_coralOmnis = new CoralIntake();
@@ -35,6 +34,10 @@ public class CoralSupersystem {
     // .until(() -> m_wrist.isVertical().getAsBoolean());
   }
 
+  public Command coralExtakeOverride() {
+    return m_coralOmnis.outakeCommand();
+  }
+
   /**
    * If we're moving the wrist horizontal, it won't hit things, but we might want to make sure it's
    * horizontal before moving the arm.
@@ -53,18 +56,19 @@ public class CoralSupersystem {
 
   /** Move to intake from the floor. */
   public Command positionFloorIntake() {
-    return moveWristHorizontal().andThen(m_elevator.toFloorIntake()).andThen(m_arm.toFloorIntakeStop());
+    return moveWristHorizontal(); // .andThen(m_elevator.toFloorIntake()).andThen(m_arm.toFloorIntakeStop());
   }
 
   /** Move to intake from the feeder station. */
-  public Command positionFeederStation() {
-    return moveWristHorizontal().andThen(m_elevator.toFeeder().alongWith(m_arm.toFeeder()));
-  }
+  // public Command positionFeederStation() {
+  //   return moveWristHorizontal().andThen(m_elevator.toFeeder().alongWith(m_arm.toFeeder()));
+  // }
 
-  /** Position to place coral on any level, including 1. */
-  public Command positionReef(GameConstants.ReefLevels level) {
-    return moveWristVertical().andThen(m_elevator.toBranch(level).andThen(m_arm.toBranch(level)));
-  }
+  // /** Position to place coral on any level, including 1. */
+  // public Command positionReef(GameConstants.ReefLevels level) {
+  //   return
+  // moveWristVertical().andThen(m_elevator.toBranch(level).andThen(m_arm.toBranch(level)));
+  // }
 
   public Command floorIntake() {
     return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeCommand());
@@ -79,13 +83,13 @@ public class CoralSupersystem {
     return m_arm.toL1Stop().andThen(m_arm.toL1().alongWith(m_coralOmnis.outakeCommand()));
   }
 
-  public Command feederStation() {
-    return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccessCommand());
-  }
+  // public Command feederStation() {
+  //   return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccessCommand());
+  // }
 
-  public Command scoreCoral(GameConstants.ReefLevels level) {
-    return positionReef(level).andThen(m_coralOmnis.scoreCommand());
-  }
+  // public Command scoreCoral(GameConstants.ReefLevels level) {
+  //   return positionReef(level).andThen(m_coralOmnis.scoreCommand());
+  // }
 
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;

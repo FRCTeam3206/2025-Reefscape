@@ -32,6 +32,7 @@ import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -50,6 +51,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
   private final CoralSupersystem m_coral = new CoralSupersystem();
+  private final Elevator m_elevator = new Elevator();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -98,7 +100,8 @@ public class Robot extends TimedRobot {
    */
   private void configureButtonBindings() {
     m_weaponsController.x().whileTrue(m_robotDrive.setXCommand());
-    m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
+    // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
+    // !m_fieldRelative));
     // m_weaponsController
     //     .a()
     //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
@@ -110,9 +113,9 @@ public class Robot extends TimedRobot {
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
-
     m_weaponsController.b().whileTrue(m_coral.floorExtake());
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
     // m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
@@ -137,6 +140,7 @@ public class Robot extends TimedRobot {
             () -> m_fieldRelative));
 
     m_algae.setDefaultCommand(m_algae.stopCommand());
+    m_elevator.setDefaultCommand(m_elevator.setVoltage(m_weaponsController::getLeftY));
   }
 
   /**

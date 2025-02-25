@@ -40,6 +40,10 @@ public class Algae extends SubsystemBase {
     return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kExtakeSpeed));
   }
 
+  public Command holdPositionCommand() {
+    return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kHoldPercentSpeed));
+  }
+
   public Command stopIntakeCommand() {
     return this.run(() -> m_wheelsMotor.set(0));
   }
@@ -70,6 +74,14 @@ public class Algae extends SubsystemBase {
           m_armMotor.set(0);
           m_wheelsMotor.set(0);
         });
+  }
+
+  public double getCurrentArm() {
+    return m_armMotor.getOutputCurrent();
+  }
+
+  public double getVoltageArm() {
+    return m_armMotor.getAppliedOutput() * m_armMotor.getBusVoltage();
   }
 
   // public double getArmAngle() {
