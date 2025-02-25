@@ -18,11 +18,6 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import java.util.function.DoubleSupplier;
 
-/* Follower
-
- * Voltage command
-*/
-
 @Logged
 public class Elevator extends SubsystemBase {
   private double simVoltage = 0;

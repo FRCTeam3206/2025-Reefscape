@@ -99,25 +99,25 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_weaponsController.x().whileTrue(m_robotDrive.setXCommand());
+    m_driverController.button(1).whileTrue(m_robotDrive.setXCommand());
     // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
     // !m_fieldRelative));
     // m_weaponsController
     //     .a()
     //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
 
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    m_weaponsController.b().whileTrue(m_coral.floorExtake());
-    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    //m_weaponsController.a().whileTrue(m_coral.floorIntake());
+    //m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    //m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    // m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
+    m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));

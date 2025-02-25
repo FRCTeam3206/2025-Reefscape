@@ -351,7 +351,7 @@ public final class Constants {
 
   public static final class WristConstants {
     public static final int kCANId = 24;
-    public static final double kHorizontalPosition = Math.PI;
+    public static final double kHorizontalPosition = 3.25;
     public static final double kVerticalPosition = 3 * Math.PI / 2;
 
     public static final double kAtAngleTolerance = 0.05;
