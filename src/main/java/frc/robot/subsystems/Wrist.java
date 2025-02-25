@@ -41,6 +41,14 @@ public class Wrist extends SubsystemBase {
     return this.run(() -> m_goalHorizontal = true);
   }
 
+  public Command toVerticalStop() {
+    return toVerticalContinuous().until(() -> isVertical().getAsBoolean());
+  }
+
+  public Command toHorizontalStop() {
+    return toHorizontalContinuous().until(() -> isHorizontal().getAsBoolean());
+  }
+
   public double getAngle() {
     return m_encoder.getPosition();
   }

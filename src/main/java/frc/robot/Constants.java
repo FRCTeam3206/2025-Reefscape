@@ -190,7 +190,7 @@ public final class Constants {
 
     public static final double kIntakeSpeed = .5;
     public static final double kExtakeSpeed = -0.5;
-    public static final double kHoldPercentSpeed = -.0125;
+    public static final double kHoldVoltage = -.2;
 
     public static final double kRetractSpeed = -0.6;
     public static final double kExtendSpeed = 0.05;
@@ -237,7 +237,7 @@ public final class Constants {
       public static final double kFloorIntake = 3.4; // Works in real life.
       public static final double kFeeder = 2.30; // This is a guess.
       public static final double kReefL1 = 2.3; // This is a guess.
-      public static final double kReefL2 = 2.10; // This is a guess.
+      public static final double kReefL2 = 2.3; // This is a guess.
       public static final double kReefL3 = kReefL2;
       public static final double kReefL4 = 2.50;
     }
@@ -354,7 +354,7 @@ public final class Constants {
     public static final double kHorizontalPosition = 3.25;
     public static final double kVerticalPosition = 3 * Math.PI / 2;
 
-    public static final double kAtAngleTolerance = 0.05;
+    public static final double kAtAngleTolerance = 0.1;
 
     public static final double kP = 0.125;
     public static final double kI = 0.0;

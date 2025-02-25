@@ -19,8 +19,8 @@ public class CoralSupersystem {
   private final CoralIntake m_coralOmnis = new CoralIntake();
 
   public CoralSupersystem() {
-    m_arm.setDefaultCommand(m_arm.moveToGoalCommand(3));
-    //m_arm.setDefaultCommand(m_arm.toStored());
+    //m_arm.setDefaultCommand(m_arm.moveToGoalCommand(3));
+    m_arm.setDefaultCommand(m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
   }
@@ -49,7 +49,7 @@ public class CoralSupersystem {
 
   /** Move the arm, wrist, and elevator so that the mechanism is in the stored position. */
   public Command positionStore() {
-    return m_arm.toStored().alongWith(m_coralOmnis.stopCommand());
+    return m_wrist.toHorizontalStop().andThen(m_arm.toStored().alongWith(m_coralOmnis.stopCommand()));
     // return moveWristHorizontal()
     // .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
     // .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
@@ -82,6 +82,10 @@ public class CoralSupersystem {
 
   public Command placeLevelOne() {
     return m_arm.toL1Stop().andThen(m_arm.toL1().alongWith(m_coralOmnis.outakeCommand()));
+  }
+
+  public Command armWristL2L3() {
+    return moveWristHorizontal().andThen(m_arm.toL2L3Stop()).andThen(m_arm.toL2L3().raceWith(m_wrist.toVerticalStop())).andThen(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()));
   }
 
   // public Command feederStation() {

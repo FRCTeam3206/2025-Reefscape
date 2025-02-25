@@ -41,7 +41,7 @@ public class Algae extends SubsystemBase {
   }
 
   public Command holdPositionCommand() {
-    return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kHoldPercentSpeed));
+    return this.run(() -> m_armMotor.setVoltage(AlgaeConstants.kHoldVoltage));
   }
 
   public Command stopIntakeCommand() {

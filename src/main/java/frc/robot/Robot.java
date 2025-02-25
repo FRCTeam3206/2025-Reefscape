@@ -112,9 +112,10 @@ public class Robot extends TimedRobot {
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    //m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    //m_weaponsController.b().whileTrue(m_coral.floorExtake());
-    //m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.a().whileTrue(m_coral.floorIntake());
+    m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
     m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
@@ -139,7 +140,7 @@ public class Robot extends TimedRobot {
             adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
             () -> m_fieldRelative));
 
-    m_algae.setDefaultCommand(m_algae.stopCommand());
+    m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     m_elevator.setDefaultCommand(m_elevator.setVoltage(m_weaponsController::getLeftY));
   }
 

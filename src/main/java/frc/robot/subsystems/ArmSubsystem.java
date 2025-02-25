@@ -233,6 +233,14 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL1);
   }
 
+  public Command toL2L3() {
+    return moveToGoalCommand(ArmConstants.Angles.kReefL2);
+  }
+
+  public Command toL2L3Stop() {
+    return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL2);
+  }
+
   public Command toBranch(GameConstants.ReefLevels level) {
     double goal = 0.0;
     switch (level) {
