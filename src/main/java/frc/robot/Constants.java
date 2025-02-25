@@ -235,7 +235,7 @@ public final class Constants {
       public static final double kStored = 1.6; // Works in real life.
       public static final double kFloorIntake = 3.4; // Works in real life.
       public static final double kFeeder = 2.30; // This is a guess.
-      public static final double kReefL1 = 3.0; // This is a guess.
+      public static final double kReefL1 = 2.3; // This is a guess.
       public static final double kReefL2 = 2.10; // This is a guess.
       public static final double kReefL3 = kReefL2;
       public static final double kReefL4 = 2.50;

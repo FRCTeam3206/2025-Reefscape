@@ -20,8 +20,7 @@ public class CoralSupersystem {
   private final CoralIntake m_coralOmnis = new CoralIntake();
 
   public CoralSupersystem() {
-    //m_arm.setDefaultCommand(m_arm.toStored());
-    m_arm.setDefaultCommand(m_arm.moveToGoalCommand(Math.PI));
+    m_arm.setDefaultCommand(m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
   }
@@ -33,7 +32,7 @@ public class CoralSupersystem {
   public Command moveWristVertical() {
     return m_wrist.toVerticalContinuous();
     // return (m_arm.toHorizontal().andThen(m_wrist.toVerticalContinuous()))
-        // .until(() -> m_wrist.isVertical().getAsBoolean());
+    // .until(() -> m_wrist.isVertical().getAsBoolean());
   }
 
   /**
@@ -48,13 +47,13 @@ public class CoralSupersystem {
   public Command positionStore() {
     return m_arm.toStored().alongWith(m_coralOmnis.stopCommand());
     // return moveWristHorizontal()
-        // .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
-        // .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
+    // .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
+    // .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
   }
 
   /** Move to intake from the floor. */
   public Command positionFloorIntake() {
-    return moveWristHorizontal().andThen(m_elevator.toFloorIntake()).andThen(m_arm.toFloorIntake());
+    return moveWristHorizontal().andThen(m_elevator.toFloorIntake()).andThen(m_arm.toFloorIntakeStop());
   }
 
   /** Move to intake from the feeder station. */
@@ -68,8 +67,16 @@ public class CoralSupersystem {
   }
 
   public Command floorIntake() {
-    return m_arm.toFloorIntake().alongWith(m_coralOmnis.intakeCommand());
+    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeCommand());
     // return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
+  }
+
+  public Command floorExtake() {
+    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand());
+  }
+
+  public Command placeLevelOne() {
+    return m_arm.toL1Stop().andThen(m_arm.toL1().alongWith(m_coralOmnis.outakeCommand()));
   }
 
   public Command feederStation() {

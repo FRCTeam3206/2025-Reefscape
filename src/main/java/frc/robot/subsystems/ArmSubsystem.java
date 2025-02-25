@@ -65,8 +65,8 @@ public class ArmSubsystem extends SubsystemBase {
           ArmSubConstants.kArmReduction,
           ArmSubConstants.kArmMOI,
           ArmSubConstants.kArmLength,
-          -Math.PI/6,
-          Math.PI/2-0.1,
+          -Math.PI / 6,
+          Math.PI / 2 - 0.1,
           true,
           0);
 
@@ -112,8 +112,10 @@ public class ArmSubsystem extends SubsystemBase {
     m_armSim.setInputVoltage(m_maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     m_armSim.update(0.02);
 
-    m_maxSim.iterate(m_armSim.getVelocityRadPerSec()*60/(2*Math.PI), RoboRioSim.getVInVoltage(), 0.02);
-    m_encoderSim.iterate(m_armSim.getVelocityRadPerSec()*60/(2*Math.PI)/ArmSubConstants.kArmReduction, 0.02);
+    m_maxSim.iterate(
+        m_armSim.getVelocityRadPerSec() * 60 / (2 * Math.PI), RoboRioSim.getVInVoltage(), 0.02);
+    m_encoderSim.iterate(
+        m_armSim.getVelocityRadPerSec() * 60 / (2 * Math.PI) / ArmSubConstants.kArmReduction, 0.02);
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
@@ -167,14 +169,19 @@ public class ArmSubsystem extends SubsystemBase {
 
   /**
    * Returns true when the arm is at its current goal and not moving. Tolerances for position and
-   * velocity are set in ArmConnstants.
+   * velocity are set in ArmConstants.
    *
    * @return at goal and not moving
    */
-  public boolean atGoal() {
-    return MathUtil.isNear(
-            this.goal.position, getAngle().getRadians(), ArmConstants.kAtAngleTolerance, 0, 2 * Math.PI)
-        && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+  public boolean atGoal(double goal) {
+    return Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    // return MathUtil.isNear(
+    //         this.goal.position,
+    //         getAngle().getRadians(),
+    //         ArmConstants.kAtAngleTolerance,
+    //         0,
+    //         2 * Math.PI)
+    //     && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
   }
 
   public void stop() {
@@ -193,6 +200,10 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalCommand(new Rotation2d(goal));
   }
 
+  public Command moveToGoalAndStopCommand(double goal) {
+    return moveToGoalCommand(goal).until(() -> atGoal(goal));
+  }
+
   public Command stopCommand() {
     return this.run(this::stop);
   }
@@ -205,20 +216,29 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalCommand(ArmConstants.Angles.kStored);
   }
 
-  public Command toFloorIntake() {
-    return moveToGoalCommand(ArmConstants.Angles.kFloorIntake).until(() -> atGoal()).andThen(stopCommand());
+  public Command toFloorIntakeStop() {
+    return moveToGoalAndStopCommand(ArmConstants.Angles.kFloorIntake).andThen(stopCommand());
+        //.until(() -> atGoal())
+        //.andThen(stopCommand());
   }
 
   public Command toFeeder() {
     return moveToGoalCommand(ArmConstants.Angles.kFeeder);
   }
 
+  public Command toL1() {
+    return moveToGoalCommand(ArmConstants.Angles.kReefL1);
+  }
+
+  public Command toL1Stop() {
+    return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL1);
+  }
+
   public Command toBranch(GameConstants.ReefLevels level) {
     double goal = 0.0;
     switch (level) {
       case l1:
-        goal = ArmConstants.Angles.kReefL1;
-        break;
+        return toL1();
       case l2:
         goal = ArmConstants.Angles.kReefL2;
         break;
