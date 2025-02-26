@@ -240,6 +240,7 @@ public final class Constants {
       public static final double kReefL2 = 2.3; // This is a guess.
       public static final double kReefL3 = kReefL2;
       public static final double kReefL4 = 2.50;
+      public static final double kSafePosition = 1.80;
     }
   }
 
@@ -473,5 +474,7 @@ public final class Constants {
     public static final double kL2Pos = .78;
     public static final double kL3Pos = 1.46;
     public static final double kL4Pos = 2.5;
+
+    public static final double kAtGoalTolerance = 0.04;
   }
 }

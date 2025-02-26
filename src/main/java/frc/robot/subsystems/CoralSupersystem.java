@@ -25,7 +25,7 @@ public class CoralSupersystem {
     m_arm.setDefaultCommand(m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
-    m_elevator.setDefaultCommand(m_elevator.stopCommand());
+    m_elevator.setDefaultCommand(m_elevator.defaultCommand(() -> m_arm.isSafe()));
   }
 
   /**
@@ -113,7 +113,8 @@ public class CoralSupersystem {
   }
 
   public Command scoreToBranchCommand(ReefLevels level) {
-    return safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
+    return safeArm().andThen(m_elevator.toBranchStop(level)).andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()));
+    // return safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
 
   // public Command scoreL2Command() {

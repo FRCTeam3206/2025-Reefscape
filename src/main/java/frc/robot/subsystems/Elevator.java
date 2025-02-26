@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.GameConstants;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 @Logged
@@ -179,18 +181,22 @@ public class Elevator extends SubsystemBase {
   public Command moveToGoalCommand(double goal) {
     return run(() -> moveToGoal(goal));
   }
-
-  public Command moveToLevelCommand(double goal) {
-    return (stopCommand().until(() -> canMoveElevator())).andThen(moveToGoalCommand(goal));
+  
+  public Command moveToGoalAndStopCommand(double goal) {
+    return moveToGoalCommand(goal).until(() -> atGoal(goal));
   }
 
-  public boolean canMoveElevator() {
-    return getPosition() < 0.005 && getVelocity() == 0;
-  }
+  // public Command moveToLevelCommand(double goal) {
+  //   return moveToGoalCommand(goal);
+  // }
 
-  public Command stayAtLevelCommand(double goal) {
-    return moveToGoalCommand(goal);
-  }
+  // public boolean canMoveElevator() {
+  //   return getPosition() < 0.005 && getVelocity() == 0;
+  // }
+
+  // public Command stayAtLevelCommand(double goal) {
+  //   return moveToGoalCommand(goal);
+  // }
 
   // public Command moveToL2Command() {
   //   return moveToLevelCommand(ElevatorSubConstants.kL2Pos);
@@ -257,10 +263,10 @@ public class Elevator extends SubsystemBase {
         goal = ElevatorSubConstants.kL4Pos;
         break;
     }
-    return moveToLevelCommand(goal);
+    return moveToGoalCommand(goal);
   }
 
-  public Command stayAtBranch(GameConstants.ReefLevels level) {
+  public Command toBranchStop(GameConstants.ReefLevels level) {
     double goal = 0.0;
     switch (level) {
       case l1:
@@ -274,11 +280,45 @@ public class Elevator extends SubsystemBase {
       case l4:
         goal = ElevatorSubConstants.kL4Pos;
         break;
-      default:
-        return stopCommand();
     }
-    return stayAtLevelCommand(goal);
+    return moveToGoalAndStopCommand(goal);
   }
+
+  public boolean atGoal(double goal) {
+    return MathUtil.isNear(goal, getPosition(), ElevatorSubConstants.kAtGoalTolerance);//Math.abs(getPosition() - goal) < 
+  }
+
+  public void defaultAction(boolean safeToGoDown) {
+    if (safeToGoDown) {
+      stop();
+    } else {
+      moveToGoal(getPosition());
+    }
+  }
+
+  public Command defaultCommand(BooleanSupplier safeToGoDown) {
+    return run(() -> defaultAction(safeToGoDown.getAsBoolean()));
+  }
+
+  // public Command stayAtBranch(GameConstants.ReefLevels level) {
+  //   double goal = 0.0;
+  //   switch (level) {
+  //     case l1:
+  //       return stopCommand();
+  //     case l2:
+  //       goal = ElevatorSubConstants.kL2Pos;
+  //       break;
+  //     case l3:
+  //       goal = ElevatorSubConstants.kL3Pos;
+  //       break;
+  //     case l4:
+  //       goal = ElevatorSubConstants.kL4Pos;
+  //       break;
+  //     default:
+  //       return stopCommand();
+  //   }
+  //   return stayAtLevelCommand(goal);
+  // }
 
   /*
     public void reset() {
