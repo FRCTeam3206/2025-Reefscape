@@ -166,7 +166,7 @@ public final class Configs {
       double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
 
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
-      // elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
+      elevatorConfig.alternateEncoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop
       //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)

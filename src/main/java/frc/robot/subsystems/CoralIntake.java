@@ -33,9 +33,9 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /**
-   * makes the finger turn to go away
+   * Sets the position of the finger
    *
-   * @param retained if true it'll block the pipe, if false it'll free it
+   * @param retained if true it will block the pipe, if false it will free it
    */
   public Command changeFinger(boolean retained) {
     return this.runOnce(
@@ -50,6 +50,7 @@ public class CoralIntake extends SubsystemBase {
 
   public void stop() {
     m_wheels.set(0);
+    changeFinger(true);
   }
 
   public Command intakeCommand() {
@@ -66,12 +67,17 @@ public class CoralIntake extends SubsystemBase {
 
   public Command scoreCommand() {
     return this.run(
-            () -> {
-              intake();
-              changeFinger(false);
-            })
-        .until(() -> !m_coralSensor.get())
-        .andThen(this.run(() -> intake()).withTimeout(CoralConstants.kSafeScoreTime));
+        () -> {
+          m_wheels.set(CoralConstants.kScoreSpeed);
+          changeFinger(false);
+        });
+    // return this.run(
+    //         () -> {
+    //           intake();
+    //           changeFinger(false);
+    //         })
+    //     .until(() -> !m_coralSensor.get())
+    //     .andThen(this.run(() -> intake()).withTimeout(CoralConstants.kSafeScoreTime));
   }
 
   public Command outakeCommand() {

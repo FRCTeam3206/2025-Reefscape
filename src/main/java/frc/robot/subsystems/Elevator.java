@@ -25,7 +25,7 @@ public class Elevator extends SubsystemBase {
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
   private final SparkMax m_max2 =
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
-  private final RelativeEncoder m_encoder = m_max.getEncoder();
+  private final RelativeEncoder m_encoder = m_max.getAlternateEncoder();
 
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -35,7 +35,12 @@ public class Elevator extends SubsystemBase {
           new TrapezoidProfile.Constraints(
               ElevatorSubConstants.kMaxVelocity, ElevatorSubConstants.kMaxAcceleration));
 
-  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(0, 0, 0, 0);
+  private final ElevatorFeedforward feedforward =
+      new ElevatorFeedforward(
+          ElevatorSubConstants.kS,
+          ElevatorSubConstants.kG,
+          ElevatorSubConstants.kV,
+          ElevatorSubConstants.kA);
   double ff = 0.0;
 
   private final PIDController feedback =
@@ -90,6 +95,7 @@ public class Elevator extends SubsystemBase {
         ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
     // SmartDashboard.putData("Arm", mech2d);
+    m_encoder.setPosition(0.0);
   }
 
   @Override
@@ -117,11 +123,12 @@ public class Elevator extends SubsystemBase {
   //   mechArm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
   // }
 
-  public Rotation2d getAngle() {
+  public double getPosition() {
+    return m_encoder.getPosition();
     // if (Robot.isSimulation()) {
     //   return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
     // }
-    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+    // return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
   }
 
   public double getVelocity() {
@@ -156,13 +163,29 @@ public class Elevator extends SubsystemBase {
     return run(() -> m_max.setVoltage(6 * volts.getAsDouble()));
   }
 
-  public void moveToGoal(Rotation2d goal) {
-    this.goal = new TrapezoidProfile.State(goal.getRadians(), 0);
+  public void moveToGoal(double goal) {
+    this.goal = new TrapezoidProfile.State(goal, 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
     ff = feedforward.calculate(setpoint.position, setpoint.velocity);
-    fb = feedback.calculate(getAngle().getRadians(), setpoint.position);
+    fb = feedback.calculate(getPosition(), setpoint.position);
 
     m_max.setVoltage(fb + ff);
+  }
+
+  public Command moveToGoalCommand(double goal) {
+    return run(() -> moveToGoal(goal));
+  }
+
+  public Command moveToL2Command() {
+    return moveToGoalCommand(ElevatorSubConstants.kL2Pos);
+  }
+
+  public Command moveToL3Command() {
+    return moveToGoalCommand(ElevatorSubConstants.kL3Pos);
+  }
+
+  public Command moveToL4Command() {
+    return moveToGoalCommand(ElevatorSubConstants.kL4Pos);
   }
 
   /**
@@ -172,7 +195,7 @@ public class Elevator extends SubsystemBase {
    * @return at goal and not moving
    */
   public boolean atGoal(double goal) {
-    return Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    return Math.abs(goal - getPosition()) < ArmConstants.kAtAngleTolerance; // TODO fix
     // return MathUtil.isNear(
     //         this.goal.position,
     //         getAngle().getRadians(),
@@ -184,6 +207,11 @@ public class Elevator extends SubsystemBase {
 
   public void stop() {
     m_max.setVoltage(0);
+    setpoint = new TrapezoidProfile.State();
+  }
+
+  public Command stopCommand() {
+    return this.run(this::stop);
   }
 
   /*
@@ -201,10 +229,6 @@ public class Elevator extends SubsystemBase {
 
     public Command moveToGoalAndStopCommand(double goal) {
       return moveToGoalCommand(goal).until(() -> atGoal(goal));
-    }
-
-    public Command stopCommand() {
-      return this.run(this::stop);
     }
 
     public Command toHorizontal() {

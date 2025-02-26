@@ -51,7 +51,11 @@ public class CoralSupersystem {
   public Command positionStore() {
     return m_wrist
         .toHorizontalStop()
-        .andThen(m_arm.toStored().alongWith(m_coralOmnis.stopCommand()));
+        .andThen(
+            m_arm
+                .toStored()
+                .alongWith(m_coralOmnis.stopCommand())
+                .alongWith(m_wrist.toHorizontalContinuous()));
     // return moveWristHorizontal()
     // .andThen(m_arm.toStored().until(() -> m_arm.aboveHorizontal().getAsBoolean()))
     // .andThen(m_elevator.toStored().alongWith(m_arm.toStored()));
@@ -90,7 +94,11 @@ public class CoralSupersystem {
     return moveWristHorizontal()
         .andThen(m_arm.toL2L3Stop())
         .andThen(m_arm.toL2L3().raceWith(m_wrist.toVerticalStop()))
-        .andThen(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()));
+        .andThen(
+            m_arm
+                .toL2L3()
+                .alongWith(m_wrist.toVerticalContinuous())
+                .alongWith(m_coralOmnis.scoreCommand()));
   }
 
   // public Command feederStation() {

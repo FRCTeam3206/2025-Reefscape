@@ -118,7 +118,9 @@ public class Robot extends TimedRobot {
     m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
+    m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
+
+    // m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
