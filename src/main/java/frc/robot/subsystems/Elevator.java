@@ -177,15 +177,15 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command moveToL2Command() {
-    return moveToGoalCommand(ElevatorSubConstants.kL2Pos);
+    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL2Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL2Pos));
   }
 
   public Command moveToL3Command() {
-    return moveToGoalCommand(ElevatorSubConstants.kL3Pos);
+    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL3Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL3Pos));
   }
 
   public Command moveToL4Command() {
-    return moveToGoalCommand(ElevatorSubConstants.kL4Pos);
+    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL4Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL4Pos));
   }
 
   /**
@@ -194,8 +194,8 @@ public class Elevator extends SubsystemBase {
    *
    * @return at goal and not moving
    */
-  public boolean atGoal(double goal) {
-    return Math.abs(goal - getPosition()) < ArmConstants.kAtAngleTolerance; // TODO fix
+  public boolean lessThan(double goal) {
+    return getPosition() + 0.1 < goal; // TODO fix
     // return MathUtil.isNear(
     //         this.goal.position,
     //         getAngle().getRadians(),

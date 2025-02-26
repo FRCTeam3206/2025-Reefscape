@@ -92,6 +92,10 @@ public class CoralSupersystem {
     return m_arm.toL1Stop().andThen(m_arm.toL1().alongWith(m_coralOmnis.outakeCommand()));
   }
 
+  public Command safeArm() {
+    return moveWristHorizontal().andThen(m_arm.toStoredStop());
+  }
+
   public Command armWristL2L3() {
     return moveWristHorizontal()
         .andThen(m_arm.toL2L3Stop())
@@ -108,7 +112,15 @@ public class CoralSupersystem {
   }
 
   public Command scoreL2Command() {
-    return m_elevator.moveToL2Command().withTimeout(1).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
+    return safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
+  }
+
+  public Command scoreL3Command() {
+    return safeArm().andThen(m_elevator.moveToL3Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL3Command()));
+  }
+
+  public Command scoreL4Command() {
+    return safeArm().andThen(m_elevator.moveToL4Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL4Command()));
   }
 
   // public Command feederStation() {

@@ -352,7 +352,7 @@ public final class Constants {
 
   public static final class WristConstants {
     public static final int kCANId = 24;
-    public static final double kHorizontalPosition = 3.25;
+    public static final double kHorizontalPosition = 3.1;
     public static final double kVerticalPosition = 3 * Math.PI / 2;
 
     public static final double kAtAngleTolerance = 0.1;
@@ -452,7 +452,7 @@ public final class Constants {
     public static final double kMaxVelocity = 2;
     public static final double kMaxAcceleration = .5;
 
-    public static final double kS = .8;
+    public static final double kS = 0;
     public static final double kG = 1.25;
     public static final double kV = 1;
     public static final double kA = 1;
@@ -471,7 +471,7 @@ public final class Constants {
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
     public static final double kL2Pos = .7;
-    public static final double kL3Pos = 1.4;
-    public static final double kL4Pos = 2;
+    public static final double kL3Pos = 1.32;
+    public static final double kL4Pos = 2.2;
   }
 }
