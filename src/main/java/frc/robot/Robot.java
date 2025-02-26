@@ -51,7 +51,6 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
   private final CoralSupersystem m_coral = new CoralSupersystem();
-  private final Elevator m_elevator = new Elevator();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -115,10 +114,14 @@ public class Robot extends TimedRobot {
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
     m_weaponsController.b().whileTrue(m_coral.floorExtake());
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
-    m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
+    m_weaponsController.povRight().whileTrue(m_coral.scoreL2Command());
+    // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
+    m_weaponsController.start().whileTrue(m_coral.scoreWheels());
+
+    // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
+    // m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
 
     // m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
@@ -143,7 +146,7 @@ public class Robot extends TimedRobot {
             () -> m_fieldRelative));
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
-    m_elevator.setDefaultCommand(m_elevator.setVoltage(m_weaponsController::getLeftY));
+    // m_elevator.setDefaultCommand(m_elevator.stopCommand());
   }
 
   /**

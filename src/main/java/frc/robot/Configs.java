@@ -165,7 +165,7 @@ public final class Configs {
     static {
       double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
 
-      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(60);
+      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
       elevatorConfig.alternateEncoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop
@@ -176,7 +176,7 @@ public final class Configs {
 
       elevatorConfig2
           .idleMode(IdleMode.kBrake)
-          .smartCurrentLimit(60)
+          .smartCurrentLimit(80)
           .follow(ElevatorConstants.Motor.kCanIdMotor1);
     }
   }

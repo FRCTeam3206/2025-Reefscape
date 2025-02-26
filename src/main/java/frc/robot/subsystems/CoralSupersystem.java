@@ -17,12 +17,14 @@ public class CoralSupersystem {
   private final ArmSubsystem m_arm = new ArmSubsystem();
   private final Wrist m_wrist = new Wrist();
   private final CoralIntake m_coralOmnis = new CoralIntake();
+  private final Elevator m_elevator = new Elevator();
 
   public CoralSupersystem() {
     // m_arm.setDefaultCommand(m_arm.moveToGoalCommand(3));
     m_arm.setDefaultCommand(m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
+    m_elevator.setDefaultCommand(m_elevator.stopCommand());
   }
 
   /**
@@ -97,8 +99,16 @@ public class CoralSupersystem {
         .andThen(
             m_arm
                 .toL2L3()
-                .alongWith(m_wrist.toVerticalContinuous())
-                .alongWith(m_coralOmnis.scoreCommand()));
+                .alongWith(m_wrist.toVerticalContinuous()));
+                //.alongWith(m_coralOmnis.scoreCommand()));
+  }
+
+  public Command scoreWheels() {
+    return m_coralOmnis.scoreCommand();
+  }
+
+  public Command scoreL2Command() {
+    return m_elevator.moveToL2Command().withTimeout(1).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
   }
 
   // public Command feederStation() {
