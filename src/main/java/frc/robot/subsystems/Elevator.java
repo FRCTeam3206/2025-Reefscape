@@ -9,16 +9,13 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.GameConstants;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -181,7 +178,7 @@ public class Elevator extends SubsystemBase {
   public Command moveToGoalCommand(double goal) {
     return run(() -> moveToGoal(goal));
   }
-  
+
   public Command moveToGoalAndStopCommand(double goal) {
     return moveToGoalCommand(goal).until(() -> atGoal(goal));
   }
@@ -285,7 +282,10 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atGoal(double goal) {
-    return MathUtil.isNear(goal, getPosition(), ElevatorSubConstants.kAtGoalTolerance);//Math.abs(getPosition() - goal) < 
+    return MathUtil.isNear(
+        goal,
+        getPosition(),
+        ElevatorSubConstants.kAtGoalTolerance); // Math.abs(getPosition() - goal) <
   }
 
   public void defaultAction(boolean safeToGoDown) {

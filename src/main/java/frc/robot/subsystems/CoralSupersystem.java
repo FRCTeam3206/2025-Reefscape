@@ -101,11 +101,8 @@ public class CoralSupersystem {
     return moveWristHorizontal()
         .andThen(m_arm.toL2L3Stop())
         .andThen(m_arm.toL2L3().raceWith(m_wrist.toVerticalStop()))
-        .andThen(
-            m_arm
-                .toL2L3()
-                .alongWith(m_wrist.toVerticalContinuous()));
-                //.alongWith(m_coralOmnis.scoreCommand()));
+        .andThen(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()));
+    // .alongWith(m_coralOmnis.scoreCommand()));
   }
 
   public Command scoreWheels() {
@@ -113,20 +110,26 @@ public class CoralSupersystem {
   }
 
   public Command scoreToBranchCommand(ReefLevels level) {
-    return safeArm().andThen(m_elevator.toBranchStop(level)).andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()));
-    // return safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
+    return safeArm()
+        .andThen(m_elevator.toBranchStop(level))
+        .andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()));
+    // return
+    // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
 
   // public Command scoreL2Command() {
-  //   return safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
+  //   return
+  // safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
   // }
 
   // public Command scoreL3Command() {
-  //   return safeArm().andThen(m_elevator.moveToL3Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL3Command()));
+  //   return
+  // safeArm().andThen(m_elevator.moveToL3Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL3Command()));
   // }
 
   // public Command scoreL4Command() {
-  //   return safeArm().andThen(m_elevator.moveToL4Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL4Command()));
+  //   return
+  // safeArm().andThen(m_elevator.moveToL4Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL4Command()));
   // }
 
   // public Command feederStation() {

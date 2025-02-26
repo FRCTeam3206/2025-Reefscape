@@ -27,13 +27,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
-import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Elevator;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
