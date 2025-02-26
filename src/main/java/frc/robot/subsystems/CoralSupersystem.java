@@ -5,6 +5,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.GameConstants.ReefLevels;
 
 @Logged
 public class CoralSupersystem {
@@ -93,7 +94,7 @@ public class CoralSupersystem {
   }
 
   public Command safeArm() {
-    return moveWristHorizontal().andThen(m_arm.toStoredStop());
+    return moveWristHorizontal().andThen(m_arm.toStoredSafe());
   }
 
   public Command armWristL2L3() {
@@ -111,17 +112,21 @@ public class CoralSupersystem {
     return m_coralOmnis.scoreCommand();
   }
 
-  public Command scoreL2Command() {
-    return safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
+  public Command scoreToBranchCommand(ReefLevels level) {
+    return safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
 
-  public Command scoreL3Command() {
-    return safeArm().andThen(m_elevator.moveToL3Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL3Command()));
-  }
+  // public Command scoreL2Command() {
+  //   return safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
+  // }
 
-  public Command scoreL4Command() {
-    return safeArm().andThen(m_elevator.moveToL4Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL4Command()));
-  }
+  // public Command scoreL3Command() {
+  //   return safeArm().andThen(m_elevator.moveToL3Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL3Command()));
+  // }
+
+  // public Command scoreL4Command() {
+  //   return safeArm().andThen(m_elevator.moveToL4Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL4Command()));
+  // }
 
   // public Command feederStation() {
   //   return positionFeederStation().andThen(m_coralOmnis.intakeUntilSuccessCommand());

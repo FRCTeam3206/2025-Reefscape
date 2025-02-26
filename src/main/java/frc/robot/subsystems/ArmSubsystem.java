@@ -219,6 +219,10 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kStored);
   }
 
+  public Command toStoredSafe() {
+    return moveToGoalCommand(ArmConstants.Angles.kStored).until(() -> getAngle().getRadians() < 1.8);
+  }
+
   public Command toFloorIntakeStop() {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kFloorIntake).andThen(stopCommand());
     // .until(() -> atGoal())

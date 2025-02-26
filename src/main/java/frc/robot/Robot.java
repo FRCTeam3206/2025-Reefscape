@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.GameConstants.ReefLevels;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.CoralSupersystem;
@@ -113,10 +114,10 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
     m_weaponsController.b().whileTrue(m_coral.floorExtake());
-    //m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
-    //m_weaponsController.povRight().whileTrue(m_coral.scoreL2Command());
-    //m_weaponsController.x().whileTrue(m_coral.scoreL3Command());
-    //m_weaponsController.y().whileTrue(m_coral.scoreL4Command());
+    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
+    m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
+    m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
     // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 

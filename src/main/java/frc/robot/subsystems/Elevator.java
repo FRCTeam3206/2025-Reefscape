@@ -16,6 +16,8 @@ import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
+import frc.robot.Constants.GameConstants;
+
 import java.util.function.DoubleSupplier;
 
 @Logged
@@ -169,24 +171,38 @@ public class Elevator extends SubsystemBase {
     ff = feedforward.calculate(setpoint.position, setpoint.velocity);
     fb = feedback.calculate(getPosition(), setpoint.position);
 
-    m_max.setVoltage(fb + ff);
+    double voltage = fb + ff;
+    if (voltage < 0) voltage = 0;
+    m_max.setVoltage(voltage);
   }
 
   public Command moveToGoalCommand(double goal) {
     return run(() -> moveToGoal(goal));
   }
 
-  public Command moveToL2Command() {
-    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL2Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL2Pos));
+  public Command moveToLevelCommand(double goal) {
+    return (stopCommand().until(() -> canMoveElevator())).andThen(moveToGoalCommand(goal));
   }
 
-  public Command moveToL3Command() {
-    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL3Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL3Pos));
+  public boolean canMoveElevator() {
+    return getPosition() < 0.005 && getVelocity() == 0;
   }
 
-  public Command moveToL4Command() {
-    return stopCommand().until(() -> lessThan(ElevatorSubConstants.kL4Pos)).andThen(moveToGoalCommand(ElevatorSubConstants.kL4Pos));
+  public Command stayAtLevelCommand(double goal) {
+    return moveToGoalCommand(goal);
   }
+
+  // public Command moveToL2Command() {
+  //   return moveToLevelCommand(ElevatorSubConstants.kL2Pos);
+  // }
+
+  // public Command moveToL3Command() {
+  //   return moveToLevelCommand(ElevatorSubConstants.kL3Pos);
+  // }
+
+  // public Command moveToL4Command() {
+  //   return moveToLevelCommand(ElevatorSubConstants.kL4Pos);
+  // }
 
   /**
    * Returns true when the arm is at its current goal and not moving. Tolerances for position and
@@ -194,16 +210,28 @@ public class Elevator extends SubsystemBase {
    *
    * @return at goal and not moving
    */
-  public boolean lessThan(double goal) {
-    return getPosition() + 0.1 < goal; // TODO fix
-    // return MathUtil.isNear(
-    //         this.goal.position,
-    //         getAngle().getRadians(),
-    //         ArmConstants.kAtAngleTolerance,
-    //         0,
-    //         2 * Math.PI)
-    //     && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
-  }
+  // public boolean lessThan(double goal) {
+  //   return getPosition() + 0.1 < goal; // TODO fix
+  //   // return MathUtil.isNear(
+  //   //         this.goal.position,
+  //   //         getAngle().getRadians(),
+  //   //         ArmConstants.kAtAngleTolerance,
+  //   //         0,
+  //   //         2 * Math.PI)
+  //   //     && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+  // }
+
+  // public boolean lessThanL2() {
+  //   return lessThan(ElevatorSubConstants.kL2Pos);
+  // }
+
+  // public boolean lessThanL3() {
+  //   return lessThan(ElevatorSubConstants.kL3Pos);
+  // }
+
+  // public boolean lessThanL4() {
+  //   return lessThan(ElevatorSubConstants.kL4Pos);
+  // }
 
   public void stop() {
     m_max.setVoltage(0);
@@ -212,6 +240,44 @@ public class Elevator extends SubsystemBase {
 
   public Command stopCommand() {
     return this.run(this::stop);
+  }
+
+  public Command toBranch(GameConstants.ReefLevels level) {
+    double goal = 0.0;
+    switch (level) {
+      case l1:
+        return stopCommand();
+      case l2:
+        goal = ElevatorSubConstants.kL2Pos;
+        break;
+      case l3:
+        goal = ElevatorSubConstants.kL3Pos;
+        break;
+      case l4:
+        goal = ElevatorSubConstants.kL4Pos;
+        break;
+    }
+    return moveToLevelCommand(goal);
+  }
+
+  public Command stayAtBranch(GameConstants.ReefLevels level) {
+    double goal = 0.0;
+    switch (level) {
+      case l1:
+        return stopCommand();
+      case l2:
+        goal = ElevatorSubConstants.kL2Pos;
+        break;
+      case l3:
+        goal = ElevatorSubConstants.kL3Pos;
+        break;
+      case l4:
+        goal = ElevatorSubConstants.kL4Pos;
+        break;
+      default:
+        return stopCommand();
+    }
+    return stayAtLevelCommand(goal);
   }
 
   /*

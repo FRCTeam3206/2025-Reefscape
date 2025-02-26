@@ -470,8 +470,8 @@ public final class Constants {
     public static final double kArmMass = 2.78; // kg
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
-    public static final double kL2Pos = .7;
-    public static final double kL3Pos = 1.32;
-    public static final double kL4Pos = 2.2;
+    public static final double kL2Pos = .78;
+    public static final double kL3Pos = 1.42;
+    public static final double kL4Pos = 2.5;
   }
 }
