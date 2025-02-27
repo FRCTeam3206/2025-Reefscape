@@ -66,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
-  final VisionSystemSim visionSim;
+  //final VisionSystemSim visionSim;
 
   @NotLogged // everything in here is already logged by modules or getPose()
   private final SwerveDrivePoseEstimator m_poseEstimator =
@@ -102,7 +102,7 @@ public class DriveSubsystem extends SubsystemBase {
       new RobotProfile(
           PathingConstants.kRobotMassKg,
           ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthWidthMeters,
+          PathingConstants.kRobotLengthWidthMeters * 2.0, // Not recommended, this is to give us more space as we're trying to get things to work.
           PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kDriveMotor);
   PathingCommandGenerator m_pathGen =
@@ -110,8 +110,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    visionSim = new VisionSystemSim("main-sim");
-    visionSim.addAprilTags(VisionConstants.kTagLayout);
+    // visionSim = new VisionSystemSim("main-sim");
+    // visionSim.addAprilTags(VisionConstants.kTagLayout);
 
     // vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1,
     // visionSim);
@@ -161,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
     double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
     m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
 
-    visionSim.update(getPose());
+    //visionSim.update(getPose());
   }
 
   /**
@@ -325,12 +325,20 @@ public class DriveSubsystem extends SubsystemBase {
     return driveCommand(() -> 0.0, () -> 0.0, () -> 0.0, () -> true);
   }
 
+  public Command stopOnceCommand() {
+    return this.runOnce(() -> drive(0, 0, 0, true));
+  }
+
   public PathingCommandGenerator getPathingCommandGenerator() {
     return m_pathGen;
   }
 
   public PathingCommand getToReefPoseCommand(PathingConstants.ReefPose reefPose, boolean right) {
     return m_pathGen.generateToPoseCommand(reefPose.getPose(right));
+  }
+
+  public PathingCommand getToGoal(Pose2d goal) {
+    return m_pathGen.generateToPoseCommand(goal);
   }
 
   // public PathingCommand getToNearestReefCommand(boolean right) {
