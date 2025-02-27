@@ -364,6 +364,12 @@ public final class Constants {
   }
 
   public static final class PathingConstants {
+    public static final AprilTagFieldLayout kTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static Pose2d poseForTag(int tag) {
+      return kTagLayout.getTagPose(tag).get().toPose2d();
+    }
+    
     public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthWidthMeters =
         Units.inchesToMeters(36); // including bumpers. Length and width are the same.
@@ -374,30 +380,26 @@ public final class Constants {
 
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2, -kCoralFaceOffset, Rotation2d.fromDegrees(180));
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6), -kCoralFaceOffset, Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
-        new Transform2d(kRobotLengthWidthMeters / 2, kCoralFaceOffset, Rotation2d.fromDegrees(180));
+        new Transform2d(kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6), kCoralFaceOffset, Rotation2d.fromDegrees(180));
 
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
     // Measurements taken from April Tag coordinates
     public static enum ReefPose {
-      CLOSE(144, 158.5, 180),
-      CLOSE_LEFT(160.39, 186.83, 120),
-      CLOSE_RIGHT(160.39, 130.17, 240),
-      FAR(209.49, 158.5, 0),
-      FAR_LEFT(193.1, 186.83, 60),
-      FAR_RIGHT(193.1, 130.17, 300);
+      CLOSE(18),
+      CLOSE_LEFT(19),
+      CLOSE_RIGHT(17),
+      FAR(21),
+      FAR_LEFT(20),
+      FAR_RIGHT(22);
 
       private Pose2d leftPose;
       private Pose2d rightPose;
 
-      private ReefPose(double xInches, double yInches, double rotDegrees) {
-        Pose2d reefPose =
-            new Pose2d(
-                Units.inchesToMeters(xInches),
-                Units.inchesToMeters(yInches),
-                Rotation2d.fromDegrees(rotDegrees));
+      private ReefPose(int tag) {
+        Pose2d reefPose = poseForTag(tag);
         this.leftPose = reefPose.transformBy(kTransformLeft);
         this.rightPose = reefPose.transformBy(kTransformRight);
       }
@@ -408,22 +410,18 @@ public final class Constants {
     }
 
     public static Pose2d poseFromTag(
-        double xInches, double yInches, double rotDegrees, Transform2d transform) {
-      return new Pose2d(
-              Units.inchesToMeters(xInches),
-              Units.inchesToMeters(yInches),
-              Rotation2d.fromDegrees(rotDegrees))
-          .plus(transform);
+        int tag, Transform2d transform) {
+      return poseForTag(tag).plus(transform);
     }
 
     public static final Transform2d kFeederTransform =
         new Transform2d(kRobotLengthWidthMeters / 2, 0.0, new Rotation2d());
-    public static final Pose2d kLeftFeederPose = poseFromTag(33.51, 291.20, 306, kFeederTransform);
-    public static final Pose2d kRightFeederPose = poseFromTag(33.51, 25.80, 54, kFeederTransform);
+    public static final Pose2d kLeftFeederPose = poseFromTag(13, kFeederTransform);
+    public static final Pose2d kRightFeederPose = poseFromTag(12, kFeederTransform);
 
     public static final Transform2d kProcessorTransform =
         new Transform2d(kRobotLengthWidthMeters / 2, 0.0, Rotation2d.fromDegrees(0));
-    public static final Pose2d kProcessorPose = poseFromTag(235.73, -0.15, 90, kProcessorTransform);
+    public static final Pose2d kProcessorPose = poseFromTag(16, kProcessorTransform);
   }
 
   public static final class ArmSubConstants {

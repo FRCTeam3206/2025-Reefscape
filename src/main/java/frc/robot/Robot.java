@@ -122,6 +122,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
+    m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
+
     // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
     // m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
 
@@ -177,7 +179,7 @@ public class Robot extends TimedRobot {
             scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
             scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
             scoreCoralCommand(ReefPose.CLOSE, false, 4)));
-    m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
+    // m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
     SmartDashboard.putData(m_autonChooser);
   }
 
@@ -204,7 +206,7 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive.getToFeederCommand(right);
+    return m_robotDrive.stopCommand();//getToFeederCommand(right);
     // We can add things with mechanisms later so that it will intake.
     // This command should stop once we see that we have the coral.
   }

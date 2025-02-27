@@ -333,34 +333,34 @@ public class DriveSubsystem extends SubsystemBase {
     return m_pathGen.generateToPoseCommand(reefPose.getPose(right));
   }
 
-  public PathingCommand getToNearestReefCommand(boolean right) {
-    Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
-    Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
-    Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
-    Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
-    Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
-    Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
-    return m_pathGen.generateToPoseSupplierCommand(
-        () -> {
-          Pose2d robotAt = AllianceUtil.getBluePose();
-          if (robotAt.getX() < PathingConstants.kReefCenterX) {
-            // Robot is at a close pose.
-            return robotAt.nearest(List.of(close, closeL, closeR));
-          } else {
-            // Robot is at a far pose.
-            return robotAt.nearest(List.of(far, farL, farR));
-          }
-        });
-  }
+  // public PathingCommand getToNearestReefCommand(boolean right) {
+  //   Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
+  //   Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
+  //   Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
+  //   Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
+  //   Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
+  //   Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
+  //   return m_pathGen.generateToPoseSupplierCommand(
+  //       () -> {
+  //         Pose2d robotAt = AllianceUtil.getBluePose();
+  //         if (robotAt.getX() < PathingConstants.kReefCenterX) {
+  //           // Robot is at a close pose.
+  //           return robotAt.nearest(List.of(close, closeL, closeR));
+  //         } else {
+  //           // Robot is at a far pose.
+  //           return robotAt.nearest(List.of(far, farL, farR));
+  //         }
+  //       });
+  // }
 
-  public PathingCommand getToFeederCommand(boolean right) {
-    return m_pathGen.generateToPoseCommand(
-        right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
-  }
+  // public PathingCommand getToFeederCommand(boolean right) {
+  //   return m_pathGen.generateToPoseCommand(
+  //       right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
+  // }
 
-  public PathingCommand getToProcessorCommand() {
-    return m_pathGen.generateToPoseCommand(PathingConstants.kProcessorPose);
-  }
+  // public PathingCommand getToProcessorCommand() {
+  //   return m_pathGen.generateToPoseCommand(PathingConstants.kProcessorPose);
+  // }
 
   /** Command to set the wheels into an X formation to prevent movement. */
   public Command setXCommand() {
