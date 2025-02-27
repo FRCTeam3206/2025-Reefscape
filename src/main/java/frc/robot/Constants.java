@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -368,10 +366,11 @@ public final class Constants {
   public static final class PathingConstants {
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
     public static Pose2d poseForTag(int tag) {
       return kTagLayout.getTagPose(tag).get().toPose2d();
     }
-    
+
     public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthWidthMeters =
         Units.inchesToMeters(36); // including bumpers. Length and width are the same.
@@ -382,9 +381,14 @@ public final class Constants {
 
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6), -kCoralFaceOffset, Rotation2d.fromDegrees(180));
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            -kCoralFaceOffset,
+            Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
-        new Transform2d(kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6), kCoralFaceOffset, Rotation2d.fromDegrees(180));
+        new Transform2d(
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kCoralFaceOffset,
+            Rotation2d.fromDegrees(180));
 
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
@@ -411,8 +415,7 @@ public final class Constants {
       }
     }
 
-    public static Pose2d poseFromTag(
-        int tag, Transform2d transform) {
+    public static Pose2d poseFromTag(int tag, Transform2d transform) {
       return poseForTag(tag).plus(transform);
     }
 
@@ -426,11 +429,24 @@ public final class Constants {
     public static final Pose2d kProcessorPose = poseFromTag(16, kProcessorTransform);
 
     public static final double kStartLineInches = 144 + 65.49 + 88;
-    public static final Pose2d kCenterStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kTagLayout.getFieldWidth() / 2, Rotation2d.fromDegrees(180));
-    public static final Pose2d kLeftStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5), Rotation2d.fromDegrees(180));
-    public static final Pose2d kRightStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5), Rotation2d.fromDegrees(180));
-        // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0, Rotation2d.fromDegrees(180))
-        // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
+    public static final Pose2d kCenterStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kTagLayout.getFieldWidth() / 2,
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d kLeftStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d kRightStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5),
+            Rotation2d.fromDegrees(180));
+    // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0,
+    // Rotation2d.fromDegrees(180))
+    // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
   }
 
   public static final class ArmSubConstants {

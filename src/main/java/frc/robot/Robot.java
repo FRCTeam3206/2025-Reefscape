@@ -101,11 +101,11 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     if (Robot.isReal()) {
       m_driverController.button(1).whileTrue(m_robotDrive.setXCommand());
-    // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
-    // !m_fieldRelative));
-    // m_weaponsController
-    //     .a()
-    //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+      // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
+      // !m_fieldRelative));
+      // m_weaponsController
+      //     .a()
+      //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
       m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
     } else {
       m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
-    //m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
+    // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
     // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
     // m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
@@ -187,12 +187,16 @@ public class Robot extends TimedRobot {
 
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
+    m_autonChooser.addOption("Basic Forward", simpleForward());
     m_autonChooser.addOption(
-        "Basic Forward",
-        simpleForward());
-    m_autonChooser.addOption("1 coral (start center)", simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
-    m_autonChooser.addOption("1 coral (start left)", simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
-    m_autonChooser.addOption("1 coral (start right)", simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
+        "1 coral (start center)",
+        simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
+    m_autonChooser.addOption(
+        "1 coral (start left)",
+        simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
+    m_autonChooser.addOption(
+        "1 coral (start right)",
+        simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
     // m_autonChooser.addOption(
     //     "Coral on the left",
     //     generateAuton(
@@ -211,7 +215,11 @@ public class Robot extends TimedRobot {
   }
 
   public Command simpleAutonGenerator(Pose2d startPose, ReefPose reefPose) {
-    return new InstantCommand(() -> m_robotDrive.resetOdometry(startPose)).andThen(simpleForward()).andThen(m_robotDrive.getToReefPoseCommand(reefPose, true)).andThen(m_robotDrive.stopOnceCommand()).andThen(m_coral.placeLevelOne().withTimeout(4));
+    return new InstantCommand(() -> m_robotDrive.resetOdometry(startPose))
+        .andThen(simpleForward())
+        .andThen(m_robotDrive.getToReefPoseCommand(reefPose, true))
+        .andThen(m_robotDrive.stopOnceCommand())
+        .andThen(m_coral.placeLevelOne().withTimeout(4));
   }
 
   // public Command generateAuton(boolean right, Command... scoreCoralCommands) {
@@ -227,13 +235,15 @@ public class Robot extends TimedRobot {
   //  * make sure we don't hit the cages.
   //  */
   // public Command robotForwardCommand() {
-  //   return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
+  //   return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () ->
+  // false).withTimeout(.5);
   // }
 
   // /**
   //  * Pick up coral from the feeder station
   //  *
-  //  * @param right Whether to pick up from the right or left feeder station (from driver view, since
+  //  * @param right Whether to pick up from the right or left feeder station (from driver view,
+  // since
   //  *     we have a rotated field).
   //  */
   // public Command pickupCoralCommand(boolean right) {
@@ -246,7 +256,8 @@ public class Robot extends TimedRobot {
   //  * Score coral on the reef.
   //  *
   //  * @param reefPose Which location on the reef to score it on.
-  //  * @param right Whether it should be the right side on that face (from the robot's perspective).
+  //  * @param right Whether it should be the right side on that face (from the robot's
+  // perspective).
   //  * @param level Which level to score the coral on.
   //  * @return A Command to score coral on the reef.
   //  */
@@ -375,15 +386,15 @@ public class Robot extends TimedRobot {
   public void resetRobotToFieldCenter() {
     var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     var heading = 0;
-        // (DriverStation.getAlliance().isPresent()
-        //         && DriverStation.getAlliance().get() == Alliance.Red)
-        //     ? 180.0
-        //     : 0.0;
+    // (DriverStation.getAlliance().isPresent()
+    //         && DriverStation.getAlliance().get() == Alliance.Red)
+    //     ? 180.0
+    //     : 0.0;
     m_robotDrive.zeroHeading();
     m_robotDrive.resetOdometry(
         new Pose2d(
-            m_robotDrive.getPose().getX(),//field.getFieldLength() / 2,
-            m_robotDrive.getPose().getY(),//field.getFieldWidth() / 2,
+            m_robotDrive.getPose().getX(), // field.getFieldLength() / 2,
+            m_robotDrive.getPose().getY(), // field.getFieldWidth() / 2,
             Rotation2d.fromDegrees(heading)));
   }
 }

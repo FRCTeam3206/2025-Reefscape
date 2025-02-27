@@ -23,15 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.pathing.PathingCommand;
 import frc.pathing.PathingCommandGenerator;
 import frc.pathing.robotprofile.RobotProfile;
-import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
-import frc.robot.Constants.VisionConstants;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import org.photonvision.simulation.VisionSystemSim;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase {
@@ -66,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
-  //final VisionSystemSim visionSim;
+  // final VisionSystemSim visionSim;
 
   @NotLogged // everything in here is already logged by modules or getPose()
   private final SwerveDrivePoseEstimator m_poseEstimator =
@@ -102,11 +98,14 @@ public class DriveSubsystem extends SubsystemBase {
       new RobotProfile(
           PathingConstants.kRobotMassKg,
           ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthWidthMeters * 2.0, // Not recommended, this is to give us more space as we're trying to get things to work.
+          PathingConstants.kRobotLengthWidthMeters
+              * 2.0, // Not recommended, this is to give us more space as we're trying to get things
+          // to work.
           PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kDriveMotor);
   PathingCommandGenerator m_pathGen =
-      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this).withAllianceFlipping(false);
+      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
+          .withAllianceFlipping(false);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -161,7 +160,7 @@ public class DriveSubsystem extends SubsystemBase {
     double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
     m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
 
-    //visionSim.update(getPose());
+    // visionSim.update(getPose());
   }
 
   /**

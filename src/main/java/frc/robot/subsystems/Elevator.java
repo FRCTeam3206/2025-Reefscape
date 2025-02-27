@@ -166,7 +166,7 @@ public class Elevator extends SubsystemBase {
 
   public void reset() {
     goal = new TrapezoidProfile.State();
-    setpoint =  new TrapezoidProfile.State();
+    setpoint = new TrapezoidProfile.State();
   }
 
   public void moveToGoal(double goal) {
