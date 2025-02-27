@@ -98,13 +98,17 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.button(1).whileTrue(m_robotDrive.setXCommand());
+    if (Robot.isReal()) {
+      m_driverController.button(1).whileTrue(m_robotDrive.setXCommand());
     // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
     // !m_fieldRelative));
     // m_weaponsController
     //     .a()
     //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+      m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    } else {
+      m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    }
 
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
@@ -284,7 +288,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    AllianceUtil.setAlliance();
+    // AllianceUtil.setAlliance();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -357,11 +361,11 @@ public class Robot extends TimedRobot {
 
   public void resetRobotToFieldCenter() {
     var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    var heading =
-        (DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red)
-            ? 180.0
-            : 0.0;
+    var heading = 0;
+        // (DriverStation.getAlliance().isPresent()
+        //         && DriverStation.getAlliance().get() == Alliance.Red)
+        //     ? 180.0
+        //     : 0.0;
     m_robotDrive.zeroHeading();
     m_robotDrive.resetOdometry(
         new Pose2d(

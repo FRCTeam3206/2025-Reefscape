@@ -106,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
           PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kDriveMotor);
   PathingCommandGenerator m_pathGen =
-      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this);
+      new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this).withAllianceFlipping(false);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
