@@ -136,18 +136,33 @@ public class Robot extends TimedRobot {
 
   /** Use this method to define default commands for subsystems. */
   private void configureDefaultCommands() {
-    m_robotDrive.setDefaultCommand(
-        m_robotDrive.driveCommand(
-            adjustJoystick(
-                m_driverController::getY,
-                () -> m_speedMultiplier,
-                () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(
-                m_driverController::getX,
-                () -> m_speedMultiplier,
-                () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
-            () -> m_fieldRelative));
+    if (Robot.isReal()) {
+      m_robotDrive.setDefaultCommand(
+          m_robotDrive.driveCommand(
+              adjustJoystick(
+                  m_driverController::getY,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(
+                  m_driverController::getX,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
+              () -> m_fieldRelative));
+    } else {
+      m_robotDrive.setDefaultCommand(
+          m_robotDrive.driveCommand(
+              adjustJoystick(
+                  m_weaponsController::getLeftY,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(
+                  m_weaponsController::getLeftX,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(m_weaponsController::getRightX, () -> m_speedMultiplier, () -> true),
+              () -> m_fieldRelative));
+    }
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
