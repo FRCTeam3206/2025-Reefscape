@@ -164,6 +164,11 @@ public class Elevator extends SubsystemBase {
     return run(() -> m_max.setVoltage(6 * volts.getAsDouble()));
   }
 
+  public void reset() {
+    goal = new TrapezoidProfile.State();
+    setpoint =  new TrapezoidProfile.State();
+  }
+
   public void moveToGoal(double goal) {
     this.goal = new TrapezoidProfile.State(goal, 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);

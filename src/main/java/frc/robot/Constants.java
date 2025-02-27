@@ -480,7 +480,7 @@ public final class Constants {
 
     public static final double kL2Pos = .78;
     public static final double kL3Pos = 1.46;
-    public static final double kL4Pos = 2.5;
+    public static final double kL4Pos = 2.42;
 
     public static final double kAtGoalTolerance = 0.04;
   }

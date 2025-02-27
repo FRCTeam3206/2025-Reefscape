@@ -117,6 +117,10 @@ public class CoralSupersystem {
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
 
+  public void resetElevator() {
+    m_elevator.reset();
+  }
+
   // public Command scoreL2Command() {
   //   return
   // safeArm().andThen(m_elevator.moveToL2Command().withTimeout(1)).andThen(armWristL2L3().alongWith(m_elevator.moveToL2Command()));
