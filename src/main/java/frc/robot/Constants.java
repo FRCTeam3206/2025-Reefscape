@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -424,7 +426,9 @@ public final class Constants {
     public static final Pose2d kProcessorPose = poseFromTag(16, kProcessorTransform);
 
     public static final double kStartLineInches = 144 + 65.49 + 88;
-    public static final Pose2d kCenterStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.75) + kRobotLengthWidthMeters / 2.0, kTagLayout.getFieldWidth() / 2, Rotation2d.fromDegrees(180));
+    public static final Pose2d kCenterStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kTagLayout.getFieldWidth() / 2, Rotation2d.fromDegrees(180));
+    public static final Pose2d kLeftStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5), Rotation2d.fromDegrees(180));
+    public static final Pose2d kRightStartPose = new Pose2d(Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0, kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5), Rotation2d.fromDegrees(180));
         // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0, Rotation2d.fromDegrees(180))
         // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
   }

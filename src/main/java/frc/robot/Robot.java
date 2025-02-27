@@ -190,7 +190,9 @@ public class Robot extends TimedRobot {
     m_autonChooser.addOption(
         "Basic Forward",
         simpleForward());
-    m_autonChooser.addOption("Forward 1 coral right (start center)", simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR, true));
+    m_autonChooser.addOption("1 coral (start center)", simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
+    m_autonChooser.addOption("1 coral (start left)", simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
+    m_autonChooser.addOption("1 coral (start right)", simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
     // m_autonChooser.addOption(
     //     "Coral on the left",
     //     generateAuton(
@@ -208,8 +210,8 @@ public class Robot extends TimedRobot {
     return m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0);
   }
 
-  public Command simpleAutonGenerator(Pose2d startPose, ReefPose reefPose, boolean right) {
-    return new InstantCommand(() -> m_robotDrive.resetOdometry(startPose)).andThen(simpleForward()).andThen(m_robotDrive.getToReefPoseCommand(reefPose, right)).andThen(m_robotDrive.stopOnceCommand()).andThen(m_coral.placeLevelOne().withTimeout(5));
+  public Command simpleAutonGenerator(Pose2d startPose, ReefPose reefPose) {
+    return new InstantCommand(() -> m_robotDrive.resetOdometry(startPose)).andThen(simpleForward()).andThen(m_robotDrive.getToReefPoseCommand(reefPose, true)).andThen(m_robotDrive.stopOnceCommand()).andThen(m_coral.placeLevelOne().withTimeout(4));
   }
 
   // public Command generateAuton(boolean right, Command... scoreCoralCommands) {
