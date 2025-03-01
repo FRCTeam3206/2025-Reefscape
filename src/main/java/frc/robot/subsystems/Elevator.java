@@ -140,8 +140,16 @@ public class Elevator extends SubsystemBase {
     return m_max.getAppliedOutput() * m_max.getBusVoltage();
   }
 
+  public double getAppliedVoltageFollower() {
+    return m_max2.getAppliedOutput() * m_max2.getBusVoltage();
+  }
+
   public double getCurrent() {
     return m_max.getOutputCurrent();
+  }
+
+  public double getCurrretFollower() {
+    return m_max2.getOutputCurrent();
   }
 
   public double getSetPoint() {
