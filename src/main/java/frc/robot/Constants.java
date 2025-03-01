@@ -79,6 +79,9 @@ public final class Constants {
 
     // These values need to be tuned.
     public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.5, 0.5, 0.1);
+
+    public static final double kFastSpeed = 0.8;
+    public static final double kSlowSpeed = 0.5;
   }
 
   public static final class ModuleConstants {

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.GameConstants.ReefLevels;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
@@ -55,10 +56,12 @@ public class Robot extends TimedRobot {
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
-  private double m_speedMultiplier = 0.5;
+  private double m_speedMultiplier = DriveConstants.kSlowSpeed;
 
   private double m_lastTime = 0;
   private double m_loopTime = 0;
+
+  private boolean m_fastMode = false;
 
   @NotLogged private Alliance m_prevAlliance = null;
 
@@ -99,17 +102,21 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    if (Robot.isReal()) {
-      m_driverController.button(1).whileTrue(m_robotDrive.setXCommand());
-      // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
-      // !m_fieldRelative));
-      // m_weaponsController
-      //     .a()
-      //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+    // if (Robot.isReal()) {
+      m_driverController.button(1).onTrue(new InstantCommand(() -> {
+        m_fastMode = !m_fastMode;
+        m_speedMultiplier = m_fastMode ? DriveConstants.kFastSpeed : DriveConstants.kSlowSpeed;
+      }));
+      m_driverController.button(3).whileTrue(m_robotDrive.setXCommand());
+    // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
+    // !m_fieldRelative));
+    // m_weaponsController
+    //     .a()
+    //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
       m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    } else {
-      m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    }
+    // } else {
+    //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // }
 
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
