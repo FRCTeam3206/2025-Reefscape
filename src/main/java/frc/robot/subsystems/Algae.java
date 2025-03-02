@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -43,10 +42,11 @@ public class Algae extends SubsystemBase {
   }
 
   public Command holdPositionCommand() {
-    return this.run(() -> {
-      m_armMotor.setVoltage(getArmAngle() < 1 ? AlgaeConstants.kHoldUpVoltage : 0.0);
-      m_wheelsMotor.set(0);
-    });
+    return this.run(
+        () -> {
+          m_armMotor.setVoltage(getArmAngle() < 1 ? AlgaeConstants.kHoldUpVoltage : 0.0);
+          m_wheelsMotor.set(0);
+        });
   }
 
   public Command stopIntakeCommand() {
