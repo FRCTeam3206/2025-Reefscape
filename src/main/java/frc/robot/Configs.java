@@ -64,7 +64,7 @@ public final class Configs {
       wheelsConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(60);
 
       // Configure basic settings of the arm motor
-      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(25).voltageCompensation(12);
+      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.

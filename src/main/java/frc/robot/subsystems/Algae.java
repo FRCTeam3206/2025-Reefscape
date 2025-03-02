@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -14,9 +15,10 @@ import frc.robot.Constants.AlgaeConstants;
 @Logged
 public class Algae extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(AlgaeConstants.kArmCanId, MotorType.kBrushless);
-  private final AbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();
+  private final RelativeEncoder m_armEncoder = m_armMotor.getEncoder();
   private final SparkMax m_wheelsMotor =
       new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
+  private final RelativeEncoder m_wheelsEncoder = m_wheelsMotor.getEncoder();
 
   public Algae() {
     m_armMotor.configure(
@@ -41,7 +43,10 @@ public class Algae extends SubsystemBase {
   }
 
   public Command holdPositionCommand() {
-    return this.run(() -> m_armMotor.setVoltage(AlgaeConstants.kHoldVoltage));
+    return this.run(() -> {
+      m_armMotor.setVoltage(getArmAngle() < 1 ? AlgaeConstants.kHoldUpVoltage : 0.0);
+      m_wheelsMotor.set(0);
+    });
   }
 
   public Command stopIntakeCommand() {
@@ -82,6 +87,10 @@ public class Algae extends SubsystemBase {
 
   public double getVoltageArm() {
     return m_armMotor.getAppliedOutput() * m_armMotor.getBusVoltage();
+  }
+
+  public double getWheelSpeed() {
+    return m_wheelsEncoder.getVelocity();
   }
 
   // public double getArmAngle() {
