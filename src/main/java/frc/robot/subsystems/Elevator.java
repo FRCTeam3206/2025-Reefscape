@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
   private final SparkMax m_max2 =
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
-  private final RelativeEncoder m_encoder = m_max.getAlternateEncoder();
+  private final RelativeEncoder m_encoder = m_max.getEncoder();
 
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -97,6 +97,7 @@ public class Elevator extends SubsystemBase {
         PersistMode.kPersistParameters);
     // SmartDashboard.putData("Arm", mech2d);
     m_encoder.setPosition(0.0);
+    reset();
   }
 
   @Override
@@ -316,11 +317,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public void defaultAction(boolean safeToGoDown) {
-    if (safeToGoDown) {
-      stop();
-    } else {
-      moveToGoal(getPosition());
-    }
+    stop();
+    // if (safeToGoDown) {
+    //   stop();
+    // } else {
+    //   moveToGoal(getPosition());
+    // }
   }
 
   public Command defaultCommand(BooleanSupplier safeToGoDown) {

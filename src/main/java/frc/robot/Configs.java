@@ -163,10 +163,10 @@ public final class Configs {
     public static final SparkMaxConfig elevatorConfig2 = new SparkMaxConfig();
 
     static {
-      double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
+      double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius / 5;
 
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
-      elevatorConfig.alternateEncoder.positionConversionFactor(elevatorPosFactor);
+      //elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop
       //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
