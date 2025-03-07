@@ -144,6 +144,14 @@ public class Elevator extends SubsystemBase {
     return m_max2.getAppliedOutput() * m_max2.getBusVoltage();
   }
 
+  public double getBusVoltage() {
+    return m_max.getBusVoltage();
+  }
+
+  public double getBusVoltageFollower() {
+    return m_max2.getBusVoltage();
+  }
+
   public double getCurrent() {
     return m_max.getOutputCurrent();
   }
@@ -169,7 +177,11 @@ public class Elevator extends SubsystemBase {
   // }
 
   public Command setVoltage(DoubleSupplier volts) {
-    return run(() -> m_max.setVoltage(6 * volts.getAsDouble()));
+    return run(
+        () -> {
+          m_max.setVoltage(6 * volts.getAsDouble());
+          m_max2.setVoltage(6 * volts.getAsDouble());
+        });
   }
 
   public void reset() {
@@ -186,6 +198,7 @@ public class Elevator extends SubsystemBase {
     double voltage = fb + ff;
     if (voltage < 0) voltage = 0;
     m_max.setVoltage(voltage);
+    m_max2.setVoltage(voltage);
   }
 
   public Command moveToGoalCommand(double goal) {
@@ -251,6 +264,7 @@ public class Elevator extends SubsystemBase {
 
   public void stop() {
     m_max.setVoltage(0);
+    m_max2.setVoltage(0);
     setpoint = new TrapezoidProfile.State();
   }
 

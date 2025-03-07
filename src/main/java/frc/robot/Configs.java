@@ -174,10 +174,7 @@ public final class Configs {
       //     .pid(1, 0, 0)
       //     .outputRange(-1, 1);
 
-      elevatorConfig2
-          .idleMode(IdleMode.kBrake)
-          .smartCurrentLimit(80)
-          .follow(ElevatorConstants.Motor.kCanIdMotor1);
+      elevatorConfig2.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
     }
   }
 
