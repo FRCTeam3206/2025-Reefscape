@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.KilogramMetersPerSecond;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -479,7 +477,11 @@ public final class Constants {
   }
 
   public static class ElevatorSubConstants {
-    public static final double kPosFactor = 3 * 22.0 * Units.inchesToMeters(.25) / 5.0; // 5 rotations is 1 rotation of sprocket, sprocket is 22 teeth each 1/4 inch
+    public static final double kPosFactor =
+        3
+            * 22.0
+            * Units.inchesToMeters(.25)
+            / 5.0; // 5 rotations is 1 rotation of sprocket, sprocket is 22 teeth each 1/4 inch
     public static final double kVelocityFactor = kPosFactor / 60.0;
 
     public static final double kMaxVelocity = 50.0 * kPosFactor;
@@ -504,7 +506,7 @@ public final class Constants {
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
     public static final double kPosOffset = Units.inchesToMeters(11);
-    public static final double kL2Pos = 0.55;//.78;
+    public static final double kL2Pos = 0.55; // .78;
     public static final double kL3Pos = .97;
     public static final double kL4Pos = 1.56;
 

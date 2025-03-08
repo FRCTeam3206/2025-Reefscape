@@ -5,7 +5,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -168,8 +167,11 @@ public final class Configs {
 
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
       elevatorConfig.encoder.uvwAverageDepth(4).uvwMeasurementPeriod(8);
-      elevatorConfig.encoder.positionConversionFactor(ElevatorSubConstants.kPosFactor).velocityConversionFactor(ElevatorSubConstants.kVelocityFactor);
-      //elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
+      elevatorConfig
+          .encoder
+          .positionConversionFactor(ElevatorSubConstants.kPosFactor)
+          .velocityConversionFactor(ElevatorSubConstants.kVelocityFactor);
+      // elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop
       //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
