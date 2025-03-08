@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.pathing.robotprofile.Motor;
@@ -78,6 +79,9 @@ public final class Constants {
 
     // These values need to be tuned.
     public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.5, 0.5, 0.1);
+
+    public static final double kFastSpeed = 0.8;
+    public static final double kSlowSpeed = 0.5;
   }
 
   public static final class ModuleConstants {
@@ -96,6 +100,29 @@ public final class Constants {
         (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps =
         (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
+  }
+
+  public static final class GameConstants {
+    public static enum ReefLevels {
+      l1,
+      l2,
+      l3,
+      l4;
+    }
+
+    // all in meters
+    // How high up each thing is
+    public static final class Positions {
+      // Made up some numbers that sound plausible
+      public static final double kFeeder = 1.5;
+      public static final double kFloorIntake = 0.1;
+      public static final double kCoralStorage = 0.5;
+      // l1 is the trough
+      public static final double kReefL1 = 0.46;
+      public static final double kReefL2 = 0.81;
+      public static final double kReefL3 = 1.21;
+      public static final double kReefL4 = 1.83;
+    }
   }
 
   public static final class OIConstants {
@@ -157,7 +184,197 @@ public final class Constants {
     public static final int kStdDevLatencyMs = 5;
   }
 
+  public static final class AlgaeConstants {
+    public static final int kArmCanId = 42;
+    public static final int kWheelsCanId = 41;
+
+    public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
+    public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
+
+    public static final double kIntakeSpeed = .5;
+    public static final double kExtakeSpeed = -0.5;
+    public static final double kHoldUpVoltage = -.6;
+    public static final double kHoldDownVoltage = 0.2;
+
+    public static final double kRetractSpeed = -0.6;
+    public static final double kExtendSpeed = 0.05;
+    public static final double kRetractedAngle = 0.1;
+    public static final double kExtendedAngle = 1;
+
+    public static final double kArmProportional = 0.0;
+    public static final double kArmDerivative = 0.0;
+    public static final double kArmIntegral = 0.0;
+    public static final double kRetractPosition = 0.0;
+    public static final double kExtendPosition = 0.0;
+    public static final double kAtGoalTolerance = 0.05;
+
+    public static final double kConversionFactor = 0.05; // This is NOT the correct value yet.
+  }
+
+  public static final class ArmConstants {
+    // public static final int gearing = 10;
+    // public static final double kUpdateFrequency = 0.02;
+
+    public static final int kArmCANId = 23;
+
+    // Trapezoid profile constraints
+    public static final double kMaxVelocity = 1.0; // raidans/second
+    public static final double kMaxAcceleration = 1.0; // radians/second^2
+
+    // Feedforward constants
+    public static final double kS = 0; // volts
+    public static final double kG = .5; // volts
+    public static final double kV = 0; // volts*second/radian
+    public static final double kA = 0; // volts*second^2/radian
+
+    // Feedback constants
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    public static final double kAtAngleTolerance = Units.degreesToRadians(2);
+    public static final double kAtVelocityTolerance = Units.degreesToRadians(2);
+
+    public static final class Angles {
+      public static final double kHorizontal = Math.PI;
+      public static final double kStored = 1.6; // Works in real life.
+      public static final double kFloorIntake = 3.4; // Works in real life.
+      public static final double kFeeder = 2.30; // This is a guess.
+      public static final double kReefL1 = 2.3; // This is a guess.
+      public static final double kReefL2 = 2.3; // This is a guess.
+      public static final double kReefL3 = kReefL2;
+      public static final double kReefL4 = 2.50;
+      public static final double kSafePosition = 1.80;
+    }
+  }
+
+  public static final class CoralConstants {
+    // Random numbers right now
+    public static final int kCANId = 25;
+    // Might not end up being "Neo550", Line 157
+    public static final DCMotor kCoralMotorType = DCMotor.getNeo550(1);
+    public static final double kIntakeSpeed = -1;
+    public static final double kOutakeSpeed = 1;
+    public static final double kScoreSpeed = -1;
+
+    public static final int kSensorChannel = 1;
+
+    public class Finger {
+      // Made up a number
+      public static final int kChannel = 0;
+      // How many turns the servo is
+      public static final double kFreePosition = 0.8;
+      public static final double kRetainedPosition = 1.0;
+    }
+
+    public static final double kSafeScoreTime = 2;
+  }
+
+  public static final class ElevatorConstants {
+    // TODO many of these arent used
+    // weight in kg for the simulation, idk what counts as part of the elevator and what doesnt
+    public static final double kWeight = 2;
+    // voltage for the simulation
+    public static final double kVoltage = 1;
+    // max elevator speed
+    public static final double kMaxVelocity = 2.45;
+    // in seconds
+    public static final double kUpdateFrequency = 0.02;
+
+    public static final class Motor {
+      public static final int kCanIdMotor1 = 21;
+      public static final int kCanIdMotor2 = 22;
+      /*between -1 and 1
+      https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/motorcontrol/MotorController.html#set(double)
+      Make it negative to reverse it*/
+      public static final double kSpeed = 0.1;
+      // how many motors in gearbox
+      public static final int kHowManyInGearbox = 2;
+    }
+
+    // idk much about electricity so this is just made up numbers
+    public static final class Voltages {
+      public static final double kDown = -5;
+      public static final double kUp = 40;
+    }
+
+    public static final class FeedForward {
+      // Static gain (volts)
+      public static final double Ks = 0;
+      // Gravity gain (volts)
+      public static final double Kg = 1.25;
+      // Velocity gain (volts per m/s)
+      public static final double Kv = 0;
+      // Acceleration gain (volts per m/s^2)
+      public static final double Ka = 0;
+    }
+
+    // something for the simulation
+    public static final class Mechanism2d {
+      // meters i think
+      public static final double kWidth = 20;
+      public static final double kHeight = 50;
+      public static final double kXDistance = 10;
+      public static final double kYDistance = 0;
+    }
+
+    public static final class Measurements {
+      // meters
+      public static final double kBottomHeight = 0;
+      public static final double kTopHeight = 1.25;
+      // how close it should be to the goal when the motors start slowing down
+      // TODO redo this with feed forward because it's better
+      public static final double kSlowDownDistance = 0.5;
+
+      // Radius of the drum of the elevator
+      // Controls the conversion factor of the SparkMax motors
+      // This value is multiplied by 2pi for the circumference, then passed in as a factor
+      // multiplying the rotations
+      public static final double kDrumRadius = 0.0508;
+      // Gearing of the gearbox on elevator (Positive values = reduction)
+      public static final double kGearing = 10;
+      // Standard deviation of elevator sim (set to 0 for no noise)
+      public static final double[] kStandardDeviation =
+          new double[] {
+            0, 0,
+          };
+    }
+
+    public static final class Encoder {
+      // Change this later idk what it is
+      public static final int kAChannel = 0;
+      public static final int kBChannel = 1;
+    }
+
+    // ways the elevator can go
+    // It aint really needed i just learned what an enum is and watned 2 use it
+    public static enum WaysItCanMove {
+      down,
+      up,
+      nowhere
+    }
+  }
+
+  public static final class WristConstants {
+    public static final int kCANId = 24;
+    public static final double kHorizontalPosition = 3.1;
+    public static final double kVerticalPosition = 3 * Math.PI / 2;
+
+    public static final double kAtAngleTolerance = 0.1;
+
+    public static final double kP = 0.125;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+  }
+
   public static final class PathingConstants {
+    public static final AprilTagFieldLayout kTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+    public static Pose2d poseForTag(int tag) {
+      return kTagLayout.getTagPose(tag).get().toPose2d();
+    }
+
     public static final double kRobotMassKg = 63.5;
     public static final double kRobotLengthWidthMeters =
         Units.inchesToMeters(36); // including bumpers. Length and width are the same.
@@ -168,32 +385,31 @@ public final class Constants {
 
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2, -kCoralFaceOffset, Rotation2d.fromDegrees(180));
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            -kCoralFaceOffset,
+            Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
-        new Transform2d(kRobotLengthWidthMeters / 2, kCoralFaceOffset, Rotation2d.fromDegrees(180));
+        new Transform2d(
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kCoralFaceOffset,
+            Rotation2d.fromDegrees(180));
 
     public static final double kReefCenterX = Units.inchesToMeters((144.0 + 209.49) / 2);
 
     // Measurements taken from April Tag coordinates
-    // I like doing it as an enum because it makes it easy to organize.
-    // Question: does doing it as an enum like this make it less efficient?
     public static enum ReefPose {
-      CLOSE(144, 158.5, 180),
-      CLOSE_LEFT(160.39, 186.83, 120),
-      CLOSE_RIGHT(160.39, 130.17, 240),
-      FAR(209.49, 158.5, 0),
-      FAR_LEFT(193.1, 186.83, 60),
-      FAR_RIGHT(193.1, 130.17, 300);
+      CLOSE(18),
+      CLOSE_LEFT(19),
+      CLOSE_RIGHT(17),
+      FAR(21),
+      FAR_LEFT(20),
+      FAR_RIGHT(22);
 
       private Pose2d leftPose;
       private Pose2d rightPose;
 
-      private ReefPose(double xInches, double yInches, double rotDegrees) {
-        Pose2d reefPose =
-            new Pose2d(
-                Units.inchesToMeters(xInches),
-                Units.inchesToMeters(yInches),
-                Rotation2d.fromDegrees(rotDegrees));
+      private ReefPose(int tag) {
+        Pose2d reefPose = poseForTag(tag);
         this.leftPose = reefPose.transformBy(kTransformLeft);
         this.rightPose = reefPose.transformBy(kTransformRight);
       }
@@ -203,22 +419,89 @@ public final class Constants {
       }
     }
 
-    public static Pose2d poseFromTag(
-        double xInches, double yInches, double rotDegrees, Transform2d transform) {
-      return new Pose2d(
-              Units.inchesToMeters(xInches),
-              Units.inchesToMeters(yInches),
-              Rotation2d.fromDegrees(rotDegrees))
-          .plus(transform);
+    public static Pose2d poseFromTag(int tag, Transform2d transform) {
+      return poseForTag(tag).plus(transform);
     }
 
     public static final Transform2d kFeederTransform =
         new Transform2d(kRobotLengthWidthMeters / 2, 0.0, new Rotation2d());
-    public static final Pose2d kLeftFeederPose = poseFromTag(33.51, 291.20, 306, kFeederTransform);
-    public static final Pose2d kRightFeederPose = poseFromTag(33.51, 25.80, 54, kFeederTransform);
+    public static final Pose2d kLeftFeederPose = poseFromTag(13, kFeederTransform);
+    public static final Pose2d kRightFeederPose = poseFromTag(12, kFeederTransform);
 
     public static final Transform2d kProcessorTransform =
         new Transform2d(kRobotLengthWidthMeters / 2, 0.0, Rotation2d.fromDegrees(0));
-    public static final Pose2d kProcessorPose = poseFromTag(235.73, -0.15, 90, kProcessorTransform);
+    public static final Pose2d kProcessorPose = poseFromTag(16, kProcessorTransform);
+
+    public static final double kStartLineInches = 144 + 65.49 + 88;
+    public static final Pose2d kCenterStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kTagLayout.getFieldWidth() / 2,
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d kLeftStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d kRightStartPose =
+        new Pose2d(
+            Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
+            kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5),
+            Rotation2d.fromDegrees(180));
+    // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0,
+    // Rotation2d.fromDegrees(180))
+    // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
+  }
+
+  public static final class ArmSubConstants {
+    public static final double kMaxVelocity = 8;
+    public static final double kMaxAcceleration = 8;
+
+    public static final double kS = 0.0;
+    public static final double kG = 1;
+    public static final double kV = 0.0;
+    public static final double kA = 0.0;
+
+    public static final double kP = 8;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
+    public static final double kMaxAngle = Units.degreesToRadians(150);
+    public static final double kMinAngle = Units.degreesToRadians(30);
+
+    public static final double kArmReduction = 25;
+    public static final double kArmPivotHeight = Units.inchesToMeters(10.5);
+    public static final double kArmLength = Units.inchesToMeters(13.5);
+    public static final double kArmMass = 2.78; // kg
+    public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
+  }
+
+  public static class ElevatorSubConstants {
+    public static final double kMaxVelocity = 2;
+    public static final double kMaxAcceleration = .5;
+
+    public static final double kS = 0;
+    public static final double kG = 1.25;
+    public static final double kV = 1;
+    public static final double kA = 1;
+
+    public static final double kP = 32.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
+    public static final double kMaxHeight = 1;
+    public static final double kMinHeight = 0;
+
+    public static final double kArmReduction = 25;
+    public static final double kArmPivotHeight = Units.inchesToMeters(10.5);
+    public static final double kArmLength = Units.inchesToMeters(13.5);
+    public static final double kArmMass = 2.78; // kg
+    public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
+
+    public static final double kL2Pos = .78;
+    public static final double kL3Pos = 1.46;
+    public static final double kL4Pos = 2.42;
+
+    public static final double kAtGoalTolerance = 0.04;
   }
 }

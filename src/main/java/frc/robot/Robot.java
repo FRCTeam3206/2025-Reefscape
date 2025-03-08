@@ -27,8 +27,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.GameConstants.ReefLevels;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
+import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -46,12 +51,17 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Algae m_algae = new Algae();
+  private final CoralSupersystem m_coral = new CoralSupersystem();
+
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
-  private double m_speedMultiplier = 0.5;
+  private double m_speedMultiplier = DriveConstants.kSlowSpeed;
 
   private double m_lastTime = 0;
   private double m_loopTime = 0;
+
+  private boolean m_fastMode = false;
 
   @NotLogged private Alliance m_prevAlliance = null;
 
@@ -92,12 +102,49 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_weaponsController.x().whileTrue(m_robotDrive.setXCommand());
-    m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative = !m_fieldRelative));
-    m_weaponsController
-        .a()
-        .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // if (Robot.isReal()) {
+    m_driverController
+        .button(1)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_fastMode = !m_fastMode;
+                  m_speedMultiplier =
+                      m_fastMode ? DriveConstants.kFastSpeed : DriveConstants.kSlowSpeed;
+                }));
+    m_driverController.button(3).whileTrue(m_robotDrive.setXCommand());
+    // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
+    // !m_fieldRelative));
+    // m_weaponsController
+    //     .a()
+    //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+    m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // } else {
+    //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // }
+
+    m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
+    m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
+    m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
+    m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
+
+    m_weaponsController.a().whileTrue(m_coral.floorIntake());
+    m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
+    m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
+    m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
+    // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
+    m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
+
+    m_weaponsController.start().whileTrue(m_coral.scoreWheels());
+
+    // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
+
+    // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
+    // m_weaponsController.y().whileTrue(m_elevator.moveToL4Command());
+
+    // m_weaponsController.b().whileTrue(m_coral.moveWristVertical());
 
     // m_weaponsController.rightTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(true));
     // m_weaponsController.leftTrigger().whileTrue(m_robotDrive.getToNearestReefCommand(false));
@@ -106,18 +153,36 @@ public class Robot extends TimedRobot {
 
   /** Use this method to define default commands for subsystems. */
   private void configureDefaultCommands() {
-    m_robotDrive.setDefaultCommand(
-        m_robotDrive.driveCommand(
-            adjustJoystick(
-                m_driverController::getY,
-                () -> m_speedMultiplier,
-                () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(
-                m_driverController::getX,
-                () -> m_speedMultiplier,
-                () -> m_invertControls || !m_fieldRelative),
-            adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
-            () -> m_fieldRelative));
+    if (Robot.isReal()) {
+      m_robotDrive.setDefaultCommand(
+          m_robotDrive.driveCommand(
+              adjustJoystick(
+                  m_driverController::getY,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(
+                  m_driverController::getX,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(m_driverController::getTwist, () -> m_speedMultiplier, () -> true),
+              () -> m_fieldRelative));
+    } else {
+      m_robotDrive.setDefaultCommand(
+          m_robotDrive.driveCommand(
+              adjustJoystick(
+                  m_weaponsController::getLeftY,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(
+                  m_weaponsController::getLeftX,
+                  () -> m_speedMultiplier,
+                  () -> m_invertControls || !m_fieldRelative),
+              adjustJoystick(m_weaponsController::getRightX, () -> m_speedMultiplier, () -> true),
+              () -> m_fieldRelative));
+    }
+
+    m_algae.setDefaultCommand(m_algae.holdPositionCommand());
+    // m_elevator.setDefaultCommand(m_elevator.stopCommand());
   }
 
   /**
@@ -134,62 +199,84 @@ public class Robot extends TimedRobot {
 
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
-    m_autonChooser.setDefaultOption(
-        "Basic Forward",
-        m_robotDrive.driveCommand(() -> -0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0));
+    m_autonChooser.addOption("Basic Forward", simpleForward());
     m_autonChooser.addOption(
-        "Coral on the left",
-        generateAuton(
-            false,
-            scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
-            scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
-            scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
-            scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
-            scoreCoralCommand(ReefPose.CLOSE, false, 4)));
-    m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
+        "1 coral (start center)",
+        simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
+    m_autonChooser.addOption(
+        "1 coral (start left)",
+        simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
+    m_autonChooser.addOption(
+        "1 coral (start right)",
+        simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
+    // m_autonChooser.addOption(
+    //     "Coral on the left",
+    //     generateAuton(
+    //         false,
+    //         scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
+    //         scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE, false, 4)));
+    // m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
     SmartDashboard.putData(m_autonChooser);
   }
 
-  public Command generateAuton(boolean right, Command... scoreCoralCommands) {
-    Command auton = robotForwardCommand().andThen(scoreCoralCommands[0]);
-    for (int i = 1; i < scoreCoralCommands.length; i++) {
-      auton = auton.andThen(pickupCoralCommand(right)).andThen(scoreCoralCommands[i]);
-    }
-    return auton;
+  public Command simpleForward() {
+    return m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0);
   }
 
-  /**
-   * We can run this at the begining of any autonomous routine so that we first drive forward, to
-   * make sure we don't hit the cages.
-   */
-  public Command robotForwardCommand() {
-    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
+  public Command simpleAutonGenerator(Pose2d startPose, ReefPose reefPose) {
+    return new InstantCommand(() -> m_robotDrive.resetOdometry(startPose))
+        .andThen(simpleForward())
+        .andThen(m_robotDrive.getToReefPoseCommand(reefPose, true))
+        .andThen(m_robotDrive.stopOnceCommand())
+        .andThen(m_coral.placeLevelOne().withTimeout(4));
   }
 
-  /**
-   * Pick up coral from the feeder station
-   *
-   * @param right Whether to pick up from the right or left feeder station (from driver view, since
-   *     we have a rotated field).
-   */
-  public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive.getToFeederCommand(right);
-    // We can add things with mechanisms later so that it will intake.
-    // This command should stop once we see that we have the coral.
-  }
+  // public Command generateAuton(boolean right, Command... scoreCoralCommands) {
+  //   Command auton = robotForwardCommand().andThen(scoreCoralCommands[0]);
+  //   for (int i = 1; i < scoreCoralCommands.length; i++) {
+  //     auton = auton.andThen(pickupCoralCommand(right)).andThen(scoreCoralCommands[i]);
+  //   }
+  //   return auton;
+  // }
 
-  /**
-   * Score coral on the reef.
-   *
-   * @param reefPose Which location on the reef to score it on.
-   * @param right Whether it should be the right side on that face (from the robot's perspective).
-   * @param level Which level to score the coral on.
-   * @return A Command to score coral on the reef.
-   */
-  public Command scoreCoralCommand(ReefPose reefPose, boolean right, int level) {
-    return m_robotDrive.getToReefPoseCommand(reefPose, right);
-    // We can later add things with the mechanism to make it score the coral correctly.
-  }
+  // /**
+  //  * We can run this at the begining of any autonomous routine so that we first drive forward, to
+  //  * make sure we don't hit the cages.
+  //  */
+  // public Command robotForwardCommand() {
+  //   return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () ->
+  // false).withTimeout(.5);
+  // }
+
+  // /**
+  //  * Pick up coral from the feeder station
+  //  *
+  //  * @param right Whether to pick up from the right or left feeder station (from driver view,
+  // since
+  //  *     we have a rotated field).
+  //  */
+  // public Command pickupCoralCommand(boolean right) {
+  //   return m_robotDrive.stopCommand();//getToFeederCommand(right);
+  //   // We can add things with mechanisms later so that it will intake.
+  //   // This command should stop once we see that we have the coral.
+  // }
+
+  // /**
+  //  * Score coral on the reef.
+  //  *
+  //  * @param reefPose Which location on the reef to score it on.
+  //  * @param right Whether it should be the right side on that face (from the robot's
+  // perspective).
+  //  * @param level Which level to score the coral on.
+  //  * @return A Command to score coral on the reef.
+  //  */
+  // public Command scoreCoralCommand(ReefPose reefPose, boolean right, int level) {
+  //   return m_robotDrive.getToReefPoseCommand(reefPose, right);
+  //   // We can later add things with the mechanism to make it score the coral correctly.
+  // }
 
   /**
    * Apply desired adjustments to a joystick input, such as deadbanding and nonlinear transforms.
@@ -236,7 +323,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    AllianceUtil.setAlliance();
+    // AllianceUtil.setAlliance();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -270,6 +357,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_coral.resetElevator();
     // if (!DriverStation.getAlliance().isEmpty()) {
     //   var alliance = DriverStation.getAlliance().get();
     //   m_invertControls = alliance.equals(Alliance.Blue);
@@ -309,16 +397,16 @@ public class Robot extends TimedRobot {
 
   public void resetRobotToFieldCenter() {
     var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    var heading =
-        (DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red)
-            ? 180.0
-            : 0.0;
+    var heading = 0;
+    // (DriverStation.getAlliance().isPresent()
+    //         && DriverStation.getAlliance().get() == Alliance.Red)
+    //     ? 180.0
+    //     : 0.0;
     m_robotDrive.zeroHeading();
     m_robotDrive.resetOdometry(
         new Pose2d(
-            field.getFieldLength() / 2,
-            field.getFieldWidth() / 2,
+            m_robotDrive.getPose().getX(), // field.getFieldLength() / 2,
+            m_robotDrive.getPose().getY(), // field.getFieldWidth() / 2,
             Rotation2d.fromDegrees(heading)));
   }
 }
