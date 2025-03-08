@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor1, MotorType.kBrushless);
   private final SparkMax m_max2 =
       new SparkMax(ElevatorConstants.Motor.kCanIdMotor2, MotorType.kBrushless);
-  private final RelativeEncoder m_encoder = m_max.getAlternateEncoder();
+  private final RelativeEncoder m_encoder = m_max.getEncoder();
 
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -97,6 +97,7 @@ public class Elevator extends SubsystemBase {
         PersistMode.kPersistParameters);
     // SmartDashboard.putData("Arm", mech2d);
     m_encoder.setPosition(0.0);
+    reset();
   }
 
   @Override
@@ -144,6 +145,14 @@ public class Elevator extends SubsystemBase {
     return m_max2.getAppliedOutput() * m_max2.getBusVoltage();
   }
 
+  public double getBusVoltage() {
+    return m_max.getBusVoltage();
+  }
+
+  public double getBusVoltageFollower() {
+    return m_max2.getBusVoltage();
+  }
+
   public double getCurrent() {
     return m_max.getOutputCurrent();
   }
@@ -154,6 +163,10 @@ public class Elevator extends SubsystemBase {
 
   public double getSetPoint() {
     return setpoint.position;
+  }
+
+  public double getSetPointVelocity() {
+    return setpoint.velocity;
   }
 
   public double getGoal() {
@@ -169,7 +182,11 @@ public class Elevator extends SubsystemBase {
   // }
 
   public Command setVoltage(DoubleSupplier volts) {
-    return run(() -> m_max.setVoltage(6 * volts.getAsDouble()));
+    return run(
+        () -> {
+          m_max.setVoltage(6 * volts.getAsDouble());
+          m_max2.setVoltage(6 * volts.getAsDouble());
+        });
   }
 
   public void reset() {
@@ -178,14 +195,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public void moveToGoal(double goal) {
+    var cur_velocity = this.setpoint.velocity;
     this.goal = new TrapezoidProfile.State(goal, 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    ff = feedforward.calculateWithVelocities(cur_velocity, setpoint.velocity);
     fb = feedback.calculate(getPosition(), setpoint.position);
 
     double voltage = fb + ff;
     if (voltage < 0) voltage = 0;
     m_max.setVoltage(voltage);
+    m_max2.setVoltage(voltage);
   }
 
   public Command moveToGoalCommand(double goal) {
@@ -251,6 +270,7 @@ public class Elevator extends SubsystemBase {
 
   public void stop() {
     m_max.setVoltage(0);
+    m_max2.setVoltage(0);
     setpoint = new TrapezoidProfile.State();
   }
 
@@ -302,11 +322,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public void defaultAction(boolean safeToGoDown) {
-    if (safeToGoDown) {
-      stop();
-    } else {
-      moveToGoal(getPosition());
-    }
+    stop();
+    // if (safeToGoDown) {
+    //   stop();
+    // } else {
+    //   moveToGoal(getPosition());
+    // }
   }
 
   public Command defaultCommand(BooleanSupplier safeToGoDown) {

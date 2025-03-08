@@ -5,7 +5,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public final class Configs {
@@ -163,10 +163,15 @@ public final class Configs {
     public static final SparkMaxConfig elevatorConfig2 = new SparkMaxConfig();
 
     static {
-      double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius;
+      // double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius / 5;
 
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
-      elevatorConfig.alternateEncoder.positionConversionFactor(elevatorPosFactor);
+      elevatorConfig.encoder.uvwAverageDepth(4).uvwMeasurementPeriod(8);
+      elevatorConfig
+          .encoder
+          .positionConversionFactor(ElevatorSubConstants.kPosFactor)
+          .velocityConversionFactor(ElevatorSubConstants.kVelocityFactor);
+      // elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop
       //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -174,10 +179,7 @@ public final class Configs {
       //     .pid(1, 0, 0)
       //     .outputRange(-1, 1);
 
-      elevatorConfig2
-          .idleMode(IdleMode.kBrake)
-          .smartCurrentLimit(80)
-          .follow(ElevatorConstants.Motor.kCanIdMotor1);
+      elevatorConfig2.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
     }
   }
 
