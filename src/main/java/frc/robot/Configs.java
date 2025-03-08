@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public final class Configs {
@@ -163,9 +164,11 @@ public final class Configs {
     public static final SparkMaxConfig elevatorConfig2 = new SparkMaxConfig();
 
     static {
-      double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius / 5;
+      // double elevatorPosFactor = 2 * Math.PI * ElevatorConstants.Measurements.kDrumRadius / 5;
 
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
+      elevatorConfig.encoder.uvwAverageDepth(4).uvwMeasurementPeriod(8);
+      elevatorConfig.encoder.positionConversionFactor(ElevatorSubConstants.kPosFactor).velocityConversionFactor(ElevatorSubConstants.kVelocityFactor);
       //elevatorConfig.encoder.positionConversionFactor(elevatorPosFactor);
       // elevatorConfig
       //     .closedLoop

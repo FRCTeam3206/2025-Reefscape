@@ -165,6 +165,10 @@ public class Elevator extends SubsystemBase {
     return setpoint.position;
   }
 
+  public double getSetPointVelocity() {
+    return setpoint.velocity;
+  }
+
   public double getGoal() {
     return goal.position;
   }
@@ -191,9 +195,10 @@ public class Elevator extends SubsystemBase {
   }
 
   public void moveToGoal(double goal) {
+    var cur_velocity = this.setpoint.velocity;
     this.goal = new TrapezoidProfile.State(goal, 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    ff = feedforward.calculateWithVelocities(cur_velocity, setpoint.velocity);
     fb = feedback.calculate(getPosition(), setpoint.position);
 
     double voltage = fb + ff;
