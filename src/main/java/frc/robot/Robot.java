@@ -102,6 +102,8 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
+    SmartDashboard.putNumber("Arm Volts", 0.0);
+
     // if (Robot.isReal()) {
     m_driverController
         .button(1)
@@ -138,6 +140,8 @@ public class Robot extends TimedRobot {
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
+
+    m_weaponsController.rightBumper().whileTrue(m_coral.setArmVoltage(() -> SmartDashboard.getNumber("Arm Volts", 0.0)));
 
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 

@@ -3,6 +3,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GameConstants.ReefLevels;
@@ -48,6 +50,10 @@ public class CoralSupersystem {
    */
   public Command moveWristHorizontal() {
     return m_wrist.toHorizontalContinuous().until(() -> m_wrist.isHorizontal().getAsBoolean());
+  }
+
+  public Command setArmVoltage(DoubleSupplier voltage) {
+    return m_arm.setVoltageCommand(voltage);
   }
 
   /** Move the arm, wrist, and elevator so that the mechanism is in the stored position. */

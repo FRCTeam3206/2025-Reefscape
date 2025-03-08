@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
@@ -95,6 +97,10 @@ public class ArmSubsystem extends SubsystemBase {
         PersistMode.kPersistParameters);
     feedback.enableContinuousInput(0, Units.rotationsToRadians(1));
     SmartDashboard.putData("Arm", mech2d);
+  }
+
+  public Command setVoltageCommand(DoubleSupplier voltage) {
+    return this.run(() -> m_max.setVoltage(voltage.getAsDouble()));
   }
 
   @Override
