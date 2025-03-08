@@ -124,9 +124,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Rotation2d getAngle() {
     if (Robot.isSimulation()) {
-      return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
+      return new Rotation2d(m_encoderSim.getPosition());
     }
-    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+    return new Rotation2d(m_encoder.getPosition());
   }
 
   public double getVelocity() {
@@ -143,6 +143,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   public double getSetPoint() {
     return setpoint.position;
+  }
+
+  public double getVelocitySetpoint() {
+    return setpoint.velocity;
   }
 
   public double getGoal() {

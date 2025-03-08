@@ -143,7 +143,8 @@ public final class Configs {
       coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(true);
       coralArmConfig
           .absoluteEncoder
-          .inverted(true)
+          .inverted(false)
+          .zeroCentered(true)
           .positionConversionFactor(Units.rotationsToRadians(1))
           .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);

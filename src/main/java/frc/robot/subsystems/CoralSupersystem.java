@@ -22,7 +22,7 @@ public class CoralSupersystem {
 
   public CoralSupersystem() {
     // m_arm.setDefaultCommand(m_arm.moveToGoalCommand(3));
-    m_arm.setDefaultCommand(m_arm.toStored());
+    m_arm.setDefaultCommand(m_arm.stopCommand());//m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
     m_elevator.setDefaultCommand(m_elevator.defaultCommand(() -> m_arm.isSafe()));
