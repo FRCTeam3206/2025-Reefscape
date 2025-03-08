@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Robot;
@@ -34,7 +33,7 @@ import frc.robot.Robot;
 @Logged
 public class ArmSubsystem extends SubsystemBase {
   private double simVoltage = 0;
-  private final SparkMax m_max = new SparkMax(ArmConstants.kArmCANId, MotorType.kBrushless);
+  private final SparkMax m_max = new SparkMax(ArmSubConstants.kArmCANId, MotorType.kBrushless);
   private final AbsoluteEncoder m_encoder = m_max.getAbsoluteEncoder();
 
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
@@ -172,19 +171,19 @@ public class ArmSubsystem extends SubsystemBase {
 
   /**
    * Returns true when the arm is at its current goal and not moving. Tolerances for position and
-   * velocity are set in ArmConstants.
+   * velocity are set in ArmSubConstants.
    *
    * @return at goal and not moving
    */
   public boolean atGoal(double goal) {
-    return Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    return Math.abs(goal - getAngle().getRadians()) < ArmSubConstants.kAtAngleTolerance;
     // return MathUtil.isNear(
     //         this.goal.position,
     //         getAngle().getRadians(),
-    //         ArmConstants.kAtAngleTolerance,
+    //         ArmSubConstants.kAtAngleTolerance,
     //         0,
     //         2 * Math.PI)
-    //     && MathUtil.isNear(0, getVelocity(), ArmConstants.kAtVelocityTolerance);
+    //     && MathUtil.isNear(0, getVelocity(), ArmSubConstants.kAtVelocityTolerance);
   }
 
   public void stop() {
@@ -212,49 +211,49 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public Command toHorizontal() {
-    return moveToGoalCommand(ArmConstants.Angles.kHorizontal);
+    return moveToGoalCommand(ArmSubConstants.Angles.kHorizontal);
   }
 
   public Command toStored() {
-    return moveToGoalCommand(ArmConstants.Angles.kStored);
+    return moveToGoalCommand(ArmSubConstants.Angles.kStored);
   }
 
   public Command toStoredStop() {
-    return moveToGoalAndStopCommand(ArmConstants.Angles.kStored);
+    return moveToGoalAndStopCommand(ArmSubConstants.Angles.kStored);
   }
 
   public boolean isSafe() {
-    return getAngle().getRadians() < ArmConstants.Angles.kSafePosition;
+    return getAngle().getRadians() < ArmSubConstants.Angles.kSafePosition;
   }
 
   public Command toStoredSafe() {
-    return moveToGoalCommand(ArmConstants.Angles.kStored).until(() -> isSafe());
+    return moveToGoalCommand(ArmSubConstants.Angles.kStored).until(() -> isSafe());
   }
 
   public Command toFloorIntakeStop() {
-    return moveToGoalAndStopCommand(ArmConstants.Angles.kFloorIntake).andThen(stopCommand());
+    return moveToGoalAndStopCommand(ArmSubConstants.Angles.kFloorIntake).andThen(stopCommand());
     // .until(() -> atGoal())
     // .andThen(stopCommand());
   }
 
   public Command toFeeder() {
-    return moveToGoalCommand(ArmConstants.Angles.kFeeder);
+    return moveToGoalCommand(ArmSubConstants.Angles.kFeeder);
   }
 
   public Command toL1() {
-    return moveToGoalCommand(ArmConstants.Angles.kReefL1);
+    return moveToGoalCommand(ArmSubConstants.Angles.kReefL1);
   }
 
   public Command toL1Stop() {
-    return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL1);
+    return moveToGoalAndStopCommand(ArmSubConstants.Angles.kReefL1);
   }
 
   public Command toL2L3() {
-    return moveToGoalCommand(ArmConstants.Angles.kReefL2);
+    return moveToGoalCommand(ArmSubConstants.Angles.kReefL2);
   }
 
   public Command toL2L3Stop() {
-    return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL2);
+    return moveToGoalAndStopCommand(ArmSubConstants.Angles.kReefL2);
   }
 
   public Command toBranch(GameConstants.ReefLevels level) {
@@ -263,13 +262,13 @@ public class ArmSubsystem extends SubsystemBase {
       case l1:
         return toL1();
       case l2:
-        goal = ArmConstants.Angles.kReefL2;
+        goal = ArmSubConstants.Angles.kReefL2;
         break;
       case l3:
-        goal = ArmConstants.Angles.kReefL3;
+        goal = ArmSubConstants.Angles.kReefL3;
         break;
       case l4:
-        goal = ArmConstants.Angles.kReefL4;
+        goal = ArmSubConstants.Angles.kReefL4;
         break;
     }
     return moveToGoalCommand(goal);

@@ -211,43 +211,6 @@ public final class Constants {
     public static final double kConversionFactor = 0.05; // This is NOT the correct value yet.
   }
 
-  public static final class ArmConstants {
-    // public static final int gearing = 10;
-    // public static final double kUpdateFrequency = 0.02;
-
-    public static final int kArmCANId = 23;
-
-    // Trapezoid profile constraints
-    public static final double kMaxVelocity = 1.0; // raidans/second
-    public static final double kMaxAcceleration = 1.0; // radians/second^2
-
-    // Feedforward constants
-    public static final double kS = 0; // volts
-    public static final double kG = .5; // volts
-    public static final double kV = 0; // volts*second/radian
-    public static final double kA = 0; // volts*second^2/radian
-
-    // Feedback constants
-    public static final double kP = 0;
-    public static final double kI = 0;
-    public static final double kD = 0;
-
-    public static final double kAtAngleTolerance = Units.degreesToRadians(2);
-    public static final double kAtVelocityTolerance = Units.degreesToRadians(2);
-
-    public static final class Angles {
-      public static final double kHorizontal = Math.PI;
-      public static final double kStored = 1.6; // Works in real life.
-      public static final double kFloorIntake = 3.4; // Works in real life.
-      public static final double kFeeder = 2.30; // This is a guess.
-      public static final double kReefL1 = 2.3; // This is a guess.
-      public static final double kReefL2 = 2.3; // This is a guess.
-      public static final double kReefL3 = kReefL2;
-      public static final double kReefL4 = 2.50;
-      public static final double kSafePosition = 1.80;
-    }
-  }
-
   public static final class CoralConstants {
     // Random numbers right now
     public static final int kCANId = 25;
@@ -454,6 +417,8 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
+    public static final int kArmCANId = 23;
+    public static final double kAtAngleTolerance = Units.degreesToRadians(2);
     public static final double kMaxVelocity = 8;
     public static final double kMaxAcceleration = 8;
 
@@ -474,6 +439,18 @@ public final class Constants {
     public static final double kArmLength = Units.inchesToMeters(13.5);
     public static final double kArmMass = 2.78; // kg
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
+
+    public static final class Angles {
+      public static final double kHorizontal = Math.PI;
+      public static final double kStored = 1.6; // Works in real life.
+      public static final double kFloorIntake = 3.4; // Works in real life.
+      public static final double kFeeder = 2.30; // This is a guess.
+      public static final double kReefL1 = 2.3; // This is a guess.
+      public static final double kReefL2 = 2.3; // This is a guess.
+      public static final double kReefL3 = kReefL2;
+      public static final double kReefL4 = 2.50;
+      public static final double kSafePosition = 1.80;
+    }
   }
 
   public static class ElevatorSubConstants {
