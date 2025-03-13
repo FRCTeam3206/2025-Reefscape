@@ -512,4 +512,8 @@ public final class Constants {
 
     public static final double kAtGoalTolerance = 0.04;
   }
+
+  public static class ClimberConstants {
+    public static final int kClimberCanId = 43;
+  }
 }

@@ -183,6 +183,14 @@ public final class Configs {
     }
   }
 
+  public static final class ClimberConfigs {
+    public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
+
+    static {
+      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+    }
+  }
+
   public static final class Wrist {
     public static final SparkMaxConfig wristConfig = new SparkMaxConfig();
     public static final double kG = 0.01;

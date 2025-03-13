@@ -33,6 +33,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
@@ -53,6 +54,8 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
   private final CoralSupersystem m_coral = new CoralSupersystem();
+
+  private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -183,6 +186,9 @@ public class Robot extends TimedRobot {
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
+
+    m_climber.setDefaultCommand(
+        m_climber.directControl(() -> -0.5 * m_weaponsController.getRightY()));
   }
 
   /**
