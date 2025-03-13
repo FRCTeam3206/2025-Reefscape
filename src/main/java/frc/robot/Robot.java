@@ -122,6 +122,7 @@ public class Robot extends TimedRobot {
     //     .a()
     //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    m_driverController.button(4).onTrue(new InstantCommand(m_climber::zeroEncoder));
     // } else {
     //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
     // }

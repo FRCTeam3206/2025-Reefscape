@@ -44,8 +44,23 @@ public class ClimberSubsystem extends SubsystemBase {
     m_max.setVoltage(0);
   }
 
+  public void zeroEncoder() {
+    m_encoder.setPosition(0);
+  }
+
+  public void runWithLimits(double power) {
+    var position = getPosition();
+    if (power < 0 && position > ClimberConstants.kMinLimit) {
+      m_max.set(power);
+    } else if (power > 0 && position < ClimberConstants.kMaxLimit) {
+      m_max.set(power);
+    } else {
+      m_max.set(0);
+    }
+  }
+
   public Command directControl(DoubleSupplier power) {
-    return this.run(() -> m_max.set(power.getAsDouble()));
+    return this.run(() -> runWithLimits(power.getAsDouble()));
   }
 
   public Command stopCommand() {
