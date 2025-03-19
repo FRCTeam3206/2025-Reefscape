@@ -164,6 +164,14 @@ public final class Constants {
             Units.inchesToMeters(10),
             new Rotation3d(0, Math.toRadians(-15), 0));
 
+    public static final String kCamera2Name = "AprilTagCamera2";
+    public static final Transform3d kRobotToCamera2 =
+        new Transform3d(
+            Units.inchesToMeters(13),
+            Units.inchesToMeters(0),
+            Units.inchesToMeters(10),
+            new Rotation3d(0, Math.toRadians(-15), 0));
+
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
