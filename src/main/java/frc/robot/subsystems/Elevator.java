@@ -259,42 +259,41 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command toBranch(GameConstants.ReefLevels level) {
-    double goal = 0.0;
-    switch (level) {
-      case l1:
-        return stopCommand();
-      case l2:
-        goal = ElevatorSubConstants.kL2Pos;
-        break;
-      case l3:
-        goal = ElevatorSubConstants.kL3Pos;
-        break;
-      case l4:
-        goal = ElevatorSubConstants.kL4Pos;
-        break;
+    if (level == GameConstants.ReefLevels.l1) {
+      return stopCommand();
     }
-    return moveToGoalCommand(goal);
+    return moveToGoalCommand(levelToHeight(level));
+  }
+
+  /**
+   * how many meters up a given reef level is
+   * @param level l2, l3, or l4, do NOT call l1, I tried to do type safety with this but i couldnt figure it out
+   * @throws Error if you call with l1 PLS DONT CALL WITH L1 I WILL CRY IF YUO DO
+   * @return height in meters
+   */
+  private double levelToHeight(GameConstants.ReefLevels level) {
+    switch (level) {
+      case l2:
+        return ElevatorSubConstants.kL2Pos;
+      case l3:
+        return ElevatorSubConstants.kL3Pos;
+      case l4:
+        return ElevatorSubConstants.kL4Pos;
+      default:
+        //If you get here you should just die  honestly
+        throw new Error("Can't go to l1 unfortunatley");
+    }
   }
 
   public Command toBranchStop(GameConstants.ReefLevels level) {
-    double goal = 0.0;
-    switch (level) {
-      case l1:
-        return stopCommand();
-      case l2:
-        goal = ElevatorSubConstants.kL2Pos;
-        break;
-      case l3:
-        goal = ElevatorSubConstants.kL3Pos;
-        break;
-      case l4:
-        goal = ElevatorSubConstants.kL4Pos;
-        break;
+    if (level == GameConstants.ReefLevels.l1) {
+      return stopCommand();
     }
-    return moveToGoalAndStopCommand(goal);
+    return moveToGoalAndStopCommand(levelToHeight(level));
   }
 
   public boolean atGoal(double goal) {
+    //blunc used a library to check a number 💀
     return MathUtil.isNear(
         goal,
         getPosition(),
