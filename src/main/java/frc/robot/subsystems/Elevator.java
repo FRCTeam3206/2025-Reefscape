@@ -258,20 +258,17 @@ public class Elevator extends SubsystemBase {
     return this.run(this::stop);
   }
 
-  public Command toBranch(GameConstants.ReefLevels level) {
-    if (level == GameConstants.ReefLevels.l1) {
-      return stopCommand();
-    }
+  public Command toBranch(GameConstants.ReefLevelsWithoutL1 level) {
     return moveToGoalCommand(levelToHeight(level));
   }
 
   /**
    * how many meters up a given reef level is
-   * @param level l2, l3, or l4, do NOT call l1, I tried to do type safety with this but i couldnt figure it out
-   * @throws Error if you call with l1 PLS DONT CALL WITH L1 I WILL CRY IF YUO DO
+   * @param level l2, l3, or l4
+   * @throws Error if you somehow put in something thats not l2, l3, or l4
    * @return height in meters
    */
-  private double levelToHeight(GameConstants.ReefLevels level) {
+  private double levelToHeight(GameConstants.ReefLevelsWithoutL1 level) {
     switch (level) {
       case l2:
         return ElevatorSubConstants.kL2Pos;
@@ -280,15 +277,11 @@ public class Elevator extends SubsystemBase {
       case l4:
         return ElevatorSubConstants.kL4Pos;
       default:
-        //If you get here you should just die  honestly
-        throw new Error("Can't go to l1 unfortunatley");
+        throw new Error("blud superseded the type check");
     }
   }
 
-  public Command toBranchStop(GameConstants.ReefLevels level) {
-    if (level == GameConstants.ReefLevels.l1) {
-      return stopCommand();
-    }
+  public Command toBranchStop(GameConstants.ReefLevelsWithoutL1 level) {
     return moveToGoalAndStopCommand(levelToHeight(level));
   }
 

@@ -109,6 +109,15 @@ public final class Constants {
       l3,
       l4;
     }
+    
+    //TODO this is really stupid
+    //you might ask: Ms Anyonymous Programmer Why Would you do this?
+    //Because Of Type Safety For One (1) Function That Doesnt Allow l1
+    public static enum ReefLevelsWithoutL1 {
+      l2,
+      l3,
+      l4,
+    }
 
     // all in meters
     // How high up each thing is
@@ -477,13 +486,20 @@ public final class Constants {
   }
 
   public static class ElevatorSubConstants {
-    public static final double kMaxVelocity = 2;
-    public static final double kMaxAcceleration = .5;
+    public static final double kPosFactor =
+        3
+            * 22.0
+            * Units.inchesToMeters(.25)
+            / 5.0; // 5 rotations is 1 rotation of sprocket, sprocket is 22 teeth each 1/4 inch
+    public static final double kVelocityFactor = kPosFactor / 60.0;
 
-    public static final double kS = 0;
-    public static final double kG = 1.25;
-    public static final double kV = 1;
-    public static final double kA = 1;
+    public static final double kMaxVelocity = 50.0 * kPosFactor;
+    public static final double kMaxAcceleration = 50.0 * kPosFactor;
+
+    public static final double kS = .3;
+    public static final double kG = 1.3;
+    public static final double kV = .15 / kPosFactor;
+    public static final double kA = .02 / kPosFactor;
 
     public static final double kP = 32.0;
     public static final double kI = 0.0;
@@ -498,9 +514,10 @@ public final class Constants {
     public static final double kArmMass = 2.78; // kg
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
-    public static final double kL2Pos = .78;
-    public static final double kL3Pos = 1.46;
-    public static final double kL4Pos = 2.42;
+    public static final double kPosOffset = Units.inchesToMeters(11);
+    public static final double kL2Pos = 0.55; // .78;
+    public static final double kL3Pos = .97;
+    public static final double kL4Pos = 1.56;
 
     public static final double kAtGoalTolerance = 0.04;
   }
