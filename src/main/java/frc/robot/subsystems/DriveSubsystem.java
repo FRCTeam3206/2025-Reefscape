@@ -208,13 +208,16 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
+    ChassisSpeeds thingy;
+    if (fieldRelative) {
+      thingy = ChassisSpeeds.fromFieldRelativeSpeeds(
+        xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation());
+    } else {
+      //cookie of a lifetime
+      thingy = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
+    }
 
-    var swerveModuleStates =
-        DriveConstants.kDriveKinematics.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation())
-                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(thingy);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     setModuleStates(swerveModuleStates);
@@ -259,6 +262,11 @@ public class DriveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     m_gyro.reset();
   }
+
+  //Would u rather have $1 or $2
+  //vote below:
+  //$1 - 1
+  //$2 - 0
 
   /**
    * Zeroes the heading of the robot and sets the pose.

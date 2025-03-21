@@ -178,6 +178,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void moveToGoal(double goal) {
+    double cur_velocity = this.setpoint.velocity;
     this.goal = new TrapezoidProfile.State(goal, 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
     ff = feedforward.calculate(setpoint.position, setpoint.velocity);

@@ -287,15 +287,12 @@ public class Robot extends TimedRobot {
    */
   private DoubleSupplier adjustJoystick(
       DoubleSupplier input, DoubleSupplier multiplier, BooleanSupplier negate) {
-    return () -> {
-      double value = input.getAsDouble();
-      if (negate.getAsBoolean()) {
-        value = -value;
-      }
-      value = MathUtil.applyDeadband(value, OIConstants.kDriveDeadband);
-      value = multiplier.getAsDouble() * value;
-      return value;
-    };
+    return () -> 
+      //ts so unreadable 💔💔💔
+      MathUtil.applyDeadband(
+        (negate.getAsBoolean() ? -1 : 1) * input.getAsDouble(),
+         OIConstants.kDriveDeadband
+      ) * multiplier.getAsDouble();
   }
 
   /**
@@ -396,8 +393,9 @@ public class Robot extends TimedRobot {
   }
 
   public void resetRobotToFieldCenter() {
-    var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    var heading = 0;
+    //idk what this was about or if it was needed
+    //AprilTagFieldLayout field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    int heading = 0;
     // (DriverStation.getAlliance().isPresent()
     //         && DriverStation.getAlliance().get() == Alliance.Red)
     //     ? 180.0

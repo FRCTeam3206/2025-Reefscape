@@ -2,6 +2,7 @@ package frc.robot.sensors;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -17,6 +18,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision {
@@ -54,7 +56,7 @@ public class Vision {
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
     Optional<EstimatedRobotPose> visionEst = Optional.empty();
-    for (var change : camera.getAllUnreadResults()) {
+    for (PhotonPipelineResult change : camera.getAllUnreadResults()) {
       visionEst = photonEstimator.update(change);
       updateEstimationStdDevs(visionEst, change.getTargets());
 
@@ -88,14 +90,14 @@ public class Vision {
 
     } else {
       // Pose present. Start running Heuristic
-      var estStdDevs = VisionConstants.kSingleTagStdDevs;
+      Matrix<N3, N1> estStdDevs = VisionConstants.kSingleTagStdDevs;
       int numTags = 0;
       double avgDist = 0;
 
       PhotonTrackedTarget firstTarget = new PhotonTrackedTarget();
       // Precalculation - see how many tags we found, and calculate an average-distance metric
-      for (var tgt : targets) {
-        var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+      for (PhotonTrackedTarget tgt : targets) {
+        Optional<Pose3d> tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
         if (tagPose.isEmpty()) continue;
         if (numTags == 0) {
           firstTarget = tgt;
