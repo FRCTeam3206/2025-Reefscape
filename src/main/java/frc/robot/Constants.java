@@ -516,6 +516,6 @@ public final class Constants {
   public static class ClimberConstants {
     public static final int kClimberCanId = 43;
     public static final double kMinLimit = 0;
-    public static final double kMaxLimit = 210;
+    public static final double kMaxLimit = 355;
   }
 }

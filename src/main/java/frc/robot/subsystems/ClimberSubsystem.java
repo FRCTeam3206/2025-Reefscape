@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ClimberConstants;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 @Logged
@@ -48,9 +50,11 @@ public class ClimberSubsystem extends SubsystemBase {
     m_encoder.setPosition(0);
   }
 
-  public void runWithLimits(double power) {
+  public void runWithLimits(double power, boolean override) {
     var position = getPosition();
-    if (power < 0 && position > ClimberConstants.kMinLimit) {
+    if (override) {
+      m_max.set(power);
+    } else if (power < 0 && position > ClimberConstants.kMinLimit) {
       m_max.set(power);
     } else if (power > 0 && position < ClimberConstants.kMaxLimit) {
       m_max.set(power);
@@ -59,8 +63,8 @@ public class ClimberSubsystem extends SubsystemBase {
     }
   }
 
-  public Command directControl(DoubleSupplier power) {
-    return this.run(() -> runWithLimits(power.getAsDouble()));
+  public Command directControl(DoubleSupplier power, BooleanSupplier override) {
+    return this.run(() -> runWithLimits(power.getAsDouble(), override.getAsBoolean()));
   }
 
   public Command stopCommand() {

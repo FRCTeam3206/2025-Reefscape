@@ -187,7 +187,7 @@ public final class Configs {
     public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
 
     static {
-      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
     }
   }
 
