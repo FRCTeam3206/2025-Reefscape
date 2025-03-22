@@ -22,6 +22,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.pathing.robotprofile.Motor;
+import frc.robot.Constants.GameConstants.ReefLevels;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -543,6 +544,21 @@ public final class Constants {
     public static final double kL2Pos = 0.40; // .78;
     public static final double kL3Pos = 0.82;
     public static final double kL4Pos = 1.46;
+
+    public static final double getGoalForLevel(ReefLevels level) {
+      switch (level) {
+        case l1:
+          return 0.0;
+        case l2:
+          return kL2Pos;
+        case l3:
+          return kL3Pos;
+        case l4:
+          return kL4Pos;      
+        default:
+          return 0.0;
+      }
+    }
 
     public static final double kAtGoalTolerance = 0.04;
   }

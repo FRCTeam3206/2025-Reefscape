@@ -5,6 +5,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
 
 @Logged
@@ -113,6 +114,15 @@ public class CoralSupersystem {
     return safeArm()
         .andThen(m_elevator.toBranchStop(level).raceWith(m_arm.toStored()))
         .andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()));
+    // return
+    // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
+  }
+
+  public Command scoreToBranchCommandStop(ReefLevels level) {
+    return safeArm()
+        .andThen(m_elevator.toBranchStop(level).raceWith(m_arm.toStored()))
+        .andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()))
+        .until(() -> m_elevator.atGoal(ElevatorSubConstants.getGoalForLevel(level)) && m_wrist.isVertical().getAsBoolean());
     // return
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }

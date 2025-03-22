@@ -203,30 +203,31 @@ public class Robot extends TimedRobot {
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
-    m_autonChooser.addOption(
-        "1 coral (start center)",
-        simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
-    m_autonChooser.addOption(
-        "1 coral (start left)",
-        simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
-    m_autonChooser.addOption(
-        "1 coral (start right)",
-        simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
-    m_autonChooser.addOption(
-        "Coral on the left",
-        generateAuton(
-            false,
-            scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
-            scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
-            scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
-            scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
-            scoreCoralCommand(ReefPose.CLOSE, false, 4)));
+    m_autonChooser.addOption("Score Coral L4", generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4)));
+    // m_autonChooser.addOption(
+    //     "1 coral (start center)",
+    //     simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
+    // m_autonChooser.addOption(
+    //     "1 coral (start left)",
+    //     simpleAutonGenerator(PathingConstants.kLeftStartPose, ReefPose.FAR_LEFT));
+    // m_autonChooser.addOption(
+    //     "1 coral (start right)",
+    //     simpleAutonGenerator(PathingConstants.kRightStartPose, ReefPose.FAR_RIGHT));
+    // m_autonChooser.addOption(
+    //     "Coral on the left",
+    //     generateAuton(
+    //         false,
+    //         scoreCoralCommand(ReefPose.FAR_LEFT, false, 4),
+    //         scoreCoralCommand(ReefPose.FAR_LEFT, true, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE_LEFT, false, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
+    //         scoreCoralCommand(ReefPose.CLOSE, false, 4)));
     // m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
     SmartDashboard.putData(m_autonChooser);
   }
 
   public Command simpleForward() {
-    return m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.0);
+    return m_robotDrive.driveCommand(() -> 0.3, () -> 0.0, () -> 0.0, () -> false).withTimeout(0.5);
   }
 
   public Command simpleAutonGenerator(Pose2d startPose, ReefPose reefPose) {
@@ -276,8 +277,10 @@ public class Robot extends TimedRobot {
    * @param level Which level to score the coral on.
    * @return A Command to score coral on the reef.
    */
-  public Command scoreCoralCommand(ReefPose reefPose, boolean right, int level) {
-    return m_robotDrive.getToReefPoseCommand(reefPose, right);
+  public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
+    return m_robotDrive.getToReefPoseCommand(reefPose, right)
+      .andThen(m_robotDrive.setXCommand().alongWith(m_coral.scoreToBranchCommandStop(level)))
+      .andThen((m_robotDrive.setXCommand().alongWith(m_coral.scoreToBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
     // We can later add things with the mechanism to make it score the coral correctly.
   }
 
