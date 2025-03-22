@@ -540,9 +540,9 @@ public final class Constants {
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
     public static final double kPosOffset = Units.inchesToMeters(11);
-    public static final double kL2Pos = 0.55; // .78;
-    public static final double kL3Pos = .97;
-    public static final double kL4Pos = 1.56;
+    public static final double kL2Pos = 0.40; // .78;
+    public static final double kL3Pos = 0.82;
+    public static final double kL4Pos = 1.46;
 
     public static final double kAtGoalTolerance = 0.04;
   }
