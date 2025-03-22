@@ -419,12 +419,12 @@ public final class Constants {
 
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(7.375),
             -kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(7.375),
             kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
 

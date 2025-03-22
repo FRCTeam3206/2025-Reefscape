@@ -29,6 +29,7 @@ public class PathingCommand extends Command {
   private TrapezoidProfile rotationProfile;
   private Supplier<Pose2d> goalPoseSupplier;
   private double translationTolerance = .05, rotationTolerance = Math.PI / 32;
+  private double velocityTolerance, rotVelocityTolerance;
   private Field2d nextPoseFieldDisplay = new Field2d();
   private Field2d finalPoseFieldDisplay = new Field2d();
   private static final double dT = .02;
@@ -50,6 +51,8 @@ public class PathingCommand extends Command {
       Subsystem subsystem,
       double translationTolerance,
       double rotationTolerance,
+      double velocityTolerance,
+      double rotVelocityTolerance,
       boolean linearPhysics) {
     this.goalPoseSupplier = goalSupplier;
     this.robotPose = currentPoseSupplier;
@@ -57,6 +60,8 @@ public class PathingCommand extends Command {
     this.linearPhysics = linearPhysics;
     this.translationTolerance = translationTolerance;
     this.rotationTolerance = rotationTolerance;
+    this.velocityTolerance = velocityTolerance;
+    this.rotVelocityTolerance = rotVelocityTolerance;
     setRobotProfile(robotProfile);
     this.pathfinder = pathfinder;
     this.addRequirements(subsystem);
@@ -144,6 +149,11 @@ public class PathingCommand extends Command {
   }
 
   public void execute() {
+    SmartDashboard.putBoolean("At Goal", atPoseGoal());
+    SmartDashboard.putBoolean("At Rotation", atRotationGoal());
+    SmartDashboard.putBoolean("Not Moving", notMoving());
+    SmartDashboard.putBoolean("Not Rotating", notRotating());
+
     finalPoseFieldDisplay.setRobotPose(goalPoseSupplier.get());
     double deltaRotation;
     deltaRotation =
@@ -193,21 +203,30 @@ public class PathingCommand extends Command {
     drive.accept(new ChassisSpeeds(xSpeed, ySpeed, rotationalVelocity));
   }
 
+  public boolean atPoseGoal() {
+    return robotPose.get().getTranslation().getDistance(goalPoseSupplier.get().getTranslation()) < translationTolerance;
+  }
+
+  public boolean atRotationGoal() {
+    return Math.abs(
+      robotPose
+          .get()
+          .getRotation()
+          .minus(goalPoseSupplier.get().getRotation())
+          .getRadians())
+      < rotationTolerance;
+  }
+
+  public boolean notMoving() {
+    return velocity < velocityTolerance;
+  }
+
+  public boolean notRotating() {
+    return rotationalVelocity < rotVelocityTolerance;
+  }
+
   public boolean isFinished() {
-    return (robotPose.get().getTranslation().getDistance(goalPoseSupplier.get().getTranslation())
-                + velocity * velocity / 2 / robotProfile.getMaxAcceleration()
-            < translationTolerance
-        && Math.abs(
-                    robotPose
-                        .get()
-                        .getRotation()
-                        .minus(goalPoseSupplier.get().getRotation())
-                        .getRadians())
-                + rotationalVelocity
-                    * rotationalVelocity
-                    / 2
-                    / robotProfile.getMaxRotationalAcceleration()
-            < rotationTolerance);
+    return atPoseGoal() && atRotationGoal() && notMoving() && notRotating();
   }
 
   private class CommandDuringPath {

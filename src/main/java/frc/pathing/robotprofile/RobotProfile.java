@@ -7,7 +7,10 @@ public class RobotProfile {
       maxRotationalAcceleration,
       length,
       width;
-  private double safteyMultiplier = .8;
+  private double velocitySafetyMult = 1;
+  private double accelSafetyMult = 1;
+  private double rotVelocitySafetyMult = 1;
+  private double rotAccelSafetyMult = 1;
 
   /**
    * Constructs a robot profile for the robot's dimensions and given maximums. For calculated
@@ -35,7 +38,6 @@ public class RobotProfile {
     this.maxRotationalAcceleration = maxRotationalAcceleration;
     this.length = length;
     this.width = width;
-    this.safteyMultiplier = 1;
   }
 
   /**
@@ -70,7 +72,7 @@ public class RobotProfile {
    * @return The maximum velocity in meters per second.
    */
   public double getMaxVelocity() {
-    return maxVelocity * safteyMultiplier;
+    return maxVelocity * velocitySafetyMult;
   }
 
   /**
@@ -84,7 +86,7 @@ public class RobotProfile {
    * @return The maximum acceleration in meters per second squared.
    */
   public double getMaxAcceleration() {
-    return maxAcceleration * safteyMultiplier;
+    return maxAcceleration * accelSafetyMult;
   }
 
   /**
@@ -98,7 +100,7 @@ public class RobotProfile {
    * @return The rotational velocity in radians per second.
    */
   public double getMaxRotationalVelocity() {
-    return maxRotationalVelocity * safteyMultiplier;
+    return maxRotationalVelocity * rotVelocitySafetyMult;
   }
 
   /**
@@ -112,7 +114,7 @@ public class RobotProfile {
    * @return The rotational acceleration in radians per second squared.
    */
   public double getMaxRotationalAcceleration() {
-    return maxRotationalAcceleration * safteyMultiplier;
+    return maxRotationalAcceleration * rotAccelSafetyMult;
   }
 
   /**
@@ -152,17 +154,17 @@ public class RobotProfile {
   }
 
   /**
-   * @return The safety multiplier.
+   * @param velocityMult The safety multiplier for the velocity
+   * @param accelMult The safety multiplier for the acceleration
+   * @param rotVelocityMult The safety multiplier for the rotational velocity
+   * @param rotAccelMult The safety multiplier for the rotational acceleration
+   * @return This robot profile
    */
-  public double getSafteyMultiplier() {
-    return safteyMultiplier;
-  }
-
-  /**
-   * @param safteyMultiplier The safety multiplier to set.
-   */
-  public RobotProfile setSafteyMultiplier(double safteyMultiplier) {
-    this.safteyMultiplier = safteyMultiplier;
+  public RobotProfile setSafteyMultipliers(double velocityMult, double accelMult, double rotVelocityMult, double rotAccelMult) {
+    this.velocitySafetyMult = velocityMult;
+    this.accelSafetyMult = accelMult;
+    this.rotVelocitySafetyMult = rotVelocityMult;
+    this.rotAccelSafetyMult = rotAccelMult;
     return this;
   }
 
@@ -180,8 +182,6 @@ public class RobotProfile {
         + getLength()
         + ", width="
         + getWidth()
-        + ", safteyMultiplier="
-        + getSafteyMultiplier()
         + "]";
   }
 }
