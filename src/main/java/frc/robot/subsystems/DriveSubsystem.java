@@ -26,8 +26,11 @@ import frc.pathing.robotprofile.RobotProfile;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.sensors.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import org.photonvision.simulation.VisionSystemSim;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase {
@@ -58,14 +61,28 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-  // private final Vision vision;
+  private final Vision vision;
+  private final Vision vision2;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
-  // final VisionSystemSim visionSim;
+  final VisionSystemSim visionSim;
 
   @NotLogged // everything in here is already logged by modules or getPose()
   private final SwerveDrivePoseEstimator m_poseEstimator =
+      new SwerveDrivePoseEstimator(
+          DriveConstants.kDriveKinematics,
+          m_gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+          },
+          new Pose2d());
+
+  @NotLogged // everything in here is already logged by modules or getPose()
+  private final SwerveDrivePoseEstimator m_poseEstimatorVision =
       new SwerveDrivePoseEstimator(
           DriveConstants.kDriveKinematics,
           m_gyro.getRotation2d(),
@@ -109,11 +126,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // visionSim = new VisionSystemSim("main-sim");
-    // visionSim.addAprilTags(VisionConstants.kTagLayout);
+    visionSim = new VisionSystemSim("main-sim");
+    visionSim.addAprilTags(VisionConstants.kTagLayout);
 
-    // vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1,
-    // visionSim);
+    vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
+    vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2, visionSim);
   }
 
   @Override
@@ -128,16 +145,35 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
-    // vision
-    //     .getEstimatedGlobalPose()
-    //     .ifPresent(
-    //         est -> {
-    //           // Change our trust in the measurement based on the tags we can see
-    //           var estStdDevs = vision.getEstimationStdDevs();
+    m_poseEstimatorVision.update(
+        m_gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+        });
 
-    //           addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
-    // estStdDevs);
-    //         });
+    vision
+        .getEstimatedGlobalPose()
+        .ifPresent(
+            est -> {
+              // Change our trust in the measurement based on the tags we can see
+              var estStdDevs = vision.getEstimationStdDevs();
+
+              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+            });
+
+    // vision2
+    //         .getEstimatedGlobalPose()
+    //         .ifPresent(
+    //             est -> {
+    //               // Change our trust in the measurement based on the tags we can see
+    //               var estStdDevs = vision2.getEstimationStdDevs();
+
+    //               addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
+    //     estStdDevs);
+    //             });
 
     m_statesMeasured =
         new SwerveModuleState[] {
@@ -160,7 +196,7 @@ public class DriveSubsystem extends SubsystemBase {
     double dTheta = (m_speedsRequested.omegaRadiansPerSecond * timestep) * 180 / Math.PI;
     m_gyroSimAngle.set(m_gyroSimAngle.get() - dTheta);
 
-    // visionSim.update(getPose());
+    visionSim.update(getPose());
   }
 
   /**
@@ -172,10 +208,19 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public Pose2d getPoseVision() {
+    return m_poseEstimatorVision.getEstimatedPosition();
+  }
+
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    m_poseEstimatorVision.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**
