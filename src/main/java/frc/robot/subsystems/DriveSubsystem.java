@@ -83,6 +83,19 @@ public class DriveSubsystem extends SubsystemBase {
           },
           new Pose2d());
 
+  @NotLogged // everything in here is already logged by modules or getPose()
+  private final SwerveDrivePoseEstimator m_poseEstimatorVision =
+      new SwerveDrivePoseEstimator(
+          DriveConstants.kDriveKinematics,
+          m_gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+          },
+          new Pose2d());
+
   private SwerveModuleState[] m_statesMeasured =
       new SwerveModuleState[] {
         new SwerveModuleState(),
@@ -134,6 +147,15 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
+    m_poseEstimatorVision.update(
+      m_gyro.getRotation2d(),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+      });
+
     vision
         .getEstimatedGlobalPose()
         .ifPresent(
@@ -145,16 +167,16 @@ public class DriveSubsystem extends SubsystemBase {
     estStdDevs);
             });
     
-    vision2
-            .getEstimatedGlobalPose()
-            .ifPresent(
-                est -> {
-                  // Change our trust in the measurement based on the tags we can see
-                  var estStdDevs = vision2.getEstimationStdDevs();
+    // vision2
+    //         .getEstimatedGlobalPose()
+    //         .ifPresent(
+    //             est -> {
+    //               // Change our trust in the measurement based on the tags we can see
+    //               var estStdDevs = vision2.getEstimationStdDevs();
     
-                  addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
-        estStdDevs);
-                });
+    //               addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
+    //     estStdDevs);
+    //             });
 
     m_statesMeasured =
         new SwerveModuleState[] {
@@ -189,10 +211,19 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public Pose2d getPoseVision() {
+    return m_poseEstimatorVision.getEstimatedPosition();
+  }
+
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    m_poseEstimatorVision.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**
