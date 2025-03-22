@@ -43,6 +43,10 @@ public class CoralSupersystem {
     return m_coralOmnis.outakeCommand();
   }
 
+  public Command defaultArm() {
+    return m_arm.toStored();
+  }
+
   /**
    * If we're moving the wrist horizontal, it won't hit things, but we might want to make sure it's
    * horizontal before moving the arm.
