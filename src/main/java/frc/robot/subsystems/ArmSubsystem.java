@@ -249,7 +249,7 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalCommand(ArmConstants.Angles.kReefL2);
   }
 
-  public Command toL2L3Stop() {
+  public Command toBranchStop() {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL2);
   }
 
