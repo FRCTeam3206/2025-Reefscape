@@ -28,6 +28,10 @@ public class CoralSupersystem {
     m_elevator.setDefaultCommand(m_elevator.defaultCommand(() -> m_arm.isSafe()));
   }
 
+  public ArmSubsystem getArm() {
+    return m_arm;
+  }
+
   /**
    * It can hit things if the wrist is vertical, so we can move the arm first to make sure it's
    * safe.
