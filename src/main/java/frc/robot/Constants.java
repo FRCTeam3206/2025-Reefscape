@@ -429,14 +429,16 @@ public final class Constants {
             / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
 
+    public static final double kAlignOffsetInches = 8.0;
+
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(7.375),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(kAlignOffsetInches),
             -kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(7.375),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(kAlignOffsetInches),
             kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
 
