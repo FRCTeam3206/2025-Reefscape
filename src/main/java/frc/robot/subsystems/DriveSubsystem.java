@@ -122,11 +122,11 @@ public class DriveSubsystem extends SubsystemBase {
           PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kRobotLengthWidthMeters,
           PathingConstants.kDriveMotor)
-          .setSafteyMultipliers(1, 0.5, 1, 1);
+          .setSafteyMultipliers(PathingConstants.kVelocitySafety, PathingConstants.kAccelSafety, PathingConstants.kRotVelocitySafety, PathingConstants.kRotAccelSafety);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
           .withAllianceFlipping(false)
-          .withTolerances(0.01, Math.toRadians(5), 0.07, Math.toRadians(15));
+          .withTolerances(PathingConstants.kTranslationTolerance, PathingConstants.kRotationTolerance, PathingConstants.kVelocityTolerance, PathingConstants.kRotVelocityTolerance);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {

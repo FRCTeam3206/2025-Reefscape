@@ -128,7 +128,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kWeaponsControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.1;
   }
 
   public static final class AutoConstants {
@@ -402,6 +402,18 @@ public final class Constants {
   }
 
   public static final class PathingConstants {
+    // Tolerances
+    public static final double kTranslationTolerance = 0.01;
+    public static final double kRotationTolerance = Math.toRadians(5);
+    public static final double kVelocityTolerance = 0.05;
+    public static final double kRotVelocityTolerance = Math.toRadians(15);
+
+    // Safety multipliers
+    public static final double kVelocitySafety = 1;
+    public static final double kAccelSafety = 0.35;
+    public static final double kRotVelocitySafety = 1;
+    public static final double kRotAccelSafety = 1;
+
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
