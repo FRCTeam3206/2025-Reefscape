@@ -184,6 +184,8 @@ public class Robot extends TimedRobot {
               () -> m_fieldRelative));
     }
 
+    m_coral.getArm().setDefaultCommand(m_coral.getArm().setVoltageDirectly(() -> m_weaponsController.getLeftY()));
+
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
   }

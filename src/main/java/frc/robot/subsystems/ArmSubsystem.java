@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
@@ -127,6 +129,10 @@ public class ArmSubsystem extends SubsystemBase {
       return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
     }
     return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+  }
+
+  public Command setVoltageDirectly(DoubleSupplier voltage) {
+    return run(() -> m_max.setVoltage(voltage.getAsDouble()));
   }
 
   public double getVelocity() {
