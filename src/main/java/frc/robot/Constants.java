@@ -502,13 +502,13 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
-    public static final double kMaxVelocity = 0.1;
-    public static final double kMaxAcceleration = 0.1;
+    public static final double kMaxVelocity = 0.05;
+    public static final double kMaxAcceleration = 0.2;
 
     public static final double kS = 0.0;
     public static final double kG = .8;
-    public static final double kV = 30;
-    public static final double kA = 10;
+    public static final double kV = 10;
+    public static final double kA = 5;
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;
