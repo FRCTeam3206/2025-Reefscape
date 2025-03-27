@@ -101,6 +101,10 @@ public class CoralSupersystem {
     return moveWristHorizontal().andThen(m_arm.toStoredSafe());
   }
 
+  public Command armTest() {
+    return m_arm.moveToGoalCommand(Math.PI);
+  }
+
   public Command armWristBranchPos() {
     return moveWristHorizontal()
         .andThen(m_arm.toBranchStop().alongWith(m_wrist.toHorizontalContinuous()));

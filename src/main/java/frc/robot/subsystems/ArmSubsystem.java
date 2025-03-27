@@ -48,7 +48,7 @@ public class ArmSubsystem extends SubsystemBase {
               ArmSubConstants.kMaxVelocity, ArmSubConstants.kMaxAcceleration));
 
   private final ArmFeedforward feedforward =
-      new ArmFeedforward(ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kA);
+      new ArmFeedforward(ArmSubConstants.kS, ArmSubConstants.kG, ArmConstants.kV, ArmSubConstants.kA);
   double ff = 0.0;
 
   private final PIDController feedback =
@@ -151,6 +151,10 @@ public class ArmSubsystem extends SubsystemBase {
     return setpoint.position;
   }
 
+  public double getSetpointVelocity() {
+    return setpoint.velocity;
+  }
+
   public double getGoal() {
     return goal.position;
   }
@@ -164,9 +168,11 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void moveToGoal(Rotation2d goal) {
+    var cur_angle = setpoint.position;
+    var cur_velocity = setpoint.velocity;
     this.goal = new TrapezoidProfile.State(goal.getRadians(), 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    ff = feedforward.calculateWithVelocities(cur_angle, cur_velocity, setpoint.velocity);
     fb = feedback.calculate(getAngle().getRadians(), setpoint.position);
 
     m_max.setVoltage(fb + ff);
