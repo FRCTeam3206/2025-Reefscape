@@ -66,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
   private final Vision vision;
-  private final Vision vision2;
+  //private final Vision vision2;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
@@ -134,7 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
     vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
-    vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2, visionSim);
+    //vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2, visionSim);
   }
 
   @Override

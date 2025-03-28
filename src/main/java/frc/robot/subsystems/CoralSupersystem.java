@@ -144,6 +144,10 @@ public class CoralSupersystem {
   //   return positionReef(level).andThen(m_coralOmnis.scoreCommand());
   // }
 
+  public Command feederIntakeCommand() {
+    return m_elevator.toFeederCommandStop().andThen(m_arm.toFeederIntake().alongWith(m_elevator.toFeederCommand()));
+  }
+
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
   }
