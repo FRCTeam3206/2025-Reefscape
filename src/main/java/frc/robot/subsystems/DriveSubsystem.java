@@ -29,11 +29,9 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
-
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
 import org.photonvision.simulation.VisionSystemSim;
 
 @Logged
@@ -117,16 +115,24 @@ public class DriveSubsystem extends SubsystemBase {
 
   RobotProfile m_robotProfile =
       new RobotProfile(
-          PathingConstants.kRobotMassKg,
-          ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthWidthMeters,
-          PathingConstants.kRobotLengthWidthMeters,
-          PathingConstants.kDriveMotor)
-          .setSafteyMultipliers(PathingConstants.kVelocitySafety, PathingConstants.kAccelSafety, PathingConstants.kRotVelocitySafety, PathingConstants.kRotAccelSafety);
+              PathingConstants.kRobotMassKg,
+              ModuleConstants.kWheelDiameterMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kDriveMotor)
+          .setSafteyMultipliers(
+              PathingConstants.kVelocitySafety,
+              PathingConstants.kAccelSafety,
+              PathingConstants.kRotVelocitySafety,
+              PathingConstants.kRotAccelSafety);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
           .withAllianceFlipping(false)
-          .withTolerances(PathingConstants.kTranslationTolerance, PathingConstants.kRotationTolerance, PathingConstants.kVelocityTolerance, PathingConstants.kRotVelocityTolerance);
+          .withTolerances(
+              PathingConstants.kTranslationTolerance,
+              PathingConstants.kRotationTolerance,
+              PathingConstants.kVelocityTolerance,
+              PathingConstants.kRotVelocityTolerance);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -156,17 +162,16 @@ public class DriveSubsystem extends SubsystemBase {
               // Change our trust in the measurement based on the tags we can see
               var estStdDevs = vision.getEstimationStdDevs();
 
-              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
-    estStdDevs);
+              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
             });
-    
+
     // vision2
     //         .getEstimatedGlobalPose()
     //         .ifPresent(
     //             est -> {
     //               // Change our trust in the measurement based on the tags we can see
     //               var estStdDevs = vision2.getEstimationStdDevs();
-    
+
     //               addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
     //     estStdDevs);
     //             });
@@ -379,17 +384,19 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
     Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
     Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
-    return m_pathGen.generateToPoseSupplierCommand(
-        () -> {
-          Pose2d robotAt = AllianceUtil.getBluePose();
-          if (robotAt.getX() < PathingConstants.kReefCenterX) {
-            // Robot is at a close pose.
-            return robotAt.nearest(List.of(close, closeL, closeR));
-          } else {
-            // Robot is at a far pose.
-            return robotAt.nearest(List.of(far, farL, farR));
-          }
-        }).andThen(setXCommand());
+    return m_pathGen
+        .generateToPoseSupplierCommand(
+            () -> {
+              Pose2d robotAt = AllianceUtil.getBluePose();
+              if (robotAt.getX() < PathingConstants.kReefCenterX) {
+                // Robot is at a close pose.
+                return robotAt.nearest(List.of(close, closeL, closeR));
+              } else {
+                // Robot is at a far pose.
+                return robotAt.nearest(List.of(far, farL, farR));
+              }
+            })
+        .andThen(setXCommand());
   }
 
   // public PathingCommand getToFeederCommand(boolean right) {
