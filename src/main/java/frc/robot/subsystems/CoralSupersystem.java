@@ -145,7 +145,13 @@ public class CoralSupersystem {
   // }
 
   public Command feederIntakeCommand() {
-    return ((m_elevator.toFeederCommandStop().alongWith(m_coralOmnis.stopCommand())).raceWith(m_arm.toStored())).andThen(m_arm.toFeederIntake().alongWith(m_elevator.toFeederCommand()).alongWith(m_coralOmnis.intakeCommand()));
+    return ((m_elevator.toFeederCommandStop().alongWith(m_coralOmnis.stopCommand()))
+            .raceWith(m_arm.toStored()))
+        .andThen(
+            m_arm
+                .toFeederIntake()
+                .alongWith(m_elevator.toFeederCommand())
+                .alongWith(m_coralOmnis.intakeCommand()));
   }
 
   public CoralIntake getOmnisSubsystem() {

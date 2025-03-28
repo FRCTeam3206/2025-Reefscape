@@ -160,7 +160,8 @@ public class RobotProfile {
    * @param rotAccelMult The safety multiplier for the rotational acceleration
    * @return This robot profile
    */
-  public RobotProfile setSafteyMultipliers(double velocityMult, double accelMult, double rotVelocityMult, double rotAccelMult) {
+  public RobotProfile setSafteyMultipliers(
+      double velocityMult, double accelMult, double rotVelocityMult, double rotAccelMult) {
     this.velocitySafetyMult = velocityMult;
     this.accelSafetyMult = accelMult;
     this.rotVelocitySafetyMult = rotVelocityMult;
