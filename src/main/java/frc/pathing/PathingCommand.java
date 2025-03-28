@@ -215,11 +215,11 @@ public class PathingCommand extends Command {
   }
 
   public boolean notMoving() {
-    return velocity < velocityTolerance;
+    return Math.abs(velocity) < velocityTolerance;
   }
 
   public boolean notRotating() {
-    return rotationalVelocity < rotVelocityTolerance;
+    return Math.abs(rotationalVelocity) < rotVelocityTolerance;
   }
 
   public boolean isFinished() {
