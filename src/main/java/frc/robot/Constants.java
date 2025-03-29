@@ -433,7 +433,7 @@ public final class Constants {
     public static final AprilTagFieldLayout kTagLayout = new AprilTagFieldLayout(kUsedTags, kTagLayoutLoaded.getFieldLength(), kTagLayoutLoaded.getFieldWidth());
 
     public static Pose2d poseForTag(int tag) {
-      return kTagLayout.getTagPose(tag).get().toPose2d();
+      return kTagLayoutLoaded.getTagPose(tag).get().toPose2d();
     }
 
     public static final double kRobotMassKg = 63.5;
@@ -499,12 +499,12 @@ public final class Constants {
     public static final Pose2d kCenterStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
-            kTagLayout.getFieldWidth() / 2,
+            kTagLayoutLoaded.getFieldWidth() / 2,
             Rotation2d.fromDegrees(180));
     public static final Pose2d kLeftStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
-            kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
+            kTagLayoutLoaded.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
             Rotation2d.fromDegrees(180));
     public static final Pose2d kRightStartPose =
         new Pose2d(
