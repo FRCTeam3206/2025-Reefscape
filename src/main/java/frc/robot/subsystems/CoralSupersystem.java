@@ -81,7 +81,7 @@ public class CoralSupersystem {
   // }
 
   public Command floorIntake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeCommand());
+    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeUntilSuccessCommand());
     // return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
@@ -151,7 +151,7 @@ public class CoralSupersystem {
             m_arm
                 .toFeederIntake()
                 .alongWith(m_elevator.toFeederCommand())
-                .alongWith(m_coralOmnis.intakeCommand()));
+                .alongWith(m_coralOmnis.intakeUntilSuccessCommand()));
   }
 
   public CoralIntake getOmnisSubsystem() {
