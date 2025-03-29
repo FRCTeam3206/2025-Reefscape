@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -190,7 +191,7 @@ public class Robot extends TimedRobot {
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
-    m_lights.setDefaultCommand(m_lights.rainbowPattern());
+    m_lights.setDefaultCommand(m_lights.solidPattern(Color.kBlue));
   }
 
   /**

@@ -284,7 +284,7 @@ public final class Constants {
 
   /** for {@link frc.robot.subsystems.Lights} */
   public static final class LightsConstants {
-    public static final int kPort = 23;
+    public static final int kPort = 0;
 
     /**
      * how many seconds to sync in microseconds for some reason Same as 20ms which is the usual

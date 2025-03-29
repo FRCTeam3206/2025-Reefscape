@@ -17,7 +17,6 @@ import frc.robot.Constants.CoralConstants;
 public class CoralIntake extends SubsystemBase {
   private final SparkMax m_wheels = new SparkMax(CoralConstants.kCANId, MotorType.kBrushless);
   private final DigitalInput m_coralSensor = new DigitalInput(CoralConstants.kSensorChannel);
-  private final Servo m_finger = new Servo(Constants.CoralConstants.Finger.kChannel);
 
   public CoralIntake() {
     m_wheels.configure(
@@ -40,11 +39,7 @@ public class CoralIntake extends SubsystemBase {
   public Command changeFinger(boolean retained) {
     return this.runOnce(
         () -> {
-          if (retained) {
-            m_finger.set(Constants.CoralConstants.Finger.kRetainedPosition);
-          } else {
-            m_finger.set(Constants.CoralConstants.Finger.kFreePosition);
-          }
+
         });
   }
 

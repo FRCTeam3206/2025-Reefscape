@@ -25,8 +25,6 @@ public final class Lights extends SubsystemBase {
     lights.setSyncTime(LightsConstants.kMicrosecondsSync);
     lights.setLength(numberOfLights);
     lights.start();
-    // this is already in the default command so idk how that works
-    solidPattern(Color.kBlue);
   }
 
   /**
