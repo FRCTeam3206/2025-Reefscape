@@ -27,12 +27,15 @@ public final class Lights extends SubsystemBase {
    * and 255
    *
    * @param color from Color value, between 0 and 1
-   * @throws IndexOutOfBoundsException if its bigger than 1 or less than 0
    * @return int between 0 and 255
    */
   public final int colorToInt(double color) {
-    if (color > 1 || color < 0) {
-      throw new IndexOutOfBoundsException("Color should be between 0 and 1!");
+    if (color > 1) {
+        color = 1;
+        //TODO print a warning
+    } else if (color < 0) {
+        color = 0;
+        //TODO print another warning
     }
     return (int) color * 255;
   }
@@ -57,24 +60,21 @@ public final class Lights extends SubsystemBase {
    * @param red between 0 and 255
    * @param green between 0 and 255
    * @param blue between 0 and 255
-   * @throws IndexOutOfBoundsException if any of the lights are bigger than 255 or less than 0
-   * @throws IndexOutOfBoundsException if the i value is less than 0 or bigger than the number of
-   *     lights
    */
   public final void changeOneColor(int i, int red, int green, int blue) {
     if (i > numberOfLights || i < 0) {
-      throw new IndexOutOfBoundsException(
-          "Light must be between 0 and " + numberOfLights + "!" + "\n Number provided: " + i);
+        //probably messed up the for loop and its going twice
+        //TODO print yet ANOther warning
+        return;
     }
     int[] allTheLights = {red, green, blue};
     for (int thing : allTheLights) {
-      if (thing > LightsConstants.kBrightestColor || thing < 0) {
-        throw new IndexOutOfBoundsException(
-            "Light must be between 0 and "
-                + LightsConstants.kBrightestColor
-                + "!"
-                + "\n Number provided: "
-                + thing);
+      if (thing > LightsConstants.kBrightestColor) {
+        thing = LightsConstants.kBrightestColor;
+        //TODO so many warnigng I CANT TAKE IT anymore
+      } else if (thing < 0) {
+        thing = 0;
+        //TODO crashout
       }
     }
     buffer.setRGB(i, red, green, blue);
