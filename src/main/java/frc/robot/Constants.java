@@ -332,17 +332,6 @@ public final class Constants {
       public static final double kUp = 40;
     }
 
-    public static final class FeedForward {
-      // Static gain (volts)
-      public static final double Ks = 0;
-      // Gravity gain (volts)
-      public static final double Kg = 1.25;
-      // Velocity gain (volts per m/s)
-      public static final double Kv = 0;
-      // Acceleration gain (volts per m/s^2)
-      public static final double Ka = 0;
-    }
-
     // something for the simulation
     public static final class Mechanism2d {
       // meters i think
@@ -502,13 +491,13 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
-    public static final double kMaxVelocity = 0.6;
-    public static final double kMaxAcceleration = 1.5;
+    public static final double kMaxVelocity = 80.0;
+    public static final double kMaxAcceleration = 15.0;
 
     public static final double kS = 0.0;
-    public static final double kG = 0.95;
-    public static final double kV = 100.0;
-    public static final double kA = 0.05;
+    public static final double kG = 0.65;
+    public static final double kV = 0.55;
+    public static final double kA = 0.07;
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;
