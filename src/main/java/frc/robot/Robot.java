@@ -205,7 +205,7 @@ public class Robot extends TimedRobot {
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
-    m_autonChooser.addOption("Score Coral L4", generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4)));
+    m_autonChooser.addOption("Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));//generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4)));
     // m_autonChooser.addOption(
     //     "1 coral (start center)",
     //     simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
@@ -277,9 +277,9 @@ public class Robot extends TimedRobot {
    * @return A Command to score coral on the reef.
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
-    return (m_robotDrive.getToReefPoseCommand(reefPose, right).alongWith(m_coral.defaultArm()))
-      .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreToBranchCommandStop(level)))
-      .andThen((m_robotDrive.setXCommand().alongWith(m_coral.holdAtBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
+    return //(m_robotDrive.getToReefPoseCommand(reefPose, right).alongWith(m_coral.defaultArm()))
+      ((m_coral.scoreToBranchCommandStop(level)))
+      .andThen(((m_coral.holdAtBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
     // We can later add things with the mechanism to make it score the coral correctly.
   }
 
