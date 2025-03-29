@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
 
@@ -13,13 +11,15 @@ public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
   public final int numberOfLights = buffer.getLength();
-  /**when it's going between 2 colors, which it should go to*/
+
+  /** when it's going between 2 colors, which it should go to */
   public boolean alternateFirstColor = true;
 
   public Lights() {
     lights.start();
     lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
-    lights.setSyncTime(0);
+    lights.setSyncTime(LightsConstants.kMicrosecondsSync);
+    solidColor(Color.kBlue);
   }
 
   /**
@@ -31,11 +31,11 @@ public final class Lights extends SubsystemBase {
    */
   public final int colorToInt(double color) {
     if (color > 1) {
-        color = 1;
-        //TODO print a warning
+      color = 1;
+      // TODO print a warning
     } else if (color < 0) {
-        color = 0;
-        //TODO print another warning
+      color = 0;
+      // TODO print another warning
     }
     return (int) color * 255;
   }
@@ -63,18 +63,18 @@ public final class Lights extends SubsystemBase {
    */
   public final void changeOneColor(int i, int red, int green, int blue) {
     if (i > numberOfLights || i < 0) {
-        //probably messed up the for loop and its going twice
-        //TODO print yet ANOther warning
-        return;
+      // probably messed up the for loop and its going twice
+      // TODO print yet ANOther warning
+      return;
     }
     int[] allTheLights = {red, green, blue};
     for (int thing : allTheLights) {
       if (thing > LightsConstants.kBrightestColor) {
         thing = LightsConstants.kBrightestColor;
-        //TODO so many warnigng I CANT TAKE IT anymore
+        // TODO so many warnigng I CANT TAKE IT anymore
       } else if (thing < 0) {
         thing = 0;
-        //TODO crashout
+        // TODO crashout
       }
     }
     buffer.setRGB(i, red, green, blue);
@@ -109,7 +109,7 @@ public final class Lights extends SubsystemBase {
    * unpacking stuff TODO make this into an object with red, green, blue properties instead of an
    * int array cause theyre werid to work with
    *
-   * @return
+   * @return int[] where 0 is red, 1 is green, 2 is blue
    */
   public final int[] hsvToRgb(int red, int green, int blue) {
     int[] colors = new int[3];
@@ -139,21 +139,16 @@ public final class Lights extends SubsystemBase {
   }
 
   /**
-   * goes between 2 solid colors
-   * Doesnt work yet
+   * goes between 2 solid colors Doesnt work yet
+   *
    * @param firstColor the first color to go to
    * @param secondColor the other color to go to
    */
   public final void alternate(Color firstColor, Color secondColor) {
     if (alternateFirstColor) {
-        solidColor(firstColor);
+      solidColor(firstColor);
     } else {
-        solidColor(secondColor);
+      solidColor(secondColor);
     }
-  }
-
-  /** makes it all blu e i guess */
-  public final void solidBlue() {
-    solidColor(Color.kBlue);
   }
 }
