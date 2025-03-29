@@ -282,6 +282,25 @@ public final class Constants {
     }
   }
 
+  /** for {@link frc.robot.subsystems.Lights} */
+  public static final class LightsConstants {
+    public static final int kPort = 23;
+
+    /**
+     * how many seconds to sync in microseconds for some reason Same as 20ms which is the usual
+     * command loop i think
+     */
+    public static final int kMicrosecondsSync = 20000;
+
+    /** how many lights there are */
+    public static final int kLength = 150;
+
+    public static final int kBrightestColor = 255;
+
+    /** hue that takes you all the way back to red, in degrees */
+    public static final int kMaxHue = 180;
+  }
+
   public static final class CoralConstants {
     // Random numbers right now
     public static final int kCANId = 25;
