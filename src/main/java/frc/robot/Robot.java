@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
     m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
     m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
-    m_weaponsController.y().whileTrue(m_coral.armTest());//(ReefLevels.l4));
+    m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
     // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
     m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
@@ -191,7 +191,7 @@ public class Robot extends TimedRobot {
               () -> m_fieldRelative));
     }
 
-    m_coral.getArm().setDefaultCommand(m_coral.getArm().setVoltageDirectly(() -> m_weaponsController.getLeftY()));
+    //m_coral.getArm().setDefaultCommand(m_coral.getArm().setVoltageDirectly(() -> m_weaponsController.getLeftY()));
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
