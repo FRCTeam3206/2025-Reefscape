@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -415,8 +418,19 @@ public final class Constants {
     public static final double kRotVelocitySafety = 1;
     public static final double kRotAccelSafety = 1;
 
-    public static final AprilTagFieldLayout kTagLayout =
+    private static final AprilTagFieldLayout kTagLayoutLoaded =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    private static final List<Integer> kUsedIds = List.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+    private static final List<AprilTag> kUsedTags = List.of();
+    {
+      for (AprilTag tag : kTagLayoutLoaded.getTags()) {
+        if (kUsedIds.contains(tag.ID)) {
+          kUsedTags.add(tag);
+        }
+      }
+    }
+
+    public static final AprilTagFieldLayout kTagLayout = new AprilTagFieldLayout(kUsedTags, kTagLayoutLoaded.getFieldLength(), kTagLayoutLoaded.getFieldWidth());
 
     public static Pose2d poseForTag(int tag) {
       return kTagLayout.getTagPose(tag).get().toPose2d();
