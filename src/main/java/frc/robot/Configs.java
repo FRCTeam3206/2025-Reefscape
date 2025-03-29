@@ -5,6 +5,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -180,6 +181,7 @@ public final class Configs {
       //     .outputRange(-1, 1);
 
       elevatorConfig2.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
+      elevatorConfig2.follow(ElevatorConstants.Motor.kCanIdMotor1);
     }
   }
 

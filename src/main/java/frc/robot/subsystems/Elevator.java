@@ -185,7 +185,6 @@ public class Elevator extends SubsystemBase {
     return run(
         () -> {
           m_max.setVoltage(6 * volts.getAsDouble());
-          m_max2.setVoltage(6 * volts.getAsDouble());
         });
   }
 
@@ -204,7 +203,6 @@ public class Elevator extends SubsystemBase {
     double voltage = fb + ff;
     if (voltage < 0) voltage = 0;
     m_max.setVoltage(voltage);
-    m_max2.setVoltage(voltage);
   }
 
   public Command moveToGoalCommand(double goal) {
@@ -270,7 +268,6 @@ public class Elevator extends SubsystemBase {
 
   public void stop() {
     m_max.setVoltage(0);
-    m_max2.setVoltage(0);
     setpoint = new TrapezoidProfile.State();
   }
 
