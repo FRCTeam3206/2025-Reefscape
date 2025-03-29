@@ -23,11 +23,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.pathing.PathingCommand;
 import frc.pathing.PathingCommandGenerator;
 import frc.pathing.robotprofile.RobotProfile;
+import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.photonvision.simulation.VisionSystemSim;
@@ -113,16 +115,24 @@ public class DriveSubsystem extends SubsystemBase {
 
   RobotProfile m_robotProfile =
       new RobotProfile(
-          PathingConstants.kRobotMassKg,
-          ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthWidthMeters
-              * 2.0, // Not recommended, this is to give us more space as we're trying to get things
-          // to work.
-          PathingConstants.kRobotLengthWidthMeters,
-          PathingConstants.kDriveMotor);
+              PathingConstants.kRobotMassKg,
+              ModuleConstants.kWheelDiameterMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kDriveMotor)
+          .setSafteyMultipliers(
+              PathingConstants.kVelocitySafety,
+              PathingConstants.kAccelSafety,
+              PathingConstants.kRotVelocitySafety,
+              PathingConstants.kRotAccelSafety);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
-          .withAllianceFlipping(false);
+          .withAllianceFlipping(false)
+          .withTolerances(
+              PathingConstants.kTranslationTolerance,
+              PathingConstants.kRotationTolerance,
+              PathingConstants.kVelocityTolerance,
+              PathingConstants.kRotVelocityTolerance);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -137,15 +147,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update the odometry in the periodic block
     m_poseEstimator.update(
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-        });
-
-    m_poseEstimatorVision.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -208,19 +209,10 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
-  public Pose2d getPoseVision() {
-    return m_poseEstimatorVision.getEstimatedPosition();
-  }
-
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-    m_poseEstimatorVision.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**
@@ -385,25 +377,27 @@ public class DriveSubsystem extends SubsystemBase {
     return m_pathGen.generateToPoseCommand(goal);
   }
 
-  // public PathingCommand getToNearestReefCommand(boolean right) {
-  //   Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
-  //   Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
-  //   Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
-  //   Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
-  //   Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
-  //   Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
-  //   return m_pathGen.generateToPoseSupplierCommand(
-  //       () -> {
-  //         Pose2d robotAt = AllianceUtil.getBluePose();
-  //         if (robotAt.getX() < PathingConstants.kReefCenterX) {
-  //           // Robot is at a close pose.
-  //           return robotAt.nearest(List.of(close, closeL, closeR));
-  //         } else {
-  //           // Robot is at a far pose.
-  //           return robotAt.nearest(List.of(far, farL, farR));
-  //         }
-  //       });
-  // }
+  public Command getToNearestReefCommand(boolean right) {
+    Pose2d close = PathingConstants.ReefPose.CLOSE.getPose(right);
+    Pose2d closeL = PathingConstants.ReefPose.CLOSE_LEFT.getPose(right);
+    Pose2d closeR = PathingConstants.ReefPose.CLOSE_RIGHT.getPose(right);
+    Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
+    Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
+    Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
+    return m_pathGen
+        .generateToPoseSupplierCommand(
+            () -> {
+              Pose2d robotAt = AllianceUtil.getBluePose();
+              if (robotAt.getX() < PathingConstants.kReefCenterX) {
+                // Robot is at a close pose.
+                return robotAt.nearest(List.of(close, closeL, closeR));
+              } else {
+                // Robot is at a far pose.
+                return robotAt.nearest(List.of(far, farL, farR));
+              }
+            })
+        .andThen(setXCommand());
+  }
 
   // public PathingCommand getToFeederCommand(boolean right) {
   //   return m_pathGen.generateToPoseCommand(
