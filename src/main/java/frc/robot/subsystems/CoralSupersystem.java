@@ -86,7 +86,7 @@ public class CoralSupersystem {
   }
 
   public Command floorExtake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand());
+    return m_arm.toFloorIntakeStop().andThen(m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand()));
   }
 
   public Command placeLevelOne() {

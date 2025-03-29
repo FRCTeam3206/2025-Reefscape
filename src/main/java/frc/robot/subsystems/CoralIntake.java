@@ -64,7 +64,7 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public Command intakeUntilSuccessCommand() {
-    return intakeCommand().until(() -> hasCoral());
+    return intakeCommand().until(() -> hasCoral()).andThen(stopCommand());
   }
 
   public Command scoreCommand() {
