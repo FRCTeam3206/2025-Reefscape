@@ -32,44 +32,45 @@ public class CoralIntake extends SubsystemBase {
     m_wheels.set(CoralConstants.kOutakeSpeed);
   }
 
-  /**
-   * Sets the position of the finger
-   *
-   * @param retained if true it will block the pipe, if false it will free it
-   */
-  public Command changeFinger(boolean retained) {
-    return this.runOnce(
-        () -> {
-          if (retained) {
-            m_finger.set(Constants.CoralConstants.Finger.kRetainedPosition);
-          } else {
-            m_finger.set(Constants.CoralConstants.Finger.kFreePosition);
-          }
-        });
+  public boolean hasCoral() {
+    return !m_coralSensor.get();
   }
+
+  // /**
+  //  * Sets the position of the finger
+  //  *
+  //  * @param retained if true it will block the pipe, if false it will free it
+  //  */
+  // public Command changeFinger(boolean retained) {
+  //   return this.runOnce(
+  //       () -> {
+  //         if (retained) {
+  //           m_finger.set(Constants.CoralConstants.Finger.kRetainedPosition);
+  //         } else {
+  //           m_finger.set(Constants.CoralConstants.Finger.kFreePosition);
+  //         }
+  //       });
+  // }
 
   public void stop() {
     m_wheels.set(0);
-    changeFinger(true);
   }
 
   public Command intakeCommand() {
     return this.run(
         () -> {
           intake();
-          changeFinger(true);
         });
   }
 
   public Command intakeUntilSuccessCommand() {
-    return intakeCommand().until(() -> m_coralSensor.get());
+    return intakeCommand().until(() -> hasCoral());
   }
 
   public Command scoreCommand() {
     return this.run(
         () -> {
           m_wheels.set(CoralConstants.kScoreSpeed);
-          changeFinger(false);
         });
     // return this.run(
     //         () -> {
@@ -84,7 +85,6 @@ public class CoralIntake extends SubsystemBase {
     return this.run(
         () -> {
           outake();
-          changeFinger(true);
         });
   }
 
@@ -92,7 +92,6 @@ public class CoralIntake extends SubsystemBase {
     return this.runOnce(
         () -> {
           stop();
-          changeFinger(true);
         });
   }
 
