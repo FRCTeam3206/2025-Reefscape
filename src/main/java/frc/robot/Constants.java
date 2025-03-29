@@ -293,12 +293,12 @@ public final class Constants {
     public static final int kMicrosecondsSync = 20000;
 
     /** how many lights there are */
-    public static final int kLength = 150;
+    public static final short kLength = 150;
 
-    public static final int kBrightestColor = 255;
+    public static final short kBrightestColor = 255;
 
     /** hue that takes you all the way back to red, in degrees */
-    public static final int kMaxHue = 180;
+    public static final short kMaxHue = 180;
   }
 
   public static final class CoralConstants {

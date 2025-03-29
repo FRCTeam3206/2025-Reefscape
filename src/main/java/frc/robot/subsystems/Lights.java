@@ -10,7 +10,7 @@ import frc.robot.Constants.LightsConstants;
 public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
-  public final int numberOfLights = buffer.getLength();
+  public final short numberOfLights = (short) buffer.getLength();
 
   /** when it's going between 2 colors, which it should go to */
   public boolean alternateFirstColor = true;
@@ -23,13 +23,13 @@ public final class Lights extends SubsystemBase {
   }
 
   /**
-   * changes red, green, and blue values from Color values (between 0 and 1) to int values between 0
+   * changes a red, green, or blue value from Color values (between 0 and 1) to int values between 0
    * and 255
    *
    * @param color from Color value, between 0 and 1
    * @return int between 0 and 255
    */
-  public final int colorToInt(double color) {
+  public final short colorToInt(double color) {
     if (color > 1) {
       color = 1;
       // TODO print a warning
@@ -37,7 +37,8 @@ public final class Lights extends SubsystemBase {
       color = 0;
       // TODO print another warning
     }
-    return (int) color * 255;
+    Integer realColor = (int) color * 255;
+    return realColor.shortValue();
   }
 
   /**
@@ -46,7 +47,7 @@ public final class Lights extends SubsystemBase {
    * @param i which light to change, must be between 0 and the last light
    * @param color Color value to change
    */
-  public final void changeOneColor(int i, Color color) {
+  public final void changeOneColor(short i, Color color) {
     changeOneColor(i, colorToInt(color.red), colorToInt(color.green), colorToInt(color.blue));
   }
 
@@ -61,7 +62,7 @@ public final class Lights extends SubsystemBase {
    * @param green between 0 and 255
    * @param blue between 0 and 255
    */
-  public final void changeOneColor(int i, int red, int green, int blue) {
+  public final void changeOneColor(short i, short red, short green, short blue) {
     if (i > numberOfLights || i < 0) {
       // probably messed up the for loop and its going twice
       // TODO print yet ANOther warning
@@ -98,28 +99,36 @@ public final class Lights extends SubsystemBase {
    * @param green green, between 0 and 255
    * @param blue blue, between 0 and 255
    */
-  public final void solidColor(int red, int green, int blue) {
-    for (int i = 0; i < numberOfLights; i++) {
+  public final void solidColor(short red, short green, short blue) {
+    for (short i = 0; i < numberOfLights; i++) {
       changeOneColor(i, red, green, blue);
     }
   }
 
   /**
-   * converts red, green, and blue to an int array of hue, saturation value colors without the weird
-   * unpacking stuff TODO make this into an object with red, green, blue properties instead of an
-   * int array cause theyre werid to work with
-   *
-   * @return int[] where 0 is red, 1 is green, 2 is blue
+   * converts hue, saturation, and value into an IntColors with red, green, blue properties
+   * @param hue between 0 and 180
+   * @param saturation between 0 and 255
+   * @param value between 0 and 255
+   * @return IntColor
    */
-  public final int[] hsvToRgb(int red, int green, int blue) {
-    int[] colors = new int[3];
-    int packedColor = Color.hsvToRgb(red, green, blue);
-    colors[0] = Color.unpackRGB(packedColor, Color.RGBChannel.kRed);
-    colors[1] = Color.unpackRGB(packedColor, Color.RGBChannel.kGreen);
-    // shoutout kasane teto
-    // and the blue one... I GUESS...
-    colors[2] = Color.unpackRGB(packedColor, Color.RGBChannel.kBlue);
-    return colors;
+  public final IntColors hsvToRgb(short hue, short saturation, short value) {
+    while (hue < 0) {
+        //goes around the hue circle basically
+        hue += LightsConstants.kMaxHue;
+    }
+    hue %= LightsConstants.kMaxHue;
+    if (saturation > LightsConstants.kBrightestColor) {
+        saturation = LightsConstants.kBrightestColor;
+    } else if (saturation < 0) {
+        saturation = 0;
+    }
+    int packedColor = Color.hsvToRgb(hue, saturation, value);
+    return new IntColors(
+        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kRed), 
+        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kGreen), 
+        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kBlue)
+    );
   }
 
   /**
@@ -128,13 +137,14 @@ public final class Lights extends SubsystemBase {
    * <p>Idk how to make it move around and do all that fancy stuff
    */
   public final void rainbow() {
-    for (int i = 0; i < numberOfLights; i++) {
-      int[] colors =
+    for (short i = 0; i < numberOfLights; i++) {
+      IntColors colors =
           hsvToRgb(
-              (int) (i / numberOfLights * LightsConstants.kMaxHue),
+              (short) (i / numberOfLights * LightsConstants.kMaxHue),
               LightsConstants.kBrightestColor,
-              LightsConstants.kBrightestColor);
-      changeOneColor(i, colors[0], colors[1], colors[2]);
+              LightsConstants.kBrightestColor
+              );
+      changeOneColor(i, colors.red, colors.green, colors.blue);
     }
   }
 
@@ -149,6 +159,30 @@ public final class Lights extends SubsystemBase {
       solidColor(firstColor);
     } else {
       solidColor(secondColor);
+    }
+  }
+
+  /**color but red, green, and blue are ints between 0 and 255 and not double 0 to 1*/
+  public final class IntColors {
+    public short red, green, blue;
+    /**
+     * makes a new class of IntColor
+     * @param red between 0 and 255
+     * @param green between 0 and 255
+     * @param blue between 0 and 255
+     */
+    public IntColors(short red, short green, short blue) {
+        short[] args = {red, green, blue};
+        for (int color : args) {
+            if (color < 0) {
+                color = 0;
+            } else if (color > LightsConstants.kBrightestColor) {
+                color = LightsConstants.kBrightestColor;
+            }
+        }
+        this.red = args[0];
+        this.green = args[1];
+        this.blue = args[2];
     }
   }
 }
