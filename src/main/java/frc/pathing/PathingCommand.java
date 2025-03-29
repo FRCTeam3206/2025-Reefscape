@@ -204,25 +204,22 @@ public class PathingCommand extends Command {
   }
 
   public boolean atPoseGoal() {
-    return robotPose.get().getTranslation().getDistance(goalPoseSupplier.get().getTranslation()) < translationTolerance;
+    return robotPose.get().getTranslation().getDistance(goalPoseSupplier.get().getTranslation())
+        < translationTolerance;
   }
 
   public boolean atRotationGoal() {
     return Math.abs(
-      robotPose
-          .get()
-          .getRotation()
-          .minus(goalPoseSupplier.get().getRotation())
-          .getRadians())
-      < rotationTolerance;
+            robotPose.get().getRotation().minus(goalPoseSupplier.get().getRotation()).getRadians())
+        < rotationTolerance;
   }
 
   public boolean notMoving() {
-    return velocity < velocityTolerance;
+    return Math.abs(velocity) < velocityTolerance;
   }
 
   public boolean notRotating() {
-    return rotationalVelocity < rotVelocityTolerance;
+    return Math.abs(rotationalVelocity) < rotVelocityTolerance;
   }
 
   public boolean isFinished() {

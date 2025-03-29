@@ -173,30 +173,30 @@ public final class Constants {
             Units.inchesToMeters(10),
             new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
 
-        // Camera 1
-        public static final String kCameraLeftName = "CameraLeft";
-        public static final Transform3d kRobotToCameraLeft =
-            new Transform3d(
-                Units.inchesToMeters(3.84),
-                Units.inchesToMeters(10.70),
-                Units.inchesToMeters(25.00),
-                new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
-    
-        public static final String kCameraRightName = "CameraRight";
-        public static final Transform3d kRobotToCameraRight =
-            new Transform3d(
-                Units.inchesToMeters(3.84),
-                Units.inchesToMeters(10.70),
-                Units.inchesToMeters(25.00),
-                new Rotation3d(0, Math.toRadians(-20), Math.toRadians(215)));
-    
-        public static final String kCameraFrontName = "CameraFront";
-        public static final Transform3d kRobotToCameraFront =
-            new Transform3d(
-                Units.inchesToMeters(3.84),
-                Units.inchesToMeters(10.70),
-                Units.inchesToMeters(25.00),
-                new Rotation3d(0, 0, 0));
+    // Camera 1
+    public static final String kCameraLeftName = "CameraLeft";
+    public static final Transform3d kRobotToCameraLeft =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
+
+    public static final String kCameraRightName = "CameraRight";
+    public static final Transform3d kRobotToCameraRight =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(215)));
+
+    public static final String kCameraFrontName = "CameraFront";
+    public static final Transform3d kRobotToCameraFront =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, 0, 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -291,7 +291,7 @@ public final class Constants {
     public static final double kOutakeSpeed = 1;
     public static final double kScoreSpeed = -1;
 
-    public static final int kSensorChannel = 1;
+    public static final int kSensorChannel = 0;
 
     public class Finger {
       // Made up a number
@@ -557,6 +557,8 @@ public final class Constants {
     public static final double kL2Pos = 0.40; // .78;
     public static final double kL3Pos = 0.82;
     public static final double kL4Pos = 1.46;
+
+    public static final double kFeederPos = 0.32;
 
     public static final double kAtGoalTolerance = 0.04;
   }

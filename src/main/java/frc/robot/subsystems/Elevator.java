@@ -334,6 +334,14 @@ public class Elevator extends SubsystemBase {
     return run(() -> defaultAction(safeToGoDown.getAsBoolean()));
   }
 
+  public Command toFeederCommand() {
+    return moveToGoalCommand(ElevatorSubConstants.kFeederPos);
+  }
+
+  public Command toFeederCommandStop() {
+    return moveToGoalAndStopCommand(ElevatorSubConstants.kFeederPos);
+  }
+
   // public Command stayAtBranch(GameConstants.ReefLevels level) {
   //   double goal = 0.0;
   //   switch (level) {

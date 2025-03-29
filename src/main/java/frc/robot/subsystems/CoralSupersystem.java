@@ -85,12 +85,14 @@ public class CoralSupersystem {
   // }
 
   public Command floorIntake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeCommand());
+    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeUntilSuccessCommand());
     // return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
   public Command floorExtake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand());
+    return m_arm
+        .toFloorIntakeStop()
+        .andThen(m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand()));
   }
 
   public Command placeLevelOne() {
@@ -152,6 +154,16 @@ public class CoralSupersystem {
   // public Command scoreCoral(GameConstants.ReefLevels level) {
   //   return positionReef(level).andThen(m_coralOmnis.scoreCommand());
   // }
+
+  public Command feederIntakeCommand() {
+    return ((m_elevator.toFeederCommandStop().alongWith(m_coralOmnis.stopCommand()))
+            .raceWith(m_arm.toStored()))
+        .andThen(
+            m_arm
+                .toFeederIntake()
+                .alongWith(m_elevator.toFeederCommand())
+                .alongWith(m_coralOmnis.intakeUntilSuccessCommand()));
+  }
 
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;

@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.pathing.PathingCommand;
@@ -29,11 +31,9 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.sensors.Vision;
-
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
 import org.photonvision.simulation.VisionSystemSim;
 
 @Logged
@@ -66,11 +66,14 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
   private final Vision vision;
-  private final Vision vision2;
+  // private final Vision vision2;
   private final SimDeviceSim m_gyroSim = new SimDeviceSim("navX-Sensor", m_gyro.getPort());
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
   final VisionSystemSim visionSim;
+
+  private Field2d m_field = new Field2d();
+  private Field2d m_field_vision = new Field2d();
 
   @NotLogged // everything in here is already logged by modules or getPose()
   private final SwerveDrivePoseEstimator m_poseEstimator =
@@ -117,16 +120,24 @@ public class DriveSubsystem extends SubsystemBase {
 
   RobotProfile m_robotProfile =
       new RobotProfile(
-          PathingConstants.kRobotMassKg,
-          ModuleConstants.kWheelDiameterMeters,
-          PathingConstants.kRobotLengthWidthMeters,
-          PathingConstants.kRobotLengthWidthMeters,
-          PathingConstants.kDriveMotor)
-          .setSafteyMultipliers(PathingConstants.kVelocitySafety, PathingConstants.kAccelSafety, PathingConstants.kRotVelocitySafety, PathingConstants.kRotAccelSafety);
+              PathingConstants.kRobotMassKg,
+              ModuleConstants.kWheelDiameterMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kRobotLengthWidthMeters,
+              PathingConstants.kDriveMotor)
+          .setSafteyMultipliers(
+              PathingConstants.kVelocitySafety,
+              PathingConstants.kAccelSafety,
+              PathingConstants.kRotVelocitySafety,
+              PathingConstants.kRotAccelSafety);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
           .withAllianceFlipping(false)
-          .withTolerances(PathingConstants.kTranslationTolerance, PathingConstants.kRotationTolerance, PathingConstants.kVelocityTolerance, PathingConstants.kRotVelocityTolerance);
+          .withTolerances(
+              PathingConstants.kTranslationTolerance,
+              PathingConstants.kRotationTolerance,
+              PathingConstants.kVelocityTolerance,
+              PathingConstants.kRotVelocityTolerance);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -134,7 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
     vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
-    vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2, visionSim);
+
+    SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putData("Vision Field", m_field_vision);
+    // vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2,
+    // visionSim);
   }
 
   @Override
@@ -156,17 +171,16 @@ public class DriveSubsystem extends SubsystemBase {
               // Change our trust in the measurement based on the tags we can see
               var estStdDevs = vision.getEstimationStdDevs();
 
-              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
-    estStdDevs);
+              addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
             });
-    
+
     // vision2
     //         .getEstimatedGlobalPose()
     //         .ifPresent(
     //             est -> {
     //               // Change our trust in the measurement based on the tags we can see
     //               var estStdDevs = vision2.getEstimationStdDevs();
-    
+
     //               addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds,
     //     estStdDevs);
     //             });
@@ -180,6 +194,9 @@ public class DriveSubsystem extends SubsystemBase {
         };
 
     m_speedsMeasured = DriveConstants.kDriveKinematics.toChassisSpeeds(m_statesMeasured);
+
+    m_field.setRobotPose(getPose());
+    m_field_vision.setRobotPose(getVisionPose());
   }
 
   @Override
@@ -204,10 +221,15 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getVisionPose() {
+    return m_poseEstimatorVision.getEstimatedPosition();
+  }
+
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    m_poseEstimatorVision.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**
@@ -379,17 +401,19 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d far = PathingConstants.ReefPose.FAR.getPose(right);
     Pose2d farL = PathingConstants.ReefPose.FAR_LEFT.getPose(right);
     Pose2d farR = PathingConstants.ReefPose.FAR_RIGHT.getPose(right);
-    return m_pathGen.generateToPoseSupplierCommand(
-        () -> {
-          Pose2d robotAt = AllianceUtil.getBluePose();
-          if (robotAt.getX() < PathingConstants.kReefCenterX) {
-            // Robot is at a close pose.
-            return robotAt.nearest(List.of(close, closeL, closeR));
-          } else {
-            // Robot is at a far pose.
-            return robotAt.nearest(List.of(far, farL, farR));
-          }
-        }).andThen(setXCommand());
+    return m_pathGen
+        .generateToPoseSupplierCommand(
+            () -> {
+              Pose2d robotAt = AllianceUtil.getBluePose();
+              if (robotAt.getX() < PathingConstants.kReefCenterX) {
+                // Robot is at a close pose.
+                return robotAt.nearest(List.of(close, closeL, closeR));
+              } else {
+                // Robot is at a far pose.
+                return robotAt.nearest(List.of(far, farL, farR));
+              }
+            })
+        .andThen(setXCommand());
   }
 
   // public PathingCommand getToFeederCommand(boolean right) {

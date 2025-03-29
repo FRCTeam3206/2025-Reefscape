@@ -25,7 +25,10 @@ public class PathingCommandGenerator {
   private Consumer<ChassisSpeeds> drive;
   private PathfinderBuilder builder;
   private final Subsystem subsystem;
-  private double translationTolerance = .05, rotationTolerance = Math.PI / 32, velocityTolerance = 0.001, rotVelocityTolerance = Math.toRadians(1);
+  private double translationTolerance = .05,
+      rotationTolerance = Math.PI / 32,
+      velocityTolerance = 0.001,
+      rotVelocityTolerance = Math.toRadians(1);
   private boolean allianceFlip = true;
   private boolean linearPhysics = false;
 
@@ -180,7 +183,8 @@ public class PathingCommandGenerator {
    * @param translationTolerance The new translation tolerance. In meters. Defaults to 5 cm.
    * @param rotationTolerance The new rotation tolerance. In radians. Defaults to pi/32.
    * @param velocityTolerance The new velocity tolerance. In radians. Defaults to 1 mm/s.
-   * @param rotVelocityTolerance The new rotational velocity tolerance. In rad/s. Defaults to 1 degree per second.
+   * @param rotVelocityTolerance The new rotational velocity tolerance. In rad/s. Defaults to 1
+   *     degree per second.
    * @return A new {@link PathingCommandGenerator} with the modification. For example, to modify one
    *     named {@code pather}, you could do {@code pather = pather.withTolerances(0.01, Math.PI /
    *     64);}, and this would have the same result as if the pather itself were modified. For this
@@ -193,7 +197,10 @@ public class PathingCommandGenerator {
    *     before generating a command without the original being affected.
    */
   public PathingCommandGenerator withTolerances(
-      double translationTolerance, double rotationTolerance, double velocityTolerance, double rotVelocityTolerance) {
+      double translationTolerance,
+      double rotationTolerance,
+      double velocityTolerance,
+      double rotVelocityTolerance) {
     PathingCommandGenerator pather = this.clone();
     pather.translationTolerance = translationTolerance;
     pather.rotationTolerance = rotationTolerance;
