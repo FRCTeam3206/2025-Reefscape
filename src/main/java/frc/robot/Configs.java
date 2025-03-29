@@ -146,7 +146,7 @@ public final class Configs {
           .inverted(false)
           .zeroOffset(0.785)
           .positionConversionFactor(2*Math.PI)
-          .velocityConversionFactor(2*Math.PI/60)
+          .velocityConversionFactor(2*Math.PI)
           .zeroCentered(true);
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
     }

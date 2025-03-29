@@ -128,6 +128,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
     m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
+    m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(80)));
+    m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
 
     // m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     // m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
