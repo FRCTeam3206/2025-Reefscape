@@ -44,7 +44,7 @@ public class CoralSupersystem {
   }
 
   public Command defaultArm() {
-    return m_arm.toStored();
+    return (m_wrist.toHorizontalStop().alongWith(m_coralOmnis.stopCommand())).andThen(m_arm.toStored());
   }
 
   /**
@@ -129,6 +129,10 @@ public class CoralSupersystem {
         .until(() -> m_elevator.atGoal(ElevatorSubConstants.getGoalForLevel(level)) && m_wrist.isVertical().getAsBoolean());
     // return
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
+  }
+
+  public Command holdAtBranchCommand(ReefLevels level) {
+    return m_elevator.toBranch(level).alongWith(armWristL2L3());
   }
 
   public void resetElevator() {

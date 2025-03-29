@@ -263,7 +263,7 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive.stopCommand(); // getToFeederCommand(right);
+    return m_coral.feederIntakeCommand(); // getToFeederCommand(right);
     // We can add things with mechanisms later so that it will intake.
     // This command should stop once we see that we have the coral.
   }
@@ -279,7 +279,7 @@ public class Robot extends TimedRobot {
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
     return (m_robotDrive.getToReefPoseCommand(reefPose, right).alongWith(m_coral.defaultArm()))
       .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreToBranchCommandStop(level)))
-      .andThen((m_robotDrive.setXCommand().alongWith(m_coral.scoreToBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
+      .andThen((m_robotDrive.setXCommand().alongWith(m_coral.holdAtBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
     // We can later add things with the mechanism to make it score the coral correctly.
   }
 
