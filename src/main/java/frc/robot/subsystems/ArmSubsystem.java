@@ -126,9 +126,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Rotation2d getAngle() {
     if (Robot.isSimulation()) {
-      return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
+      return new Rotation2d(m_encoderSim.getPosition());
     }
-    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+    return new Rotation2d(m_encoder.getPosition());
   }
 
   public Command setVoltageDirectly(DoubleSupplier voltage) {

@@ -140,12 +140,14 @@ public final class Configs {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(true);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(false);
       coralArmConfig
           .absoluteEncoder
-          .inverted(true)
+          .inverted(false)
+          .zeroOffset(0.785)
           .positionConversionFactor(Units.rotationsToRadians(1))
-          .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
+          .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1))
+          .zeroCentered(true);
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
     }
   }
