@@ -2,7 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
 
@@ -10,16 +13,20 @@ import frc.robot.Constants.LightsConstants;
 public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
+  public LEDPattern pattern =
+      LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
   public final short numberOfLights = (short) buffer.getLength();
 
   /** when it's going between 2 colors, which it should go to */
   public boolean alternateFirstColor = true;
 
   public Lights() {
-    lights.start();
     lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
     lights.setSyncTime(LightsConstants.kMicrosecondsSync);
-    solidColor(Color.kBlue);
+    lights.setLength(numberOfLights);
+    lights.start();
+    // this is already in the default command so idk how that works
+    solidPattern(Color.kBlue);
   }
 
   /**
@@ -29,7 +36,7 @@ public final class Lights extends SubsystemBase {
    * @param color from Color value, between 0 and 1
    * @return int between 0 and 255
    */
-  public final short colorToInt(double color) {
+  private final short colorToInt(double color) {
     if (color > 1) {
       color = 1;
       // TODO print a warning
@@ -41,13 +48,78 @@ public final class Lights extends SubsystemBase {
     return realColor.shortValue();
   }
 
+  public void periodic() {
+    pattern.applyTo(buffer);
+    lights.setData(buffer);
+  }
+
+  /**
+   * changes the pattern to a gradient with all the colors you pass as arguments. Dont too too many
+   * arguments or else thats stupid
+   *
+   * @param colors
+   * @return Command that makes it a gradient with all the colors
+   */
+  public final Command gradientPattern(Color... colors) {
+    return this.runOnce(
+        () -> {
+          pattern = LEDPattern.gradient(GradientType.kContinuous, colors);
+        });
+  }
+
+  /**
+   * changes the pattern to a solid color
+   *
+   * @param color which color to do
+   * @return Command which changes it to a solid color
+   */
+  public final Command solidPattern(Color color) {
+    return this.runOnce(
+        () -> {
+          pattern = LEDPattern.solid(color);
+        });
+  }
+
+  /**
+   * makes the pattern rainbow
+   *
+   * @return COmmand that does that
+   */
+  public final Command rainbowPattern() {
+    return this.runOnce(
+        () -> {
+          pattern =
+              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
+        });
+  }
+
+  /**
+   * multiplies the brightness to be brighter or darker, 1 does nothing It doenst work yet cause
+   * they use some "dimensionless" thing instead of a double like ANYBODY SANE WOULD DO!!!! AHHHH!!
+   * im just kidding im not really mad its just stupid
+   *
+   * @param multiplier between like 0.1 and 2 i dont really know
+   * @return command that does it
+   */
+  /*public final Command multiplyBrightness(double multiplier) {
+    return this.runOnce(()->{
+      //TODO this probably doesnt work
+      pattern.atBrightness(Dimensionless.ofBaseUnits(multiplier, null));
+    });
+  }
+
+  public final Command blink(byte seconds) {
+    return this.runOnce(()->{
+    });
+  }
+
   /**
    * change color with wpilib Color value
    *
    * @param i which light to change, must be between 0 and the last light
    * @param color Color value to change
    */
-  public final void changeOneColor(short i, Color color) {
+  /*public final void changeOneColor(short i, Color color) {
     changeOneColor(i, colorToInt(color.red), colorToInt(color.green), colorToInt(color.blue));
   }
 
@@ -62,7 +134,7 @@ public final class Lights extends SubsystemBase {
    * @param green between 0 and 255
    * @param blue between 0 and 255
    */
-  public final void changeOneColor(short i, short red, short green, short blue) {
+  /*public final void changeOneColor(short i, short red, short green, short blue) {
     if (i > numberOfLights || i < 0) {
       // probably messed up the for loop and its going twice
       // TODO print yet ANOther warning
@@ -87,7 +159,7 @@ public final class Lights extends SubsystemBase {
    *
    * @param color the Color value to change to
    */
-  public final void solidColor(Color color) {
+  /*public final void solidColor(Color color) {
     solidColor(colorToInt(color.red), colorToInt(color.green), colorToInt(color.blue));
   }
 
@@ -99,7 +171,7 @@ public final class Lights extends SubsystemBase {
    * @param green green, between 0 and 255
    * @param blue blue, between 0 and 255
    */
-  public final void solidColor(short red, short green, short blue) {
+  /*public final void solidColor(short red, short green, short blue) {
     for (short i = 0; i < numberOfLights; i++) {
       changeOneColor(i, red, green, blue);
     }
@@ -112,7 +184,7 @@ public final class Lights extends SubsystemBase {
    * @param value between 0 and 255
    * @return IntColor
    */
-  public final IntColors hsvToRgb(short hue, short saturation, short value) {
+  /*public final IntColors hsvToRgb(short hue, short saturation, short value) {
     while (hue < 0) {
         //goes around the hue circle basically
         hue += LightsConstants.kMaxHue;
@@ -125,8 +197,8 @@ public final class Lights extends SubsystemBase {
     }
     int packedColor = Color.hsvToRgb(hue, saturation, value);
     return new IntColors(
-        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kRed), 
-        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kGreen), 
+        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kRed),
+        (short) Color.unpackRGB(packedColor, Color.RGBChannel.kGreen),
         (short) Color.unpackRGB(packedColor, Color.RGBChannel.kBlue)
     );
   }
@@ -136,7 +208,8 @@ public final class Lights extends SubsystemBase {
    *
    * <p>Idk how to make it move around and do all that fancy stuff
    */
-  public final void rainbow() {
+  /*public final void rainbow() {
+    pattern.applyTo(buffer);
     for (short i = 0; i < numberOfLights; i++) {
       IntColors colors =
           hsvToRgb(
@@ -148,41 +221,29 @@ public final class Lights extends SubsystemBase {
     }
   }
 
-  /**
-   * goes between 2 solid colors Doesnt work yet
-   *
-   * @param firstColor the first color to go to
-   * @param secondColor the other color to go to
-   */
-  public final void alternate(Color firstColor, Color secondColor) {
-    if (alternateFirstColor) {
-      solidColor(firstColor);
-    } else {
-      solidColor(secondColor);
-    }
-  }
-
   /**color but red, green, and blue are ints between 0 and 255 and not double 0 to 1*/
   public final class IntColors {
     public short red, green, blue;
+
     /**
      * makes a new class of IntColor
+     *
      * @param red between 0 and 255
      * @param green between 0 and 255
      * @param blue between 0 and 255
      */
     public IntColors(short red, short green, short blue) {
-        short[] args = {red, green, blue};
-        for (int color : args) {
-            if (color < 0) {
-                color = 0;
-            } else if (color > LightsConstants.kBrightestColor) {
-                color = LightsConstants.kBrightestColor;
-            }
+      short[] args = {red, green, blue};
+      for (int color : args) {
+        if (color < 0) {
+          color = 0;
+        } else if (color > LightsConstants.kBrightestColor) {
+          color = LightsConstants.kBrightestColor;
         }
-        this.red = args[0];
-        this.green = args[1];
-        this.blue = args[2];
+      }
+      this.red = args[0];
+      this.green = args[1];
+      this.blue = args[2];
     }
   }
 }
