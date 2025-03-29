@@ -492,16 +492,16 @@ public final class Constants {
 
   public static final class ArmSubConstants {
     public static final double kMaxVelocity = 4.0;
-    public static final double kMaxAcceleration = 18.0;
+    public static final double kMaxAcceleration = 16.0;
 
     public static final double kS = 0.0;
     public static final double kG = .9;
     public static final double kV = 0.5;
-    public static final double kA = 0.05;
+    public static final double kA = 0.054;
 
-    public static final double kP = 2.0;
+    public static final double kP = 4.0;
     public static final double kI = 0.0;
-    public static final double kD = 0.0;
+    public static final double kD = 0.04;
 
     public static final double kMaxAngle = Units.degreesToRadians(150);
     public static final double kMinAngle = Units.degreesToRadians(30);
