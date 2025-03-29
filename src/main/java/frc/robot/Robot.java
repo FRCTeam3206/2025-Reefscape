@@ -142,6 +142,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
+    m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
+
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
     // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
