@@ -145,8 +145,8 @@ public final class Configs {
           .absoluteEncoder
           .inverted(false)
           .zeroOffset(0.785)
-          .positionConversionFactor(Units.rotationsToRadians(1))
-          .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1))
+          .positionConversionFactor(2*Math.PI)
+          .velocityConversionFactor(2*Math.PI/60)
           .zeroCentered(true);
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
     }

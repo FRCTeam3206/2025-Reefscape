@@ -507,7 +507,7 @@ public final class Constants {
 
     public static final double kS = 0.0;
     public static final double kG = 0.95;
-    public static final double kV = 16.0;
+    public static final double kV = 100.0;
     public static final double kA = 0.05;
 
     public static final double kP = 0.0;
