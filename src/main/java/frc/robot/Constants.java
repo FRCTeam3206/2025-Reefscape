@@ -128,7 +128,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kWeaponsControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.1;
   }
 
   public static final class AutoConstants {
@@ -155,14 +155,48 @@ public final class Constants {
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-    // Camera 1
+    // Camera 1 (facing forward)
     public static final String kCamera1Name = "AprilTagCamera1";
     public static final Transform3d kRobotToCamera1 =
         new Transform3d(
-            Units.inchesToMeters(13),
-            Units.inchesToMeters(0),
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
             Units.inchesToMeters(10),
-            new Rotation3d(0, Math.toRadians(-15), 0));
+            new Rotation3d(0, 0, 0));
+
+    // Camera 2 (facing back at an angle)
+    public static final String kCamera2Name = "AprilTagCamera2";
+    public static final Transform3d kRobotToCamera2 =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(10),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
+
+    // Camera 1
+    public static final String kCameraLeftName = "CameraLeft";
+    public static final Transform3d kRobotToCameraLeft =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(145)));
+
+    public static final String kCameraRightName = "CameraRight";
+    public static final Transform3d kRobotToCameraRight =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, Math.toRadians(-20), Math.toRadians(215)));
+
+    public static final String kCameraFrontName = "CameraFront";
+    public static final Transform3d kRobotToCameraFront =
+        new Transform3d(
+            Units.inchesToMeters(3.84),
+            Units.inchesToMeters(10.70),
+            Units.inchesToMeters(25.00),
+            new Rotation3d(0, 0, 0));
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -239,7 +273,7 @@ public final class Constants {
       public static final double kHorizontal = Math.PI;
       public static final double kStored = 1.6; // Works in real life.
       public static final double kFloorIntake = 3.4; // Works in real life.
-      public static final double kFeeder = 2.30; // This is a guess.
+      public static final double kFeeder = 1.95; // This is a guess.
       public static final double kReefL1 = 2.3; // This is a guess.
       public static final double kReefL2 = 2.3; // This is a guess.
       public static final double kReefL3 = kReefL2;
@@ -368,6 +402,18 @@ public final class Constants {
   }
 
   public static final class PathingConstants {
+    // Tolerances
+    public static final double kTranslationTolerance = 0.01;
+    public static final double kRotationTolerance = Math.toRadians(5);
+    public static final double kVelocityTolerance = 0.05;
+    public static final double kRotVelocityTolerance = Math.toRadians(15);
+
+    // Safety multipliers
+    public static final double kVelocitySafety = 1;
+    public static final double kAccelSafety = 0.35;
+    public static final double kRotVelocitySafety = 1;
+    public static final double kRotAccelSafety = 1;
+
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
@@ -383,14 +429,16 @@ public final class Constants {
             / 2; // page 24: pipes on the same face are 1 ft. 1 in. apart (center to center)
     public static final Motor kDriveMotor = Motor.NEO().gear(4.71);
 
+    public static final double kAlignOffsetInches = 8.0;
+
     public static final Transform2d kTransformLeft =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(kAlignOffsetInches),
             -kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
     public static final Transform2d kTransformRight =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(6),
+            kRobotLengthWidthMeters / 2 + Units.inchesToMeters(kAlignOffsetInches),
             kCoralFaceOffset,
             Rotation2d.fromDegrees(180));
 
@@ -506,9 +554,11 @@ public final class Constants {
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
     public static final double kPosOffset = Units.inchesToMeters(11);
-    public static final double kL2Pos = 0.55; // .78;
-    public static final double kL3Pos = .97;
-    public static final double kL4Pos = 1.56;
+    public static final double kL2Pos = 0.40; // .78;
+    public static final double kL3Pos = 0.82;
+    public static final double kL4Pos = 1.46;
+
+    public static final double kFeederPos = 0.32;
 
     public static final double kAtGoalTolerance = 0.04;
   }
