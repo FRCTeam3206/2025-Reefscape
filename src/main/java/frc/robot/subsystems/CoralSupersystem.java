@@ -158,6 +158,16 @@ public class CoralSupersystem {
   //   return positionReef(level).andThen(m_coralOmnis.scoreCommand());
   // }
 
+  public Command feederIntakeCommand() {
+    return ((m_elevator.toFeederCommandStop().alongWith(m_coralOmnis.stopCommand()))
+            .raceWith(m_arm.toStored()))
+        .andThen(
+            m_arm
+                .toFeederIntake()
+                .alongWith(m_elevator.toFeederCommand())
+                .alongWith(m_coralOmnis.intakeCommand()));
+  }
+
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
   }

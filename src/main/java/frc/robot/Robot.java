@@ -142,6 +142,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
+    m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
+
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
     // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
@@ -251,19 +253,17 @@ public class Robot extends TimedRobot {
    * make sure we don't hit the cages.
    */
   public Command robotForwardCommand() {
-    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () ->
-  false).withTimeout(.5);
+    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
   }
 
   /**
    * Pick up coral from the feeder station
    *
-   * @param right Whether to pick up from the right or left feeder station (from driver view,
-  since
+   * @param right Whether to pick up from the right or left feeder station (from driver view, since
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive.stopCommand();//getToFeederCommand(right);
+    return m_robotDrive.stopCommand(); // getToFeederCommand(right);
     // We can add things with mechanisms later so that it will intake.
     // This command should stop once we see that we have the coral.
   }
@@ -272,8 +272,7 @@ public class Robot extends TimedRobot {
    * Score coral on the reef.
    *
    * @param reefPose Which location on the reef to score it on.
-   * @param right Whether it should be the right side on that face (from the robot's
-  perspective).
+   * @param right Whether it should be the right side on that face (from the robot's perspective).
    * @param level Which level to score the coral on.
    * @return A Command to score coral on the reef.
    */
@@ -404,10 +403,11 @@ public class Robot extends TimedRobot {
 
   public void resetRobotToFieldCenter() {
     var field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    var heading = (DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red)
-        ? 180.0
-        : 0.0;
+    var heading =
+        (DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red)
+            ? 180.0
+            : 0.0;
     m_robotDrive.zeroHeading();
     m_robotDrive.resetOdometry(
         new Pose2d(
