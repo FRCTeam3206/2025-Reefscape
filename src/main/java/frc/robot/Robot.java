@@ -277,9 +277,9 @@ public class Robot extends TimedRobot {
    * @return A Command to score coral on the reef.
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
-    return //(m_robotDrive.getToReefPoseCommand(reefPose, right).alongWith(m_coral.defaultArm()))
-      ((m_coral.scoreToBranchCommandStop(level)))
-      .andThen(((m_coral.holdAtBranchCommand(level).alongWith(m_coral.scoreWheels()))).withTimeout(6));
+    return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
+      .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreToBranchCommandStop(level)))
+      .andThen((m_robotDrive.setXCommand().alongWith(m_coral.scoreAtBranchCommand(level))).withTimeout(3));
     // We can later add things with the mechanism to make it score the coral correctly.
   }
 
