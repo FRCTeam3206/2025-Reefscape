@@ -292,7 +292,7 @@ public final class Constants {
     public static final double kOutakeSpeed = 1;
     public static final double kScoreSpeed = -1;
 
-    public static final int kSensorChannel = 1;
+    public static final int kSensorChannel = 0;
 
     public class Finger {
       // Made up a number
