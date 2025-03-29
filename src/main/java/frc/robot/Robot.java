@@ -126,30 +126,28 @@ public class Robot extends TimedRobot {
     m_driverController.button(3).whileTrue(m_robotDrive.getToNearestReefCommand(false));
     m_driverController.button(4).whileTrue(m_robotDrive.getToNearestReefCommand(true));
 
-    m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
-    m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
-    m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
-    m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
+    // m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
+    // m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
+    // m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
+    // m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
 
-    // m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
-    // m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
-    // m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
-    // m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
+    m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
+    m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
+    m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
+    m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    // m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    // m_weaponsController.b().whileTrue(m_coral.floorExtake());
-    // m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
-    // m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
-    // m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
-    // m_weaponsController.y().whileTrue(m_coral.armTest());//(ReefLevels.l4));
-    // // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
-    // m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
+    m_weaponsController.a().whileTrue(m_coral.floorIntake());
+    m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
+    m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
+    m_weaponsController.y().whileTrue(m_coral.armTest());//(ReefLevels.l4));
+    // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
+    m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    // m_weaponsController.start().whileTrue(m_coral.scoreWheels());
+    m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
-    // m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
-
-    // END
+    m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
 
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
