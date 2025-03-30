@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
@@ -32,6 +30,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Robot;
+import java.util.function.DoubleSupplier;
 
 @Logged
 public class ArmSubsystem extends SubsystemBase {
@@ -48,7 +47,8 @@ public class ArmSubsystem extends SubsystemBase {
               ArmSubConstants.kMaxVelocity, ArmSubConstants.kMaxAcceleration));
 
   private final ArmFeedforward feedforward =
-      new ArmFeedforward(ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kV, ArmSubConstants.kA);
+      new ArmFeedforward(
+          ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kV, ArmSubConstants.kA);
   double ff = 0.0;
 
   private final PIDController feedback =
