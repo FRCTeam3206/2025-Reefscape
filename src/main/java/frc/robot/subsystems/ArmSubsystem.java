@@ -232,7 +232,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public boolean isSafe() {
-    return getAngle().getRadians() < ArmConstants.Angles.kSafePosition;
+    return getAngle().getRadians() > ArmConstants.Angles.kSafePosition;
   }
 
   public Command toStoredSafe() {
