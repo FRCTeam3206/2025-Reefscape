@@ -22,8 +22,8 @@ public class CoralSupersystem {
   private final Elevator m_elevator = new Elevator();
 
   public CoralSupersystem() {
-    m_arm.setDefaultCommand(m_arm.toFeeder());
-    //m_arm.setDefaultCommand(m_arm.toStored());
+    // m_arm.setDefaultCommand(m_arm.moveToGoalCommand(3));
+    m_arm.setDefaultCommand(m_arm.toStored());
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
     m_elevator.setDefaultCommand(m_elevator.defaultCommand(() -> m_arm.isSafe()));
@@ -163,13 +163,5 @@ public class CoralSupersystem {
 
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
-  }
-
-  public Command horizontal() {
-    return m_wrist.toHorizontalContinuous();
-  }
-
-  public Command vertical() {
-    return m_wrist.toVerticalContinuous();
   }
 }

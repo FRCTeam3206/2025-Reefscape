@@ -58,10 +58,6 @@ public class Wrist extends SubsystemBase {
     return m_encoder.getPosition();
   }
 
-  public double getVelocity() {
-    return m_encoder.getVelocity();
-  }
-
   public Trigger isVertical() {
     return new Trigger(() -> atAngle(WristConstants.kVerticalPosition));
   }

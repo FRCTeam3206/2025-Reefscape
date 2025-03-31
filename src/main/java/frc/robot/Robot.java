@@ -142,12 +142,10 @@ public class Robot extends TimedRobot {
     m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
     m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
     m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
+    // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
+    m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    // m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
-    // m_weaponsController.start().whileTrue(m_coral.scoreWheels());
-
-    m_weaponsController.back().whileTrue(m_coral.horizontal());
-    m_weaponsController.start().whileTrue(m_coral.vertical());
+    m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
     m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
 

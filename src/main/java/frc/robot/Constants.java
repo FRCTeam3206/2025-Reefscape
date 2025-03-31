@@ -385,11 +385,11 @@ public final class Constants {
 
     public static final double kAtAngleTolerance = 0.1;
 
-    public static final double kP = 0;
+    public static final double kP = 0.125;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final double kV = 0.0;
+    public static final double kV = 0.1;
 
     public static final double kMaxVelocity = 1;
     public static final double kMaxAcceleration = 1;
