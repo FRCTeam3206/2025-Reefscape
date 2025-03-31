@@ -388,6 +388,11 @@ public final class Constants {
     public static final double kP = 0.125;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
+
+    public static final double kV = 0.1;
+
+    public static final double kMaxVelocity = 1;
+    public static final double kMaxAcceleration = 1;
   }
 
   public static final class PathingConstants {
@@ -505,6 +510,8 @@ public final class Constants {
 
     public static final double kMaxAngle = Units.degreesToRadians(150);
     public static final double kMinAngle = Units.degreesToRadians(30);
+
+    public static final double kSafeWrist = 1.38;
 
     public static final double kArmReduction = 25;
     public static final double kArmPivotHeight = Units.inchesToMeters(10.5);

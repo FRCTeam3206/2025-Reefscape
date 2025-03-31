@@ -178,6 +178,10 @@ public class ArmSubsystem extends SubsystemBase {
     m_max.setVoltage(fb + ff);
   }
 
+  public boolean safeWrist() {
+    return getAngle().getRadians() < ArmSubConstants.kSafeWrist;
+  }
+
   /**
    * Returns true when the arm is at its current goal and not moving. Tolerances for position and
    * velocity are set in ArmConstants.
