@@ -6,9 +6,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -74,12 +72,10 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double goal = m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition;
+    double goal =
+        m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition;
 
-    fb =
-        feedback.calculate(
-            getAngle(),
-            goal);
+    fb = feedback.calculate(getAngle(), goal);
 
     m_motor.set(fb);
   }
