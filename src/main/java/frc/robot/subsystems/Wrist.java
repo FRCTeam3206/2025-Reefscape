@@ -23,13 +23,7 @@ public class Wrist extends SubsystemBase {
   private AbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
   private double m_arbFF = 0.0;
 
-  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-
-  private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(WristConstants.kMaxVelocity, WristConstants.kMaxAcceleration));
-
   private final PIDController feedback = new PIDController(WristConstants.kP, 0, WristConstants.kD);
-  private final ArmFeedforward feedforward = new ArmFeedforward(0.0, 0.0, WristConstants.kV);
   double fb = 0.0;
   double ff = 0.0;
 
@@ -78,28 +72,15 @@ public class Wrist extends SubsystemBase {
     return m_motor.getOutputCurrent();
   }
 
-  public double getSetpoint() {
-    return setpoint.position;
-  }
-
-  public double getSetpointVelocity() {
-    return setpoint.velocity;
-  }
-
   @Override
   public void periodic() {
     double goal = m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition;
-
-    this.goal = new TrapezoidProfile.State(goal, 0);
-    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
 
     fb =
         feedback.calculate(
             getAngle(),
             goal);
-    ff =
-        feedforward.calculate(setpoint.position, setpoint.velocity);
 
-    m_motor.set(fb + ff);
+    m_motor.set(fb);
   }
 }
