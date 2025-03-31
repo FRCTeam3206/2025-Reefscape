@@ -33,6 +33,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.BooleanSupplier;
@@ -53,6 +54,8 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Algae m_algae = new Algae();
   private final CoralSupersystem m_coral = new CoralSupersystem();
+
+  private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -137,7 +140,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    m_weaponsController.b().whileTrue(m_coral.feederIntakeCommand());
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
     m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
     m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
@@ -147,7 +150,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
-    m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
+    m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
+    m_weaponsController.rightBumper().onFalse(m_climber.climbCommand());
 
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
@@ -196,6 +200,10 @@ public class Robot extends TimedRobot {
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
+
+    m_climber.setDefaultCommand(
+        m_climber.directControl(
+            () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
   }
 
   /**
