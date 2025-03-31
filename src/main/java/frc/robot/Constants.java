@@ -404,9 +404,9 @@ public final class Constants {
   public static final class PathingConstants {
     // Tolerances
     public static final double kTranslationTolerance = 0.01;
-    public static final double kRotationTolerance = Math.toRadians(5);
-    public static final double kVelocityTolerance = 0.05;
-    public static final double kRotVelocityTolerance = Math.toRadians(15);
+    public static final double kRotationTolerance = Math.toRadians(1);
+    public static final double kVelocityTolerance = 0.04;
+    public static final double kRotVelocityTolerance = Math.toRadians(7);
 
     // Safety multipliers
     public static final double kVelocitySafety = 1;
