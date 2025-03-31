@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +18,7 @@ import java.util.function.DoubleSupplier;
 @Logged
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax m_max = new SparkMax(ClimberConstants.kClimberCanId, MotorType.kBrushless);
-  private final RelativeEncoder m_encoder = m_max.getEncoder();
+  private final SparkAbsoluteEncoder m_encoder = m_max.getAbsoluteEncoder();
 
   public ClimberSubsystem() {
     m_max.configure(
@@ -46,15 +47,9 @@ public class ClimberSubsystem extends SubsystemBase {
     m_max.setVoltage(0);
   }
 
-  public void zeroEncoder() {
-    m_encoder.setPosition(0);
-  }
-
-  public void runWithLimits(double power, boolean override) {
+  public void runWithLimits(double power) {
     var position = getPosition();
-    if (override) {
-      m_max.set(power);
-    } else if (power < 0 && position > ClimberConstants.kMinLimit) {
+    if (power < 0 && position > ClimberConstants.kMinLimit) {
       m_max.set(power);
     } else if (power > 0 && position < ClimberConstants.kMaxLimit) {
       m_max.set(power);
@@ -63,8 +58,34 @@ public class ClimberSubsystem extends SubsystemBase {
     }
   }
 
-  public Command directControl(DoubleSupplier power, BooleanSupplier override) {
-    return this.run(() -> runWithLimits(power.getAsDouble(), override.getAsBoolean()));
+  public void deploy() {
+    var position = getPosition();
+    if (position > ClimberConstants.kMaxLimit) {
+      m_max.set(0);
+    } else {
+      m_max.set(1);
+    }
+  }
+
+  public void climb() {
+    var position = getPosition();
+    if (position < ClimberConstants.kClimbMin) {
+      m_max.set(0);
+    } else {
+      m_max.set(-1);
+    }
+  }
+
+  public Command directControl(DoubleSupplier power) {
+    return this.run(() -> runWithLimits(power.getAsDouble()));
+  }
+
+  public Command deployCommand() {
+    return run(() -> deploy()).until(() -> getPosition() >= ClimberConstants.kMaxLimit);
+  }
+
+  public Command climbCommand() {
+    return run(() -> climb());
   }
 
   public Command stopCommand() {

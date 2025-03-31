@@ -122,7 +122,6 @@ public class Robot extends TimedRobot {
     //     .a()
     //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
     m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    m_driverController.button(4).onTrue(new InstantCommand(m_climber::zeroEncoder));
     // } else {
     //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
     // }
@@ -136,7 +135,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    m_weaponsController.b().whileTrue(m_coral.floorExtake());
+    m_weaponsController.b().whileTrue(m_coral.feederIntakeCommand());
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
     m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
     m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
@@ -146,7 +145,8 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
-    m_weaponsController.rightBumper().whileTrue(m_coral.feederIntakeCommand());
+    m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
+    m_weaponsController.rightBumper().onFalse(m_climber.climbCommand());
 
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
@@ -194,7 +194,7 @@ public class Robot extends TimedRobot {
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
 
     m_climber.setDefaultCommand(
-        m_climber.directControl(() -> - m_weaponsController.getRightY(), () -> m_weaponsController.leftBumper().getAsBoolean()));
+        m_climber.directControl(() -> - MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
   }
 
   /**
