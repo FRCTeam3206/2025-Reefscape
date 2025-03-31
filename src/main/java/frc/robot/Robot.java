@@ -194,7 +194,7 @@ public class Robot extends TimedRobot {
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
 
     m_climber.setDefaultCommand(
-        m_climber.directControl(() -> -0.5 * m_weaponsController.getRightY(), () -> m_weaponsController.leftBumper().getAsBoolean()));
+        m_climber.directControl(() -> - m_weaponsController.getRightY(), () -> m_weaponsController.leftBumper().getAsBoolean()));
   }
 
   /**
