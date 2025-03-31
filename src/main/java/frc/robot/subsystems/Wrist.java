@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,8 +26,12 @@ public class Wrist extends SubsystemBase {
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
+  private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(WristConstants.kMaxVelocity, WristConstants.kMaxAcceleration));
+
   private final PIDController feedback = new PIDController(WristConstants.kP, 0, WristConstants.kD);
+  private final ArmFeedforward feedforward = new ArmFeedforward(0.0, 0.0, WristConstants.kV);
   double fb = 0.0;
+  double ff = 0.0;
 
   public Wrist() {
     m_motor.configure(
@@ -73,23 +78,28 @@ public class Wrist extends SubsystemBase {
     return m_motor.getOutputCurrent();
   }
 
+  public double getSetpoint() {
+    return setpoint.position;
+  }
+
+  public double getSetpointVelocity() {
+    return setpoint.velocity;
+  }
+
   @Override
   public void periodic() {
-    // m_arbFF = Math.cos(getAngle()) * Configs.Wrist.kG;
-    // m_controller.setReference(
-    //     m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition,
-    //     ControlType.kMAXMotionPositionControl,
-    //     ClosedLoopSlot.kSlot0,
-    //     m_arbFF);
-    // this.goal = new TrapezoidProfile.State(goal, 0);
-    // this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+    double goal = m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition;
+
+    this.goal = new TrapezoidProfile.State(goal, 0);
+    this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
 
     fb =
         feedback.calculate(
             getAngle(),
-            m_goalHorizontal
-                ? WristConstants.kHorizontalPosition
-                : WristConstants.kVerticalPosition);
-    m_motor.set(fb);
+            goal);
+    ff =
+        feedforward.calculate(setpoint.position, setpoint.velocity);
+
+    m_motor.set(fb + ff);
   }
 }

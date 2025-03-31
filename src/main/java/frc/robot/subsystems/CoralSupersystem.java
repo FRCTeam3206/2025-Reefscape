@@ -106,7 +106,7 @@ public class CoralSupersystem {
 
   public Command armWristBranchPos() {
     return moveWristHorizontal()
-        .andThen(m_arm.toBranchStop().raceWith(m_wrist.toHorizontalContinuous()))
+        .andThen((m_arm.toBranchStop().raceWith(m_wrist.toHorizontalContinuous())).until(() -> m_arm.safeWrist()))
         .andThen(m_arm.toL2L3().raceWith(m_wrist.toVerticalStop()))
         .andThen(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()));
     // .alongWith(m_coralOmnis.scoreCommand()));
