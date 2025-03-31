@@ -271,14 +271,14 @@ public final class Constants {
 
     public static final class Angles {
       public static final double kHorizontal = Math.PI;
-      public static final double kStored = 1.6; // Works in real life.
-      public static final double kFloorIntake = 3.4; // Works in real life.
-      public static final double kFeeder = 1.95; // This is a guess.
-      public static final double kReefL1 = 2.3; // This is a guess.
-      public static final double kReefL2 = 2.3; // This is a guess.
+      public static final double kStored = 1.64; // Works in real life.
+      public static final double kFloorIntake = -.25; // Works in real life.
+      public static final double kFeeder = 0.98;
+      public static final double kReefL1 = 0.98;
+      public static final double kReefL2 = 0.98;
       public static final double kReefL3 = kReefL2;
-      public static final double kReefL4 = 2.50;
-      public static final double kSafePosition = 1.80;
+      public static final double kReefL4 = 0.74;
+      public static final double kSafePosition = 1.54;
     }
   }
 
@@ -291,7 +291,7 @@ public final class Constants {
     public static final double kOutakeSpeed = 1;
     public static final double kScoreSpeed = -1;
 
-    public static final int kSensorChannel = 1;
+    public static final int kSensorChannel = 0;
 
     public class Finger {
       // Made up a number
@@ -330,17 +330,6 @@ public final class Constants {
     public static final class Voltages {
       public static final double kDown = -5;
       public static final double kUp = 40;
-    }
-
-    public static final class FeedForward {
-      // Static gain (volts)
-      public static final double Ks = 0;
-      // Gravity gain (volts)
-      public static final double Kg = 1.25;
-      // Velocity gain (volts per m/s)
-      public static final double Kv = 0;
-      // Acceleration gain (volts per m/s^2)
-      public static final double Ka = 0;
     }
 
     // something for the simulation
@@ -502,17 +491,17 @@ public final class Constants {
   }
 
   public static final class ArmSubConstants {
-    public static final double kMaxVelocity = 8;
-    public static final double kMaxAcceleration = 8;
+    public static final double kMaxVelocity = 4.0;
+    public static final double kMaxAcceleration = 16.0;
 
     public static final double kS = 0.0;
-    public static final double kG = 1;
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
+    public static final double kG = .9;
+    public static final double kV = 0.5;
+    public static final double kA = 0.054;
 
-    public static final double kP = 8;
+    public static final double kP = 4.0;
     public static final double kI = 0.0;
-    public static final double kD = 0.0;
+    public static final double kD = 0.04;
 
     public static final double kMaxAngle = Units.degreesToRadians(150);
     public static final double kMinAngle = Units.degreesToRadians(30);

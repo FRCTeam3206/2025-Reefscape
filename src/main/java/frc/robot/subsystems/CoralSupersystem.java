@@ -4,6 +4,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GameConstants.ReefLevels;
 
@@ -26,6 +27,10 @@ public class CoralSupersystem {
     m_coralOmnis.setDefaultCommand(m_coralOmnis.stopCommand());
     m_wrist.setDefaultCommand(m_wrist.toHorizontalContinuous());
     m_elevator.setDefaultCommand(m_elevator.defaultCommand(() -> m_arm.isSafe()));
+  }
+
+  public Command armToAngle(Rotation2d angle) {
+    return m_arm.moveToGoalCommand(angle);
   }
 
   /**
@@ -81,12 +86,14 @@ public class CoralSupersystem {
   // }
 
   public Command floorIntake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeCommand());
+    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.intakeUntilSuccessCommand());
     // return positionFloorIntake().andThen(m_coralOmnis.intakeUntilSuccessCommand());
   }
 
   public Command floorExtake() {
-    return m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand());
+    return m_arm
+        .toFloorIntakeStop()
+        .andThen(m_arm.toFloorIntakeStop().alongWith(m_coralOmnis.outakeCommand()));
   }
 
   public Command placeLevelOne() {
@@ -97,9 +104,9 @@ public class CoralSupersystem {
     return moveWristHorizontal().andThen(m_arm.toStoredSafe());
   }
 
-  public Command armWristL2L3() {
+  public Command armWristBranchPos() {
     return moveWristHorizontal()
-        .andThen(m_arm.toL2L3Stop())
+        .andThen(m_arm.toBranchStop().raceWith(m_wrist.toHorizontalContinuous()))
         .andThen(m_arm.toL2L3().raceWith(m_wrist.toVerticalStop()))
         .andThen(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()));
     // .alongWith(m_coralOmnis.scoreCommand()));
@@ -112,7 +119,7 @@ public class CoralSupersystem {
   public Command scoreToBranchCommand(ReefLevels level) {
     return safeArm()
         .andThen(m_elevator.toBranchStop(level).raceWith(m_arm.toStored()))
-        .andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()));
+        .andThen(m_elevator.toBranch(level).alongWith(armWristBranchPos()));
     // return
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
@@ -151,7 +158,7 @@ public class CoralSupersystem {
             m_arm
                 .toFeederIntake()
                 .alongWith(m_elevator.toFeederCommand())
-                .alongWith(m_coralOmnis.intakeCommand()));
+                .alongWith(m_coralOmnis.intakeUntilSuccessCommand()));
   }
 
   public CoralIntake getOmnisSubsystem() {

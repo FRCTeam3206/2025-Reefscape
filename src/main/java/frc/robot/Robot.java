@@ -129,6 +129,11 @@ public class Robot extends TimedRobot {
     m_driverController.button(3).whileTrue(m_robotDrive.getToNearestReefCommand(false));
     m_driverController.button(4).whileTrue(m_robotDrive.getToNearestReefCommand(true));
 
+    // m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
+    // m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
+    // m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
+    // m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
+
     m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
     m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
     m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
@@ -189,6 +194,9 @@ public class Robot extends TimedRobot {
               adjustJoystick(m_weaponsController::getRightX, () -> m_speedMultiplier, () -> true),
               () -> m_fieldRelative));
     }
+
+    // m_coral.getArm().setDefaultCommand(m_coral.getArm().setVoltageDirectly(() ->
+    // m_weaponsController.getLeftY()));
 
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());

@@ -30,6 +30,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Robot;
+import java.util.function.DoubleSupplier;
 
 @Logged
 public class ArmSubsystem extends SubsystemBase {
@@ -46,7 +47,8 @@ public class ArmSubsystem extends SubsystemBase {
               ArmSubConstants.kMaxVelocity, ArmSubConstants.kMaxAcceleration));
 
   private final ArmFeedforward feedforward =
-      new ArmFeedforward(ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kA);
+      new ArmFeedforward(
+          ArmSubConstants.kS, ArmSubConstants.kG, ArmSubConstants.kV, ArmSubConstants.kA);
   double ff = 0.0;
 
   private final PIDController feedback =
@@ -124,9 +126,13 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Rotation2d getAngle() {
     if (Robot.isSimulation()) {
-      return new Rotation2d((m_encoderSim.getPosition() + Math.PI) % (2 * Math.PI));
+      return new Rotation2d(m_encoderSim.getPosition());
     }
-    return new Rotation2d((m_encoder.getPosition() + Math.PI) % (2 * Math.PI));
+    return new Rotation2d(m_encoder.getPosition());
+  }
+
+  public Command setVoltageDirectly(DoubleSupplier voltage) {
+    return run(() -> m_max.setVoltage(voltage.getAsDouble()));
   }
 
   public double getVelocity() {
@@ -145,6 +151,10 @@ public class ArmSubsystem extends SubsystemBase {
     return setpoint.position;
   }
 
+  public double getSetpointVelocity() {
+    return setpoint.velocity;
+  }
+
   public double getGoal() {
     return goal.position;
   }
@@ -158,9 +168,11 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void moveToGoal(Rotation2d goal) {
+    var cur_angle = setpoint.position;
+    var cur_velocity = setpoint.velocity;
     this.goal = new TrapezoidProfile.State(goal.getRadians(), 0);
     this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
-    ff = feedforward.calculate(setpoint.position, setpoint.velocity);
+    ff = feedforward.calculateWithVelocities(cur_angle, cur_velocity, setpoint.velocity);
     fb = feedback.calculate(getAngle().getRadians(), setpoint.position);
 
     m_max.setVoltage(fb + ff);
@@ -220,7 +232,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public boolean isSafe() {
-    return getAngle().getRadians() < ArmConstants.Angles.kSafePosition;
+    return getAngle().getRadians() > ArmConstants.Angles.kSafePosition;
   }
 
   public Command toStoredSafe() {
@@ -253,7 +265,7 @@ public class ArmSubsystem extends SubsystemBase {
     return moveToGoalCommand(ArmConstants.Angles.kReefL2);
   }
 
-  public Command toL2L3Stop() {
+  public Command toBranchStop() {
     return moveToGoalAndStopCommand(ArmConstants.Angles.kReefL2);
   }
 
