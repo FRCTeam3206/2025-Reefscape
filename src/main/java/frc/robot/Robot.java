@@ -205,7 +205,7 @@ public class Robot extends TimedRobot {
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
 
     m_lights.setDefaultCommand(
-        m_lights.setPattern(
+        m_lights.setPatternCommand(
             () -> {
               if (m_climber.getCanClimb()) {
                 return Color.kLimeGreen;

@@ -50,6 +50,14 @@ public final class Lights extends SubsystemBase {
   }
 
   /**
+   * Method to set the pattern to a solid color
+   * @param color The color to set the lights to
+   */
+  public void setSolidPattern(Color color) {
+    pattern = LEDPattern.solid(color);
+  }
+
+  /**
    * changes the pattern to a solid color
    *
    * @param color which color to do
@@ -57,9 +65,15 @@ public final class Lights extends SubsystemBase {
    */
   public final Command solidPattern(Color color) {
     return this.runOnce(
-        () -> {
-          pattern = LEDPattern.solid(color);
-        });
+        () -> setSolidPattern(color));
+  }
+
+  /**
+   * Method to set the pattern to rainbow
+   */
+  public void setRainbowPattern() {
+    pattern =
+              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
   }
 
   /**
@@ -69,10 +83,7 @@ public final class Lights extends SubsystemBase {
    */
   public final Command rainbowPattern() {
     return this.runOnce(
-        () -> {
-          pattern =
-              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
-        });
+        () -> setRainbowPattern());
   }
 
   /**
@@ -91,15 +102,17 @@ public final class Lights extends SubsystemBase {
         });
   }
 
-  public final Command setPattern(Supplier<Color> color, BooleanSupplier rainbow) {
+  public void setPattern(Color color, boolean rainbow) {
+    if (rainbow) {
+      setRainbowPattern();
+    } else {
+      setSolidPattern(color);
+    }
+  }
+
+  public final Command setPatternCommand(Supplier<Color> color, BooleanSupplier rainbow) {
     return run(
-        () -> {
-          if (rainbow.getAsBoolean()) {
-            rainbowPattern().execute();
-          } else {
-            solidPattern(color.get()).execute();
-          }
-        });
+        () -> setPattern(color.get(), rainbow.getAsBoolean()));
   }
 
   public final Command blink(short milliseconds) {
