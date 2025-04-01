@@ -374,6 +374,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_coral.resetElevator();
+    m_climber.resetClimb();
 
     if (!DriverStation.getAlliance().isEmpty()) {
       var alliance = DriverStation.getAlliance().get();

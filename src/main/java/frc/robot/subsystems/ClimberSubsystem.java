@@ -17,6 +17,9 @@ public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax m_max = new SparkMax(ClimberConstants.kClimberCanId, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_encoder = m_max.getAbsoluteEncoder();
 
+  private boolean canClimb = false;
+  private boolean climbed = false;
+
   public ClimberSubsystem() {
     m_max.configure(
         Configs.ClimberConfigs.climberConfig,
@@ -68,8 +71,11 @@ public class ClimberSubsystem extends SubsystemBase {
     var position = getPosition();
     if (position < ClimberConstants.kClimbMin) {
       m_max.set(0);
-    } else {
+      climbed = true;
+    } else if (canClimb) {
       m_max.set(-1);
+    } else {
+      m_max.set(0);
     }
   }
 
@@ -78,11 +84,29 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command deployCommand() {
-    return run(() -> deploy()).until(() -> getPosition() >= ClimberConstants.kMaxLimit);
+    return run(() -> deploy())
+        .until(() -> getPosition() >= ClimberConstants.kMaxLimit)
+        .andThen(
+            () -> {
+              canClimb = true;
+            });
   }
 
   public Command climbCommand() {
     return run(() -> climb());
+  }
+
+  public void resetClimb() {
+    canClimb = false;
+    climbed = false;
+  }
+
+  public boolean getCanClimb() {
+    return canClimb;
+  }
+
+  public boolean getClimbed() {
+    return climbed;
   }
 
   public Command stopCommand() {
