@@ -1,15 +1,11 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Percent;
-
-import edu.wpi.first.units.DimensionlessUnit;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
@@ -86,15 +82,14 @@ public final class Lights extends SubsystemBase {
    * @return command that does it
    */
   public final Command multiplyBrightness(float multiplier) {
-    return this.runOnce(()->{
-      //doesnt work
-      pattern.atBrightness(Dimensionless.ofBaseUnits(multiplier, null));
-    });
+    return this.runOnce(
+        () -> {
+          // doesnt work
+          pattern.atBrightness(Dimensionless.ofBaseUnits(multiplier, null));
+        });
   }
 
   public final Command blink(short milliseconds) {
-    return this.runOnce(()->{
-
-    });
+    return this.runOnce(() -> {});
   }
 }
