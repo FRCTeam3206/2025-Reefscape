@@ -166,4 +166,8 @@ public class CoralSupersystem {
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
   }
+
+  public boolean hasCoral() {
+    return m_coralOmnis.hasCoral();
+  }
 }

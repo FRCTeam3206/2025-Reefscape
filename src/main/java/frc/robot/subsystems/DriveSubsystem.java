@@ -139,6 +139,8 @@ public class DriveSubsystem extends SubsystemBase {
               PathingConstants.kVelocityTolerance,
               PathingConstants.kRotVelocityTolerance);
 
+  private boolean aligned = false;
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     visionSim = new VisionSystemSim("main-sim");
@@ -258,6 +260,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    aligned = false;
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
@@ -413,7 +416,7 @@ public class DriveSubsystem extends SubsystemBase {
                 return robotAt.nearest(List.of(far, farL, farR));
               }
             })
-        .andThen(setXCommand());
+        .andThen(setXAlignedCommand());
   }
 
   // public PathingCommand getToFeederCommand(boolean right) {
@@ -428,5 +431,16 @@ public class DriveSubsystem extends SubsystemBase {
   /** Command to set the wheels into an X formation to prevent movement. */
   public Command setXCommand() {
     return run(this::setX);
+  }
+
+  public Command setXAlignedCommand() {
+    return run(() -> {
+      setX();
+      aligned = true;
+    });
+  }
+
+  public boolean autoAligned() {
+    return aligned;
   }
 }

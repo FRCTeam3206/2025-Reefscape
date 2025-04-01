@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -87,6 +90,18 @@ public final class Lights extends SubsystemBase {
           // doesnt work
           pattern.atBrightness(Dimensionless.ofBaseUnits(multiplier, null));
         });
+  }
+
+  public final Command setPattern(Supplier<Color> color, BooleanSupplier rainbow) {
+    return run(
+      () -> {
+        if (rainbow.getAsBoolean()) {
+          rainbowPattern().execute();
+        } else {
+          solidPattern(color.get()).execute();
+        }
+      }
+    );
   }
 
   public final Command blink(short milliseconds) {
