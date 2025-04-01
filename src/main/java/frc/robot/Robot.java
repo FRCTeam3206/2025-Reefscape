@@ -212,13 +212,13 @@ public class Robot extends TimedRobot {
         m_lights.setPatternCommand(
             () -> {
               if (m_climber.getCanClimb()) {
-                return Color.kLimeGreen;
+                return Color.fromHSV(175, 220, 100); // Light green (Light green-blue)
               } else if (m_robotDrive.autoAligned()) {
-                return Color.kSeaGreen;
+                return Color.fromHSV(0, 255, 100); // Dark green (Green)
               } else if (m_coral.hasCoral()) {
-                return Color.kCoral;
+                return Color.fromHSV(60, 255, 100); // Red-orange
               } else {
-                return Color.kFirstBlue;
+                return Color.fromHSV(120, 255, 100); // Blue
               }
             },
             () -> {
