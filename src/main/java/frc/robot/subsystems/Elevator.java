@@ -319,10 +319,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atGoal(double goal) {
-    atGoal = MathUtil.isNear(
-        goal,
-        getPosition(),
-        ElevatorSubConstants.kAtGoalTolerance); // Math.abs(getPosition() - goal) <
+    atGoal =
+        MathUtil.isNear(
+            goal,
+            getPosition(),
+            ElevatorSubConstants.kAtGoalTolerance); // Math.abs(getPosition() - goal) <
     return atGoal;
   }
 

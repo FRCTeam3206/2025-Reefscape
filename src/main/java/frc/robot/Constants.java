@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.List;
-
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -26,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.pathing.robotprofile.Motor;
 import frc.robot.Constants.GameConstants.ReefLevels;
+import java.util.List;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -414,8 +413,10 @@ public final class Constants {
 
     private static final AprilTagFieldLayout kTagLayoutLoaded =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    private static final List<Integer> kUsedIds = List.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+    private static final List<Integer> kUsedIds =
+        List.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
     private static final List<AprilTag> kUsedTags = List.of();
+
     {
       for (AprilTag tag : kTagLayoutLoaded.getTags()) {
         if (kUsedIds.contains(tag.ID)) {
@@ -424,7 +425,9 @@ public final class Constants {
       }
     }
 
-    public static final AprilTagFieldLayout kTagLayout = new AprilTagFieldLayout(kUsedTags, kTagLayoutLoaded.getFieldLength(), kTagLayoutLoaded.getFieldWidth());
+    public static final AprilTagFieldLayout kTagLayout =
+        new AprilTagFieldLayout(
+            kUsedTags, kTagLayoutLoaded.getFieldLength(), kTagLayoutLoaded.getFieldWidth());
 
     public static Pose2d poseForTag(int tag) {
       return kTagLayoutLoaded.getTagPose(tag).get().toPose2d();
@@ -498,13 +501,16 @@ public final class Constants {
     public static final Pose2d kLeftStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
-            kTagLayoutLoaded.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
+            kTagLayoutLoaded.getFieldWidth()
+                - kRobotLengthWidthMeters / 2
+                - Units.inchesToMeters(4.5),
             Rotation2d.fromDegrees(180));
     public static final Pose2d kRightStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
             kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5),
             Rotation2d.fromDegrees(180));
+
     // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0,
     // Rotation2d.fromDegrees(180))
     // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
@@ -585,12 +591,12 @@ public final class Constants {
         case l3:
           return kL3Pos;
         case l4:
-          return kL4Pos;      
+          return kL4Pos;
         default:
           return 0.0;
       }
     }
-    
+
     public static final double kFeederPos = 0.32;
 
     public static final double kAtGoalTolerance = 0.04;

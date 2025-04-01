@@ -12,7 +12,6 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,7 +30,6 @@ import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.PathingConstants;
 import frc.robot.Constants.PathingConstants.NumCoralAuton;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
@@ -234,10 +232,14 @@ public class Robot extends TimedRobot {
    */
   public Command getAutonomousCommand() {
     if (m_testMode.getSelected()) {
-      Command coral1 = scoreCoralCommand(m_1Pose.getSelected(), m_1Right.getSelected(), m_1Level.getSelected());
-      Command coral2 = scoreCoralCommand(m_2Pose.getSelected(), m_2Right.getSelected(), m_2Level.getSelected());
-      Command coral3 = scoreCoralCommand(m_3Pose.getSelected(), m_3Right.getSelected(), m_3Level.getSelected());
-      Command coral4 = scoreCoralCommand(m_4Pose.getSelected(), m_4Right.getSelected(), m_4Level.getSelected());
+      Command coral1 =
+          scoreCoralCommand(m_1Pose.getSelected(), m_1Right.getSelected(), m_1Level.getSelected());
+      Command coral2 =
+          scoreCoralCommand(m_2Pose.getSelected(), m_2Right.getSelected(), m_2Level.getSelected());
+      Command coral3 =
+          scoreCoralCommand(m_3Pose.getSelected(), m_3Right.getSelected(), m_3Level.getSelected());
+      Command coral4 =
+          scoreCoralCommand(m_4Pose.getSelected(), m_4Right.getSelected(), m_4Level.getSelected());
       switch (m_numCoral.getSelected()) {
         case k1Coral:
           return generateAuton(m_rightPickup.getSelected(), coral1);
@@ -261,7 +263,13 @@ public class Robot extends TimedRobot {
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
-    m_autonChooser.addOption("Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));//generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4)));
+    m_autonChooser.addOption(
+        "Score Coral L4",
+        scoreCoralCommand(
+            ReefPose.CLOSE_RIGHT,
+            true,
+            ReefLevels.l4)); // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
+    // ReefLevels.l4)));
 
     // m_autonChooser.addOption(
     //     "1 coral (start center)",
@@ -411,7 +419,9 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive.getToFeederCommand(right).andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXCommand()));
+    return m_robotDrive
+        .getToFeederCommand(right)
+        .andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXCommand()));
   }
 
   /**
@@ -424,7 +434,7 @@ public class Robot extends TimedRobot {
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
     return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
-         .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreCommand(level)));
+        .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreCommand(level)));
   }
 
   /**
