@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.pathing.PathingCommand;
@@ -69,6 +71,9 @@ public class DriveSubsystem extends SubsystemBase {
   private final SimDouble m_gyroSimAngle = m_gyroSim.getDouble("Yaw");
 
   final VisionSystemSim visionSim;
+
+  private Field2d m_field = new Field2d();
+  private Field2d m_field_vision = new Field2d();
 
   @NotLogged // everything in here is already logged by modules or getPose()
   private final SwerveDrivePoseEstimator m_poseEstimator =
@@ -140,6 +145,9 @@ public class DriveSubsystem extends SubsystemBase {
     visionSim.addAprilTags(VisionConstants.kTagLayout);
 
     vision = new Vision(VisionConstants.kCamera1Name, VisionConstants.kRobotToCamera1, visionSim);
+
+    SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putData("Vision Field", m_field_vision);
     // vision2 = new Vision(VisionConstants.kCamera2Name, VisionConstants.kRobotToCamera2,
     // visionSim);
   }
@@ -186,6 +194,9 @@ public class DriveSubsystem extends SubsystemBase {
         };
 
     m_speedsMeasured = DriveConstants.kDriveKinematics.toChassisSpeeds(m_statesMeasured);
+
+    m_field.setRobotPose(getPose());
+    m_field_vision.setRobotPose(getVisionPose());
   }
 
   @Override
@@ -210,10 +221,15 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getVisionPose() {
+    return m_poseEstimatorVision.getEstimatedPosition();
+  }
+
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    m_poseEstimatorVision.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
 
   /**

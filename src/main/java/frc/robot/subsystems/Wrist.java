@@ -7,7 +7,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,11 +21,9 @@ public class Wrist extends SubsystemBase {
   private AbsoluteEncoder m_encoder = m_motor.getAbsoluteEncoder();
   private double m_arbFF = 0.0;
 
-  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-
   private final PIDController feedback = new PIDController(WristConstants.kP, 0, WristConstants.kD);
   double fb = 0.0;
+  double ff = 0.0;
 
   public Wrist() {
     m_motor.configure(
@@ -75,21 +72,11 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // m_arbFF = Math.cos(getAngle()) * Configs.Wrist.kG;
-    // m_controller.setReference(
-    //     m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition,
-    //     ControlType.kMAXMotionPositionControl,
-    //     ClosedLoopSlot.kSlot0,
-    //     m_arbFF);
-    // this.goal = new TrapezoidProfile.State(goal, 0);
-    // this.setpoint = profile.calculate(0.020, this.setpoint, this.goal);
+    double goal =
+        m_goalHorizontal ? WristConstants.kHorizontalPosition : WristConstants.kVerticalPosition;
 
-    fb =
-        feedback.calculate(
-            getAngle(),
-            m_goalHorizontal
-                ? WristConstants.kHorizontalPosition
-                : WristConstants.kVerticalPosition);
+    fb = feedback.calculate(getAngle(), goal);
+
     m_motor.set(fb);
   }
 }
