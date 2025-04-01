@@ -12,6 +12,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,6 +32,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants;
+import frc.robot.Constants.PathingConstants.NumCoralAuton;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -49,6 +51,24 @@ import java.util.function.DoubleSupplier;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
+  private SendableChooser<Boolean> m_testMode = new SendableChooser<Boolean>();
+  private SendableChooser<NumCoralAuton> m_numCoral = new SendableChooser<NumCoralAuton>();
+
+  private SendableChooser<ReefPose> m_1Pose = new SendableChooser<ReefPose>();
+  private SendableChooser<Boolean> m_1Right = new SendableChooser<Boolean>();
+  private SendableChooser<ReefLevels> m_1Level = new SendableChooser<ReefLevels>();
+
+  private SendableChooser<ReefPose> m_2Pose = new SendableChooser<ReefPose>();
+  private SendableChooser<Boolean> m_2Right = new SendableChooser<Boolean>();
+  private SendableChooser<ReefLevels> m_2Level = new SendableChooser<ReefLevels>();
+
+  private SendableChooser<ReefPose> m_3Pose = new SendableChooser<ReefPose>();
+  private SendableChooser<Boolean> m_3Right = new SendableChooser<Boolean>();
+  private SendableChooser<ReefLevels> m_3Level = new SendableChooser<ReefLevels>();
+
+  private SendableChooser<ReefPose> m_4Pose = new SendableChooser<ReefPose>();
+  private SendableChooser<Boolean> m_4Right = new SendableChooser<Boolean>();
+  private SendableChooser<ReefLevels> m_4Level = new SendableChooser<ReefLevels>();
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -222,6 +242,7 @@ public class Robot extends TimedRobot {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
     m_autonChooser.addOption("Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));//generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4)));
+
     // m_autonChooser.addOption(
     //     "1 coral (start center)",
     //     simpleAutonGenerator(PathingConstants.kCenterStartPose, ReefPose.FAR));
@@ -241,7 +262,94 @@ public class Robot extends TimedRobot {
     //         scoreCoralCommand(ReefPose.CLOSE_LEFT, true, 4),
     //         scoreCoralCommand(ReefPose.CLOSE, false, 4)));
     // m_autonChooser.addOption("Processor", m_robotDrive.getToProcessorCommand());
-    SmartDashboard.putData(m_autonChooser);
+
+    m_testMode.setDefaultOption("Normal Mode", false);
+    m_testMode.addOption("Test Mode", true);
+
+    m_numCoral.setDefaultOption("One Coral", NumCoralAuton.k1Coral);
+    m_numCoral.addOption("Two Coral", NumCoralAuton.k2Coral);
+    m_numCoral.addOption("Three Coral", NumCoralAuton.k3Coral);
+    m_numCoral.addOption("Four Coral", NumCoralAuton.k4Coral);
+
+    m_1Level.setDefaultOption("Level 1", ReefLevels.l1);
+    m_1Level.addOption("Level 2", ReefLevels.l2);
+    m_1Level.addOption("Level 3", ReefLevels.l3);
+    m_1Level.addOption("Level 4", ReefLevels.l4);
+
+    m_1Pose.setDefaultOption("Far Pose", ReefPose.FAR);
+    m_1Pose.addOption("Far Left Pose", ReefPose.FAR_LEFT);
+    m_1Pose.addOption("Far Right Pose", ReefPose.FAR_RIGHT);
+    m_1Pose.addOption("Close Pose", ReefPose.CLOSE);
+    m_1Pose.addOption("Close Left Pose", ReefPose.CLOSE_LEFT);
+    m_1Pose.addOption("Close Right Pose", ReefPose.CLOSE_RIGHT);
+
+    m_1Right.setDefaultOption("Right", true);
+    m_1Right.addOption("Left", false);
+
+    m_2Level.setDefaultOption("Level 1", ReefLevels.l1);
+    m_2Level.addOption("Level 2", ReefLevels.l2);
+    m_2Level.addOption("Level 3", ReefLevels.l3);
+    m_2Level.addOption("Level 4", ReefLevels.l4);
+
+    m_2Pose.setDefaultOption("Far Pose", ReefPose.FAR);
+    m_2Pose.addOption("Far Left Pose", ReefPose.FAR_LEFT);
+    m_2Pose.addOption("Far Right Pose", ReefPose.FAR_RIGHT);
+    m_2Pose.addOption("Close Pose", ReefPose.CLOSE);
+    m_2Pose.addOption("Close Left Pose", ReefPose.CLOSE_LEFT);
+    m_2Pose.addOption("Close Right Pose", ReefPose.CLOSE_RIGHT);
+
+    m_2Right.setDefaultOption("Right", true);
+    m_2Right.addOption("Left", false);
+
+    m_3Level.setDefaultOption("Level 1", ReefLevels.l1);
+    m_3Level.addOption("Level 2", ReefLevels.l2);
+    m_3Level.addOption("Level 3", ReefLevels.l3);
+    m_3Level.addOption("Level 4", ReefLevels.l4);
+
+    m_3Pose.setDefaultOption("Far Pose", ReefPose.FAR);
+    m_3Pose.addOption("Far Left Pose", ReefPose.FAR_LEFT);
+    m_3Pose.addOption("Far Right Pose", ReefPose.FAR_RIGHT);
+    m_3Pose.addOption("Close Pose", ReefPose.CLOSE);
+    m_3Pose.addOption("Close Left Pose", ReefPose.CLOSE_LEFT);
+    m_3Pose.addOption("Close Right Pose", ReefPose.CLOSE_RIGHT);
+
+    m_3Right.setDefaultOption("Right", true);
+    m_3Right.addOption("Left", false);
+
+    m_4Level.setDefaultOption("Level 1", ReefLevels.l1);
+    m_4Level.addOption("Level 2", ReefLevels.l2);
+    m_4Level.addOption("Level 3", ReefLevels.l3);
+    m_4Level.addOption("Level 4", ReefLevels.l4);
+
+    m_4Pose.setDefaultOption("Far Pose", ReefPose.FAR);
+    m_4Pose.addOption("Far Left Pose", ReefPose.FAR_LEFT);
+    m_4Pose.addOption("Far Right Pose", ReefPose.FAR_RIGHT);
+    m_4Pose.addOption("Close Pose", ReefPose.CLOSE);
+    m_4Pose.addOption("Close Left Pose", ReefPose.CLOSE_LEFT);
+    m_4Pose.addOption("Close Right Pose", ReefPose.CLOSE_RIGHT);
+
+    m_4Right.setDefaultOption("Right", true);
+    m_4Right.addOption("Left", false);
+
+    SmartDashboard.putData("Auton Chooser", m_autonChooser);
+    SmartDashboard.putData("Test Mode", m_testMode);
+    SmartDashboard.putData("Coral Num", m_numCoral);
+
+    SmartDashboard.putData("1 Level", m_1Level);
+    SmartDashboard.putData("1 Pose", m_1Pose);
+    SmartDashboard.putData("1 Right", m_1Right);
+
+    SmartDashboard.putData("2 Level", m_2Level);
+    SmartDashboard.putData("2 Pose", m_2Pose);
+    SmartDashboard.putData("2 Right", m_2Right);
+
+    SmartDashboard.putData("3 Level", m_3Level);
+    SmartDashboard.putData("3 Pose", m_3Pose);
+    SmartDashboard.putData("3 Right", m_3Right);
+
+    SmartDashboard.putData("4 Level", m_4Level);
+    SmartDashboard.putData("4 Pose", m_4Pose);
+    SmartDashboard.putData("4 Right", m_4Right);
   }
 
   public Command simpleForward() {
