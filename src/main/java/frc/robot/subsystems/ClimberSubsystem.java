@@ -84,7 +84,12 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command deployCommand() {
-    return run(() -> deploy()).until(() -> getPosition() >= ClimberConstants.kMaxLimit).andThen(() -> {canClimb = true;});
+    return run(() -> deploy())
+        .until(() -> getPosition() >= ClimberConstants.kMaxLimit)
+        .andThen(
+            () -> {
+              canClimb = true;
+            });
   }
 
   public Command climbCommand() {
