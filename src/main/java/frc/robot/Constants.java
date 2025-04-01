@@ -302,7 +302,7 @@ public final class Constants {
     public static final int kMicrosecondsSync = 20000;
 
     /** how many lights there are */
-    public static final short kLength = 100;
+    public static final short kLength = 89;
 
     public static final short kBrightestColor = 255;
 
