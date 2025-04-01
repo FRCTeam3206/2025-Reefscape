@@ -30,6 +30,8 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmSubConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Robot;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 @Logged
@@ -182,8 +184,28 @@ public class ArmSubsystem extends SubsystemBase {
     atGoal(goal.getRadians());
   }
 
+  /**
+   * Moves to the goal angle
+   * @param goal The goal in radians
+   */
+  public void moveToGoal(double goal) {
+    moveToGoal(Rotation2d.fromRadians(goal));
+  }
+
   public boolean safeWrist() {
     return getAngle().getRadians() < ArmSubConstants.kSafeWrist;
+  }
+
+  public void defaultArm(boolean wristHorizontal) {
+    if (wristHorizontal || getAngle().getRadians() > ArmConstants.Angles.kSafePosition) {
+      moveToGoal(ArmConstants.Angles.kStored);
+    } else {
+      moveToGoal(ArmConstants.Angles.kSafePosition);
+    }
+  }
+
+  public Command defaultArmCommand(BooleanSupplier wristHorizontal) {
+    return this.run(() -> defaultArm(wristHorizontal.getAsBoolean()));
   }
 
   /**
