@@ -424,7 +424,7 @@ public class Robot extends TimedRobot {
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
     return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
-         .andThen(m_robotDrive.setXCommand().alongWith(m_coral.scoreCommand(level)));
+         .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreCommand(level)));
   }
 
   /**
