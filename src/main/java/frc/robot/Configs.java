@@ -3,7 +3,6 @@ package frc.robot;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -140,12 +139,14 @@ public final class Configs {
     public static final SparkMaxConfig coralArmConfig = new SparkMaxConfig();
 
     static {
-      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(true);
+      coralArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).inverted(false);
       coralArmConfig
           .absoluteEncoder
-          .inverted(true)
-          .positionConversionFactor(Units.rotationsToRadians(1))
-          .velocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
+          .inverted(false)
+          .zeroOffset(0.785)
+          .positionConversionFactor(2 * Math.PI)
+          .velocityConversionFactor(2 * Math.PI)
+          .zeroCentered(true);
       coralArmConfig.signals.absoluteEncoderPositionPeriodMs(20);
     }
   }
@@ -180,6 +181,21 @@ public final class Configs {
       //     .outputRange(-1, 1);
 
       elevatorConfig2.idleMode(IdleMode.kBrake).smartCurrentLimit(80);
+    }
+  }
+
+  public static final class ClimberConfigs {
+    public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
+
+    static {
+      climberConfig
+          .idleMode(IdleMode.kBrake)
+          .smartCurrentLimit(40)
+          .inverted(false)
+          .absoluteEncoder
+          .positionConversionFactor(2 * Math.PI)
+          .velocityConversionFactor(2.0 * Math.PI / 60.0)
+          .zeroCentered(true);
     }
   }
 
