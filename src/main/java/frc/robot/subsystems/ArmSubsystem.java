@@ -60,6 +60,8 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMaxSim m_maxSim = new SparkMaxSim(m_max, m_armGearbox);
   private final SparkAbsoluteEncoderSim m_encoderSim = m_maxSim.getAbsoluteEncoderSim();
 
+  public boolean atGoal = false;
+
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(
           m_armGearbox,
@@ -176,6 +178,8 @@ public class ArmSubsystem extends SubsystemBase {
     fb = feedback.calculate(getAngle().getRadians(), setpoint.position);
 
     m_max.setVoltage(fb + ff);
+
+    atGoal(goal.getRadians());
   }
 
   public boolean safeWrist() {
@@ -189,7 +193,8 @@ public class ArmSubsystem extends SubsystemBase {
    * @return at goal and not moving
    */
   public boolean atGoal(double goal) {
-    return Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    atGoal = Math.abs(goal - getAngle().getRadians()) < ArmConstants.kAtAngleTolerance;
+    return atGoal;
     // return MathUtil.isNear(
     //         this.goal.position,
     //         getAngle().getRadians(),
@@ -201,6 +206,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void stop() {
     m_max.setVoltage(0);
+    atGoal = false;
   }
 
   public void reset() {

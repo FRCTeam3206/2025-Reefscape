@@ -387,7 +387,7 @@ public final class Constants {
     public static final double kHorizontalPosition = 3.1;
     public static final double kVerticalPosition = 3 * Math.PI / 2;
 
-    public static final double kAtAngleTolerance = 0.1;
+    public static final double kAtAngleTolerance = 0.15;
 
     public static final double kP = 0.125;
     public static final double kI = 0.0;

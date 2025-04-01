@@ -184,4 +184,12 @@ public class CoralSupersystem {
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
   }
+
+  public Command scoreCommand(ReefLevels level) {
+    if (level.equals(ReefLevels.l1)) {
+      return placeLevelOne().until(() -> !m_coralOmnis.hasCoral());
+    } else {
+      return scoreToBranchCommandStop(level).andThen(scoreAtBranchCommand(level));
+    }
+  }
 }

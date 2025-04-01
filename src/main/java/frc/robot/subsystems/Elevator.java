@@ -48,6 +48,8 @@ public class Elevator extends SubsystemBase {
       new PIDController(ElevatorSubConstants.kP, 0, ElevatorSubConstants.kD);
   double fb = 0.0;
 
+  boolean atGoal = false;
+
   // Simulation
   // private final DCMotor m_armGearbox = DCMotor.getNEO(1);
   // private final SparkMaxSim m_maxSim = new SparkMaxSim(m_max, m_armGearbox);
@@ -205,6 +207,8 @@ public class Elevator extends SubsystemBase {
     if (voltage < 0) voltage = 0;
     m_max.setVoltage(voltage);
     m_max2.setVoltage(voltage);
+
+    atGoal(goal);
   }
 
   public Command moveToGoalCommand(double goal) {
@@ -315,14 +319,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atGoal(double goal) {
-    return MathUtil.isNear(
+    atGoal = MathUtil.isNear(
         goal,
         getPosition(),
         ElevatorSubConstants.kAtGoalTolerance); // Math.abs(getPosition() - goal) <
+    return atGoal;
   }
 
   public void defaultAction(boolean safeToGoDown) {
     stop();
+    atGoal = false;
     // if (safeToGoDown) {
     //   stop();
     // } else {
