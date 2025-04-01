@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -28,6 +29,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.pathing.robotprofile.Motor;
+import frc.robot.Constants.GameConstants.ReefLevels;
+import java.util.List;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -416,11 +419,11 @@ public final class Constants {
     public static final double kHorizontalPosition = 3.1;
     public static final double kVerticalPosition = 3 * Math.PI / 2;
 
-    public static final double kAtAngleTolerance = 0.1;
+    public static final double kAtAngleTolerance = 0.15;
 
-    public static final double kP = 0.125;
+    public static final double kP = 0.25;
     public static final double kI = 0.0;
-    public static final double kD = 0.0;
+    public static final double kD = 0.02;
 
     public static final double kV = 0.1;
 
@@ -431,9 +434,9 @@ public final class Constants {
   public static final class PathingConstants {
     // Tolerances
     public static final double kTranslationTolerance = 0.01;
-    public static final double kRotationTolerance = Math.toRadians(5);
-    public static final double kVelocityTolerance = 0.05;
-    public static final double kRotVelocityTolerance = Math.toRadians(15);
+    public static final double kRotationTolerance = Math.toRadians(1);
+    public static final double kVelocityTolerance = 0.04;
+    public static final double kRotVelocityTolerance = Math.toRadians(7);
 
     // Safety multipliers
     public static final double kVelocitySafety = 1;
@@ -441,11 +444,26 @@ public final class Constants {
     public static final double kRotVelocitySafety = 1;
     public static final double kRotAccelSafety = 1;
 
-    public static final AprilTagFieldLayout kTagLayout =
+    private static final AprilTagFieldLayout kTagLayoutLoaded =
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    private static final List<Integer> kUsedIds =
+        List.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+    private static final List<AprilTag> kUsedTags = List.of();
+
+    {
+      for (AprilTag tag : kTagLayoutLoaded.getTags()) {
+        if (kUsedIds.contains(tag.ID)) {
+          kUsedTags.add(tag);
+        }
+      }
+    }
+
+    public static final AprilTagFieldLayout kTagLayout =
+        new AprilTagFieldLayout(
+            kUsedTags, kTagLayoutLoaded.getFieldLength(), kTagLayoutLoaded.getFieldWidth());
 
     public static Pose2d poseForTag(int tag) {
-      return kTagLayout.getTagPose(tag).get().toPose2d();
+      return kTagLayoutLoaded.getTagPose(tag).get().toPose2d();
     }
 
     public static final double kRobotMassKg = 63.5;
@@ -511,21 +529,31 @@ public final class Constants {
     public static final Pose2d kCenterStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
-            kTagLayout.getFieldWidth() / 2,
+            kTagLayoutLoaded.getFieldWidth() / 2,
             Rotation2d.fromDegrees(180));
     public static final Pose2d kLeftStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
-            kTagLayout.getFieldWidth() - kRobotLengthWidthMeters / 2 - Units.inchesToMeters(4.5),
+            kTagLayoutLoaded.getFieldWidth()
+                - kRobotLengthWidthMeters / 2
+                - Units.inchesToMeters(4.5),
             Rotation2d.fromDegrees(180));
     public static final Pose2d kRightStartPose =
         new Pose2d(
             Units.inchesToMeters(kStartLineInches - 11.875) + kRobotLengthWidthMeters / 2.0,
             kRobotLengthWidthMeters / 2.0 + Units.inchesToMeters(4.5),
             Rotation2d.fromDegrees(180));
+
     // new Pose2d(poseForTag(14).getX(), (poseForTag(14).getY() + poseForTag(15).getY()) / 2.0,
     // Rotation2d.fromDegrees(180))
     // .plus(new Transform2d(kRobotLengthWidthMeters / 2.0, 0, new Rotation2d()));
+
+    public static enum NumCoralAuton {
+      k1Coral,
+      k2Coral,
+      k3Coral,
+      k4Coral;
+    }
   }
 
   public static final class ArmSubConstants {
@@ -586,6 +614,21 @@ public final class Constants {
     public static final double kL2Pos = 0.40; // .78;
     public static final double kL3Pos = 0.82;
     public static final double kL4Pos = 1.46;
+
+    public static final double getGoalForLevel(ReefLevels level) {
+      switch (level) {
+        case l1:
+          return 0.0;
+        case l2:
+          return kL2Pos;
+        case l3:
+          return kL3Pos;
+        case l4:
+          return kL4Pos;
+        default:
+          return 0.0;
+      }
+    }
 
     public static final double kFeederPos = 0.32;
 
