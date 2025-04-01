@@ -434,10 +434,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command setXAlignedCommand() {
-    return run(() -> {
-      setX();
-      aligned = true;
-    });
+    return run(
+        () -> {
+          setX();
+          aligned = true;
+        });
   }
 
   public boolean autoAligned() {

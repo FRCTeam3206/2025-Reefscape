@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -12,6 +9,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** changes the color of the strip of lights it has */
 public final class Lights extends SubsystemBase {
@@ -94,14 +93,13 @@ public final class Lights extends SubsystemBase {
 
   public final Command setPattern(Supplier<Color> color, BooleanSupplier rainbow) {
     return run(
-      () -> {
-        if (rainbow.getAsBoolean()) {
-          rainbowPattern().execute();
-        } else {
-          solidPattern(color.get()).execute();
-        }
-      }
-    );
+        () -> {
+          if (rainbow.getAsBoolean()) {
+            rainbowPattern().execute();
+          } else {
+            solidPattern(color.get()).execute();
+          }
+        });
   }
 
   public final Command blink(short milliseconds) {

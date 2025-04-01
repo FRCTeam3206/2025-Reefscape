@@ -204,19 +204,22 @@ public class Robot extends TimedRobot {
     m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
 
-    m_lights.setDefaultCommand(m_lights.setPattern(() -> {
-      if (m_climber.getCanClimb()) {
-        return Color.kLimeGreen;
-      } else if (m_robotDrive.autoAligned()) {
-        return Color.kSeaGreen;
-      } else if (m_coral.hasCoral()) {
-        return Color.kCoral;
-      } else {
-        return Color.kFirstBlue;
-      }
-    }, () -> {
-      return m_climber.getClimbed();
-    }));
+    m_lights.setDefaultCommand(
+        m_lights.setPattern(
+            () -> {
+              if (m_climber.getCanClimb()) {
+                return Color.kLimeGreen;
+              } else if (m_robotDrive.autoAligned()) {
+                return Color.kSeaGreen;
+              } else if (m_coral.hasCoral()) {
+                return Color.kCoral;
+              } else {
+                return Color.kFirstBlue;
+              }
+            },
+            () -> {
+              return m_climber.getClimbed();
+            }));
   }
 
   /**
