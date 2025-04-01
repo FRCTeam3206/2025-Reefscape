@@ -401,7 +401,7 @@ public class Robot extends TimedRobot {
    * make sure we don't hit the cages.
    */
   public Command robotForwardCommand() {
-    return m_robotDrive.stopCommand().withTimeout(0.5);//m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5);
+    return m_robotDrive.driveCommand(() -> 0.5, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25);
   }
 
   /**
@@ -423,11 +423,8 @@ public class Robot extends TimedRobot {
    * @return A Command to score coral on the reef.
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
-    return m_coral.scoreCommand(level);
-    // return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
-    //   .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreToBranchCommandStop(level)))
-    //   .andThen((m_robotDrive.setXCommand().alongWith(m_coral.scoreAtBranchCommand(level))).withTimeout(3));
-    // We can later add things with the mechanism to make it score the coral correctly.
+    return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
+         .andThen(m_robotDrive.setXCommand().alongWith(m_coral.scoreCommand(level)));
   }
 
   /**
