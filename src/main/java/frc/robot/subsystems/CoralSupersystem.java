@@ -189,7 +189,9 @@ public class CoralSupersystem {
     if (level.equals(ReefLevels.l1)) {
       return placeLevelOne().until(() -> !m_coralOmnis.hasCoral());
     } else {
-      return scoreToBranchCommandStop(level).andThen(scoreAtBranchCommand(level));
+      return scoreToBranchCommandStop(level)
+        .andThen(scoreAtBranchCommand(level).until(() -> m_coralOmnis.hasCoral()))
+        .andThen(scoreAtBranchCommand(level).withTimeout(1));
     }
   }
 }
