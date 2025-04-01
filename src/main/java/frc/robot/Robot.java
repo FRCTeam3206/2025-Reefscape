@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LightsConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants;
@@ -212,13 +213,13 @@ public class Robot extends TimedRobot {
         m_lights.setPatternCommand(
             () -> {
               if (m_climber.getCanClimb()) {
-                return Color.fromHSV(175, 220, 100); // Light green (Light green-blue)
+                return LightsConstants.kClimbGreen; // Light green (Light green-blue)
               } else if (m_robotDrive.autoAligned()) {
-                return Color.fromHSV(0, 255, 100); // Dark green (Green)
+                return LightsConstants.kAlignedGreen; // Dark green (Green)
               } else if (m_coral.hasCoral()) {
-                return Color.fromHSV(60, 255, 100); // Red-orange
+                return LightsConstants.kCoralRed; // Red-orange
               } else {
-                return Color.fromHSV(120, 255, 100); // Blue
+                return LightsConstants.kDefaultBlue; // Blue
               }
             },
             () -> {

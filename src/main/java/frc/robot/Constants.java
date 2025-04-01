@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -21,6 +24,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.pathing.robotprofile.Motor;
 
 /**
@@ -299,6 +305,14 @@ public final class Constants {
 
     /** hue that takes you all the way back to red, in degrees */
     public static final short kMaxHue = 180;
+
+    public static final Distance kLEDSpacing = Meters.of(1 / 120.0);
+    public static final LinearVelocity kScrollSpeed = MetersPerSecond.of(1);
+
+    public static final Color kDefaultBlue = Color.fromHSV(120, 255, 100);
+    public static final Color kAlignedGreen = Color.fromHSV(0, 255, 100);
+    public static final Color kCoralRed = Color.fromHSV(60, 255, 100);
+    public static final Color kClimbGreen = Color.fromHSV(175, 220, 100);
   }
 
   public static final class CoralConstants {

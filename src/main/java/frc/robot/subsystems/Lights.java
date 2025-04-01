@@ -17,7 +17,7 @@ public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
   public LEDPattern pattern =
-      LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
+      LEDPattern.solid(LightsConstants.kDefaultBlue);
   public final short numberOfLights = (short) buffer.getLength();
 
   /** when it's going between 2 colors, which it should go to */
@@ -73,7 +73,7 @@ public final class Lights extends SubsystemBase {
    */
   public void setRainbowPattern() {
     pattern =
-              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor);
+              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor).scrollAtAbsoluteSpeed(LightsConstants.kScrollSpeed, LightsConstants.kLEDSpacing);
   }
 
   /**
