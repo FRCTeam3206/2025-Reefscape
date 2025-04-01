@@ -411,9 +411,7 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_coral.feederIntakeCommand(); // getToFeederCommand(right);
-    // We can add things with mechanisms later so that it will intake.
-    // This command should stop once we see that we have the coral.
+    return m_robotDrive.getToFeederCommand(right).andThen(m_coral.feederIntakeCommand().alongWith(m_robotDrive.setXCommand()));
   }
 
   /**
