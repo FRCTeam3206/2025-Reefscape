@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
   private SendableChooser<Boolean> m_testMode = new SendableChooser<Boolean>();
+  private SendableChooser<Boolean> m_rightPickup = new SendableChooser<Boolean>();
   private SendableChooser<NumCoralAuton> m_numCoral = new SendableChooser<NumCoralAuton>();
 
   private SendableChooser<ReefPose> m_1Pose = new SendableChooser<ReefPose>();
@@ -232,10 +233,29 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if (m_autonChooser.getSelected() == null) {
-      return m_robotDrive.stopCommand();
+    if (m_testMode.getSelected()) {
+      Command coral1 = scoreCoralCommand(m_1Pose.getSelected(), m_1Right.getSelected(), m_1Level.getSelected());
+      Command coral2 = scoreCoralCommand(m_2Pose.getSelected(), m_2Right.getSelected(), m_2Level.getSelected());
+      Command coral3 = scoreCoralCommand(m_3Pose.getSelected(), m_3Right.getSelected(), m_3Level.getSelected());
+      Command coral4 = scoreCoralCommand(m_4Pose.getSelected(), m_4Right.getSelected(), m_4Level.getSelected());
+      switch (m_numCoral.getSelected()) {
+        case k1Coral:
+          return generateAuton(m_rightPickup.getSelected(), coral1);
+        case k2Coral:
+          return generateAuton(m_rightPickup.getSelected(), coral1, coral2);
+        case k3Coral:
+          return generateAuton(m_rightPickup.getSelected(), coral1, coral2, coral3);
+        case k4Coral:
+          return generateAuton(m_rightPickup.getSelected(), coral1, coral2, coral3, coral4);
+        default:
+          return m_robotDrive.stopCommand();
+      }
+    } else {
+      if (m_autonChooser.getSelected() == null) {
+        return m_robotDrive.stopCommand();
+      }
+      return m_autonChooser.getSelected();
     }
-    return m_autonChooser.getSelected();
   }
 
   public void autons() {
@@ -270,6 +290,9 @@ public class Robot extends TimedRobot {
     m_numCoral.addOption("Two Coral", NumCoralAuton.k2Coral);
     m_numCoral.addOption("Three Coral", NumCoralAuton.k3Coral);
     m_numCoral.addOption("Four Coral", NumCoralAuton.k4Coral);
+
+    m_rightPickup.setDefaultOption("Right Pickup", true);
+    m_rightPickup.addOption("Left Pickup", false);
 
     m_1Level.setDefaultOption("Level 1", ReefLevels.l1);
     m_1Level.addOption("Level 2", ReefLevels.l2);
@@ -334,6 +357,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auton Chooser", m_autonChooser);
     SmartDashboard.putData("Test Mode", m_testMode);
     SmartDashboard.putData("Coral Num", m_numCoral);
+    SmartDashboard.putData("Right Pickup", m_rightPickup);
 
     SmartDashboard.putData("1 Level", m_1Level);
     SmartDashboard.putData("1 Pose", m_1Pose);
