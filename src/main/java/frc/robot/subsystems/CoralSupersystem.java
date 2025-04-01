@@ -134,7 +134,7 @@ public class CoralSupersystem {
   public Command scoreToBranchCommandStop(ReefLevels level) {
     return safeArm()
         .andThen(m_elevator.toBranchStop(level).raceWith(m_arm.toStored()))
-        .andThen(m_elevator.toBranch(level).alongWith(armWristL2L3()))
+        .andThen(m_elevator.toBranch(level).alongWith(armWristBranchPos()))
         .until(() -> m_elevator.atGoal(ElevatorSubConstants.getGoalForLevel(level)) && m_wrist.isVertical().getAsBoolean());
     // return
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
