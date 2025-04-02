@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ElevatorSubConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
 
 @Logged
@@ -45,6 +46,11 @@ public class CoralSupersystem {
 
   public Command coralExtakeOverride() {
     return m_coralOmnis.outakeCommand();
+  }
+
+  public Command defaultArm() {
+    return (m_wrist.toHorizontalStop().alongWith(m_coralOmnis.stopCommand()))
+        .andThen(m_arm.toStored());
   }
 
   /**
@@ -126,6 +132,25 @@ public class CoralSupersystem {
     // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
   }
 
+  public Command scoreToBranchCommandStop(ReefLevels level) {
+    return safeArm()
+        .andThen(m_elevator.toBranchStop(level).raceWith(m_arm.toStored()))
+        .andThen(m_elevator.toBranch(level).alongWith(armWristBranchPos()))
+        .until(
+            () ->
+                m_elevator.atGoal(ElevatorSubConstants.getGoalForLevel(level))
+                    && m_wrist.isVertical().getAsBoolean());
+    // return
+    // safeArm().andThen(m_elevator.toBranch(level).withTimeout(1)).andThen((m_elevator.stayAtBranch(level)).alongWith(armWristL2L3()));
+  }
+
+  public Command scoreAtBranchCommand(ReefLevels level) {
+    return m_elevator
+        .toBranch(level)
+        .alongWith(m_arm.toL2L3().alongWith(m_wrist.toVerticalContinuous()))
+        .alongWith(m_coralOmnis.scoreCommand());
+  }
+
   public void resetElevator() {
     m_elevator.reset();
   }
@@ -165,5 +190,15 @@ public class CoralSupersystem {
 
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
+  }
+
+  public Command scoreCommand(ReefLevels level) {
+    if (level.equals(ReefLevels.l1)) {
+      return placeLevelOne().until(() -> !m_coralOmnis.hasCoral());
+    } else {
+      return scoreToBranchCommandStop(level)
+          .andThen(scoreAtBranchCommand(level).until(() -> m_coralOmnis.hasCoral()))
+          .andThen(scoreAtBranchCommand(level).withTimeout(1));
+    }
   }
 }

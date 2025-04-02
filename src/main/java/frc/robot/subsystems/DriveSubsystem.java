@@ -416,10 +416,10 @@ public class DriveSubsystem extends SubsystemBase {
         .andThen(setXCommand());
   }
 
-  // public PathingCommand getToFeederCommand(boolean right) {
-  //   return m_pathGen.generateToPoseCommand(
-  //       right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
-  // }
+  public PathingCommand getToFeederCommand(boolean right) {
+    return m_pathGen.generateToPoseCommand(
+        right ? PathingConstants.kRightFeederPose : PathingConstants.kLeftFeederPose);
+  }
 
   // public PathingCommand getToProcessorCommand() {
   //   return m_pathGen.generateToPoseCommand(PathingConstants.kProcessorPose);
