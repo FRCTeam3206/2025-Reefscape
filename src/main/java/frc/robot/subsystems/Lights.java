@@ -35,8 +35,7 @@ public final class Lights extends SubsystemBase {
   }
 
   /**
-   * changes the pattern to a gradient with all the colors you pass as arguments. Dont too too many
-   * arguments or else thats stupid
+   * changes the pattern to a gradient with all the colors you pass as arguments.
    *
    * @param colors
    * @return Command that makes it a gradient with all the colors
