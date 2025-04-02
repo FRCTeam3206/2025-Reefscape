@@ -284,15 +284,13 @@ public class Robot extends TimedRobot {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
     m_autonChooser.addOption(
-        "Score Coral L4",
-        scoreCoralCommand(
-            ReefPose.CLOSE_RIGHT,
-            true,
-            ReefLevels.l4));
+        "Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));
 
-    m_autonChooser.addOption("Feeder Right", pickupCoralCommand(true));
-    m_autonChooser.addOption("Feeder Left", pickupCoralCommand(false));
-             // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
+    if (Robot.isSimulation()) {
+      m_autonChooser.addOption("Feeder Right", pickupCoralCommand(true));
+      m_autonChooser.addOption("Feeder Left", pickupCoralCommand(false));
+    }
+    // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
     // ReefLevels.l4)));
 
     // m_autonChooser.addOption(
