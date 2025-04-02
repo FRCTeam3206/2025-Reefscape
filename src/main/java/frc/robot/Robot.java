@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
+import frc.robot.Constants.LightsConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.NumCoralAuton;
 import frc.robot.Constants.PathingConstants.ReefPose;
@@ -36,6 +37,7 @@ import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Lights;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -75,6 +77,7 @@ public class Robot extends TimedRobot {
   private final CoralSupersystem m_coral = new CoralSupersystem();
 
   private final ClimberSubsystem m_climber = new ClimberSubsystem();
+  private final Lights m_lights = new Lights();
 
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
@@ -223,6 +226,23 @@ public class Robot extends TimedRobot {
     m_climber.setDefaultCommand(
         m_climber.directControl(
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
+
+    m_lights.setDefaultCommand(
+        m_lights.setPatternCommand(
+            () -> {
+              if (m_climber.getCanClimb()) {
+                return LightsConstants.kClimbGreen; // Light green (Light green-blue)
+              } else if (m_robotDrive.autoAligned()) {
+                return LightsConstants.kAlignedGreen; // Dark green (Green)
+              } else if (m_coral.hasCoral()) {
+                return LightsConstants.kCoralRed; // Red-orange
+              } else {
+                return LightsConstants.kDefaultBlue; // Blue
+              }
+            },
+            () -> {
+              return m_climber.getClimbed();
+            }));
   }
 
   /**
@@ -264,11 +284,13 @@ public class Robot extends TimedRobot {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
     m_autonChooser.addOption(
-        "Score Coral L4",
-        scoreCoralCommand(
-            ReefPose.CLOSE_RIGHT,
-            true,
-            ReefLevels.l4)); // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
+        "Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));
+
+    if (Robot.isSimulation()) {
+      m_autonChooser.addOption("Feeder Right", pickupCoralCommand(true));
+      m_autonChooser.addOption("Feeder Left", pickupCoralCommand(false));
+    }
+    // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
     // ReefLevels.l4)));
 
     // m_autonChooser.addOption(
@@ -421,7 +443,7 @@ public class Robot extends TimedRobot {
   public Command pickupCoralCommand(boolean right) {
     return m_robotDrive
         .getToFeederCommand(right)
-        .andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXCommand()));
+        .andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXAlignedCommand()));
   }
 
   /**
@@ -434,7 +456,7 @@ public class Robot extends TimedRobot {
    */
   public Command scoreCoralCommand(ReefPose reefPose, boolean right, ReefLevels level) {
     return (m_robotDrive.getToReefPoseCommand(reefPose, right).raceWith(m_coral.defaultArm()))
-        .andThen(m_robotDrive.setXCommand().raceWith(m_coral.scoreCommand(level)));
+        .andThen(m_robotDrive.setXAlignedCommand().raceWith(m_coral.scoreCommand(level)));
   }
 
   /**

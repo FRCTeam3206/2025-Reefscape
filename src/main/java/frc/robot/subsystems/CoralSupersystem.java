@@ -192,6 +192,10 @@ public class CoralSupersystem {
     return m_coralOmnis;
   }
 
+  public boolean hasCoral() {
+    return m_coralOmnis.hasCoral();
+  }
+
   public Command scoreCommand(ReefLevels level) {
     if (level.equals(ReefLevels.l1)) {
       return placeLevelOne().until(() -> !m_coralOmnis.hasCoral());

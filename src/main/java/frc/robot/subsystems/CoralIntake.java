@@ -6,18 +6,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants;
 import frc.robot.Constants.CoralConstants;
 
 @Logged
 public class CoralIntake extends SubsystemBase {
   private final SparkMax m_wheels = new SparkMax(CoralConstants.kCANId, MotorType.kBrushless);
   private final DigitalInput m_coralSensor = new DigitalInput(CoralConstants.kSensorChannel);
-  private final Servo m_finger = new Servo(Constants.CoralConstants.Finger.kChannel);
 
   public CoralIntake() {
     m_wheels.configure(
