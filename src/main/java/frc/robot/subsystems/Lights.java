@@ -83,11 +83,9 @@ public final class Lights extends SubsystemBase {
   }
 
   /**
-   * multiplies the brightness to be brighter or darker, 1 does nothing It doenst work yet cause
-   * they use some "dimensionless" thing instead of a double like ANYBODY SANE WOULD DO!!!! AHHHH!!
-   * im just kidding im not really mad its just stupid
+   * Creates a new version of the current pattern at a different brightness.
    *
-   * @param multiplier between like 0.1 and 2 i dont really know
+   * @param multiplier between like 0.1 and 2
    * @return command that does it
    */
   public final Command multiplyBrightness(float multiplier) {
