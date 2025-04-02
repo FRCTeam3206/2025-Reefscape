@@ -16,8 +16,7 @@ import java.util.function.Supplier;
 public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
-  public LEDPattern pattern =
-      LEDPattern.solid(LightsConstants.kDefaultBlue);
+  public LEDPattern pattern = LEDPattern.solid(LightsConstants.kDefaultBlue);
   public final short numberOfLights = (short) buffer.getLength();
 
   /** when it's going between 2 colors, which it should go to */
@@ -51,6 +50,7 @@ public final class Lights extends SubsystemBase {
 
   /**
    * Method to set the pattern to a solid color
+   *
    * @param color The color to set the lights to
    */
   public void setSolidPattern(Color color) {
@@ -64,16 +64,14 @@ public final class Lights extends SubsystemBase {
    * @return Command which changes it to a solid color
    */
   public final Command solidPattern(Color color) {
-    return this.runOnce(
-        () -> setSolidPattern(color));
+    return this.runOnce(() -> setSolidPattern(color));
   }
 
-  /**
-   * Method to set the pattern to rainbow
-   */
+  /** Method to set the pattern to rainbow */
   public void setRainbowPattern() {
     pattern =
-              LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor).scrollAtAbsoluteSpeed(LightsConstants.kScrollSpeed, LightsConstants.kLEDSpacing);
+        LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor)
+            .scrollAtAbsoluteSpeed(LightsConstants.kScrollSpeed, LightsConstants.kLEDSpacing);
   }
 
   /**
@@ -82,8 +80,7 @@ public final class Lights extends SubsystemBase {
    * @return COmmand that does that
    */
   public final Command rainbowPattern() {
-    return this.runOnce(
-        () -> setRainbowPattern());
+    return this.runOnce(() -> setRainbowPattern());
   }
 
   /**
@@ -111,8 +108,7 @@ public final class Lights extends SubsystemBase {
   }
 
   public final Command setPatternCommand(Supplier<Color> color, BooleanSupplier rainbow) {
-    return run(
-        () -> setPattern(color.get(), rainbow.getAsBoolean()));
+    return run(() -> setPattern(color.get(), rainbow.getAsBoolean()));
   }
 
   public final Command blink(short milliseconds) {
