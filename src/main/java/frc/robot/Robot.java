@@ -284,13 +284,36 @@ public class Robot extends TimedRobot {
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
-    m_autonChooser.addOption(
-        "Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));
 
-    if (Robot.isSimulation()) {
-      m_autonChooser.addOption("Feeder Right", pickupCoralCommand(true));
-      m_autonChooser.addOption("Feeder Left", pickupCoralCommand(false));
-    }
+    m_autonChooser.addOption("Left L4 and Feeder", generateAuton(
+      false,
+      scoreCoralCommand(ReefPose.FAR_LEFT, true, ReefLevels.l4),
+      scoreCoralCommand(ReefPose.CLOSE_LEFT, true, ReefLevels.l1)));
+    m_autonChooser.addOption("Right L4 and Feeder", generateAuton(
+      true,
+      scoreCoralCommand(ReefPose.FAR_RIGHT, false, ReefLevels.l4),
+      scoreCoralCommand(ReefPose.CLOSE_RIGHT, false, ReefLevels.l1)));
+
+    // m_autonChooser.addOption("Left L4 Stop", generateAuton(
+    //   false,
+    //   scoreCoralCommand(ReefPose.FAR_LEFT, true, ReefLevels.l4)));
+    // m_autonChooser.addOption("Right L4 Stop", generateAuton(
+    //   true,
+    //   scoreCoralCommand(ReefPose.FAR_RIGHT, false, ReefLevels.l4)));
+
+    m_autonChooser.addOption("Center L1 (slightly left)", generateAuton(
+      false,
+      scoreCoralCommand(ReefPose.FAR, true, ReefLevels.l1)));
+    m_autonChooser.addOption("Center L1 (slightly right)", generateAuton(
+      true,
+      scoreCoralCommand(ReefPose.FAR, false, ReefLevels.l1)));
+    // m_autonChooser.addOption(
+    //     "Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));
+
+    // if (Robot.isSimulation()) {
+    //   m_autonChooser.addOption("Feeder Right", pickupCoralCommand(true));
+    //   m_autonChooser.addOption("Feeder Left", pickupCoralCommand(false));
+    // }
     // generateAuton(false, scoreCoralCommand(ReefPose.CLOSE_RIGHT, true,
     // ReefLevels.l4)));
 
