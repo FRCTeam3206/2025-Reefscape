@@ -643,7 +643,7 @@ public final class Constants {
     public static final int kClimberCanId = 43;
     public static final double kMinLimit = 0;
     public static final double kClimbMin = 0.38;
-    public static final double kMaxLimit = 1.57;
+    public static final double kMaxLimit = 1.7;
     // public static final double kMaxLimit = 355;
   }
 }
