@@ -34,7 +34,10 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return this.run(() -> m_wheelsMotor.set(AlgaeConstants.kIntakeSpeed));
+    return this.run(() -> {
+      m_wheelsMotor.set(AlgaeConstants.kIntakeSpeed);
+      m_armMotor.setVoltage(0.5);
+    });
   }
 
   public Command extakeCommand() {

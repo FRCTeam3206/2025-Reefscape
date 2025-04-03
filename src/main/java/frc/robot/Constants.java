@@ -435,7 +435,7 @@ public final class Constants {
     // Tolerances
     public static final double kTranslationTolerance = 0.01;
     public static final double kRotationTolerance = Math.toRadians(1);
-    public static final double kVelocityTolerance = 0.04;
+    public static final double kVelocityTolerance = 0.07;
     public static final double kRotVelocityTolerance = Math.toRadians(7);
 
     // Safety multipliers
@@ -519,7 +519,7 @@ public final class Constants {
     public static final double kFeederLength = 1.975; // Approximation from CAD, in meters
     public static final Transform2d kFeederTransform =
         new Transform2d(
-            kRobotLengthWidthMeters / 2,
+            kRobotLengthWidthMeters / 2 + 0.05,
             -(kFeederLength / 2.0 - kRobotLengthWidthMeters / 2.0),
             Rotation2d.fromDegrees(180));
     public static final Pose2d kLeftFeederPose = poseFromTag(13, kFeederTransform);
