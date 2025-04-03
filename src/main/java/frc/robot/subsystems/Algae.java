@@ -93,6 +93,14 @@ public class Algae extends SubsystemBase {
     return m_wheelsEncoder.getVelocity();
   }
 
+  public double getCurrentWheels() {
+    return m_wheelsMotor.getOutputCurrent();
+  }
+
+  public double getVoltageWheels() {
+    return m_wheelsMotor.getAppliedOutput() * m_wheelsMotor.getBusVoltage();
+  }
+
   // public double getArmAngle() {
   //   return m_armAbsoluteEncoder.getPosition();
   // }
