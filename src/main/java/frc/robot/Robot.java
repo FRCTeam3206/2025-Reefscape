@@ -104,6 +104,7 @@ public class Robot extends TimedRobot {
     m_lastTime = Timer.getFPGATimestamp();
 
     DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
     Epilogue.bind(this);
   }
 
