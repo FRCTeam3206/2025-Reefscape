@@ -442,8 +442,8 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return m_robotDrive
-        .getToFeederCommand(right)
+    return (m_robotDrive
+        .getToFeederCommand(right).alongWith(m_coral.defaultArm()))
         .andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXAlignedCommand()));
   }
 
