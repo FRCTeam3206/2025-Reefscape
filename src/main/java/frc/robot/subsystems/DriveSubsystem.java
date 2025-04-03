@@ -132,7 +132,7 @@ public class DriveSubsystem extends SubsystemBase {
               PathingConstants.kRotAccelSafety);
   PathingCommandGenerator m_pathGen =
       new PathingCommandGenerator(m_robotProfile, this::getPose, this::driveSpeed, this)
-          .withAllianceFlipping(false)
+          .withAllianceFlipping(true)
           .withTolerances(
               PathingConstants.kTranslationTolerance,
               PathingConstants.kRotationTolerance,
