@@ -296,4 +296,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
     return moveToGoalCommand(goal);
   }
+
+  public Command climbArm() {
+    return run(() -> m_max.setVoltage(1.0)).withTimeout(0.5);
+  }
 }

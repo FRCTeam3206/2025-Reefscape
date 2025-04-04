@@ -205,4 +205,8 @@ public class CoralSupersystem {
           .andThen(scoreAtBranchCommand(level).withTimeout(1));
     }
   }
+
+  public Command climb() {
+    return m_arm.climbArm();
+  }
 }

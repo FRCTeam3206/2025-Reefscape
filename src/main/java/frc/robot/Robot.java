@@ -174,7 +174,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
     m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
-    m_weaponsController.rightBumper().onFalse(m_climber.climbCommand());
+    m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
 
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
@@ -569,7 +569,7 @@ public class Robot extends TimedRobot {
       var alliance = DriverStation.getAlliance().get();
       m_invertControls = alliance.equals(Alliance.Blue);
       if (m_prevAlliance == null || !m_prevAlliance.equals(alliance)) {
-        resetRobotToFieldCenter();
+        // resetRobotToFieldCenter();
         m_prevAlliance = alliance;
       }
     }
