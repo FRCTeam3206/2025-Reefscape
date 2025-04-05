@@ -176,6 +176,8 @@ public class Robot extends TimedRobot {
     m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
     m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
 
+    // m_weaponsController.a().whileTrue(L4Stop(ReefPose.CLOSE_LEFT, true));
+
     // m_weaponsController.leftBumper().whileTrue(m_robotDrive.getToGoal(PathingConstants.kCenterStartPose));//m_robotDrive.getToReefPoseCommand(ReefPose.CLOSE_RIGHT, true));
 
     // m_weaponsController.povRight().whileTrue(m_elevator.moveToL2Command());
@@ -281,6 +283,14 @@ public class Robot extends TimedRobot {
     }
   }
 
+  public Command L4Stop(ReefPose pose, boolean right) {
+    return generateAuton(
+      right,
+      scoreCoralCommand(pose, right, ReefLevels.l4)).andThen(
+        m_coral.defaultArm().alongWith(m_robotDrive.setXAlignedCommand())
+      );
+  }
+
   public void autons() {
     m_autonChooser.setDefaultOption("Nothing", m_robotDrive.stopCommand());
     m_autonChooser.addOption("Basic Forward", simpleForward());
@@ -291,22 +301,21 @@ public class Robot extends TimedRobot {
       scoreCoralCommand(ReefPose.CLOSE_LEFT, true, ReefLevels.l1)));
     m_autonChooser.addOption("Right L4 and Feeder", generateAuton(
       true,
-      scoreCoralCommand(ReefPose.FAR_RIGHT, false, ReefLevels.l4),
-      scoreCoralCommand(ReefPose.CLOSE_RIGHT, false, ReefLevels.l1)));
+      scoreCoralCommand(ReefPose.FAR_RIGHT, true, ReefLevels.l4),
+      scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l1)));
 
-    // m_autonChooser.addOption("Left L4 Stop", generateAuton(
-    //   false,
-    //   scoreCoralCommand(ReefPose.FAR_LEFT, true, ReefLevels.l4)));
-    // m_autonChooser.addOption("Right L4 Stop", generateAuton(
-    //   true,
-    //   scoreCoralCommand(ReefPose.FAR_RIGHT, false, ReefLevels.l4)));
+    m_autonChooser.addOption("Left L4 Stop", L4Stop(ReefPose.FAR_LEFT, true));
+    m_autonChooser.addOption("Right L4 Stop", L4Stop(ReefPose.FAR_RIGHT, true));
+
+    m_autonChooser.addOption("Center L4 Stop (slightly left)", L4Stop(ReefPose.FAR, true));
+    // m_autonChooser.addOption("Center L4 Stop (slightly right)", L4Stop(ReefPose.FAR, false));
 
     m_autonChooser.addOption("Center L1 (slightly left)", generateAuton(
       false,
       scoreCoralCommand(ReefPose.FAR, true, ReefLevels.l1)));
-    m_autonChooser.addOption("Center L1 (slightly right)", generateAuton(
-      true,
-      scoreCoralCommand(ReefPose.FAR, false, ReefLevels.l1)));
+    // m_autonChooser.addOption("Center L1 (slightly right)", generateAuton(
+    //   true,
+    //   scoreCoralCommand(ReefPose.FAR, false, ReefLevels.l1)));
     // m_autonChooser.addOption(
     //     "Score Coral L4", scoreCoralCommand(ReefPose.CLOSE_RIGHT, true, ReefLevels.l4));
 
@@ -443,7 +452,7 @@ public class Robot extends TimedRobot {
   }
 
   public Command generateAuton(boolean right, Command... scoreCoralCommands) {
-    Command auton = robotForwardCommand().andThen(scoreCoralCommands[0]);
+    Command auton = scoreCoralCommands[0];//robotForwardCommand().andThen(scoreCoralCommands[0]);
     for (int i = 1; i < scoreCoralCommands.length; i++) {
       auton = auton.andThen(pickupCoralCommand(right)).andThen(scoreCoralCommands[i]);
     }
@@ -465,9 +474,9 @@ public class Robot extends TimedRobot {
    *     we have a rotated field).
    */
   public Command pickupCoralCommand(boolean right) {
-    return (m_robotDrive
-        .getToFeederCommand(right).alongWith(m_coral.defaultArm()))
-        .andThen(m_coral.feederIntakeCommand().raceWith(m_robotDrive.setXAlignedCommand()));
+    return ((m_robotDrive
+        .getToFeederCommand(right).alongWith(m_coral.defaultArm())).withTimeout(3.5))
+        .andThen(m_coral.feederIntakeCommandEnd().raceWith(m_robotDrive.setXAlignedCommand()));
   }
 
   /**

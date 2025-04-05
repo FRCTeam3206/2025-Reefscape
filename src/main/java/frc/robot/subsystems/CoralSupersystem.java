@@ -188,6 +188,10 @@ public class CoralSupersystem {
                 .alongWith(m_coralOmnis.intakeUntilSuccessCommand()));
   }
 
+  public Command feederIntakeCommandEnd() {
+    return feederIntakeCommand().until(() -> hasCoral());
+  }
+
   public CoralIntake getOmnisSubsystem() {
     return m_coralOmnis;
   }

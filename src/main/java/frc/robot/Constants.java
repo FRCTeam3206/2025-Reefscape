@@ -519,7 +519,7 @@ public final class Constants {
     public static final double kFeederLength = 1.975; // Approximation from CAD, in meters
     public static final Transform2d kFeederTransform =
         new Transform2d(
-            kRobotLengthWidthMeters / 2 + 0.05,
+            kRobotLengthWidthMeters / 2 + 0.02,
             -(kFeederLength / 2.0 - kRobotLengthWidthMeters / 2.0),
             Rotation2d.fromDegrees(180));
     public static final Pose2d kLeftFeederPose = poseFromTag(13, kFeederTransform);
