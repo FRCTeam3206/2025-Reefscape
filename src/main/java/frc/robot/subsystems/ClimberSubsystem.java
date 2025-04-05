@@ -69,11 +69,13 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void climb() {
     var position = getPosition();
-    if (position < ClimberConstants.kClimbMin) {
-      m_max.set(0);
-      climbed = true;
-    } else if (canClimb) {
-      m_max.set(-1);
+    if (canClimb) {
+      if (position >= ClimberConstants.kClimbMin) {
+        m_max.set(-1);
+      } else {
+        m_max.set(0);
+        climbed = true;
+      }
     } else {
       m_max.set(0);
     }
