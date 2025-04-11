@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -229,6 +230,10 @@ public class Robot extends TimedRobot {
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
 
     m_lights.setDefaultCommand(
+      m_lights.blinkCommand((short) 2000, true)
+    );
+    
+    m_lights.setDefaultCommand(
         m_lights.setPatternCommand(
             () -> {
               if (m_climber.getCanClimb()) {
@@ -236,14 +241,15 @@ public class Robot extends TimedRobot {
               } else if (m_robotDrive.autoAligned()) {
                 return LightsConstants.kAlignedGreen; // Dark green (Green)
               } else if (m_coral.hasCoral()) {
-                return LightsConstants.kCoralRed; // Red-orange
+                return Color.kWhite;
               } else {
                 return LightsConstants.kDefaultBlue; // Blue
               }
             },
             () -> {
               return m_climber.getClimbed();
-            }));
+            }
+        ));
   }
 
   /**

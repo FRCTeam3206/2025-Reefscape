@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
+
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Percent;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -18,9 +22,6 @@ public final class Lights extends SubsystemBase {
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
   public LEDPattern pattern = LEDPattern.solid(LightsConstants.kDefaultBlue);
   public final short numberOfLights = (short) buffer.getLength();
-
-  /** when it's going between 2 colors, which it should go to */
-  public boolean alternateFirstColor = true;
 
   public Lights() {
     lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
@@ -34,17 +35,18 @@ public final class Lights extends SubsystemBase {
     lights.setData(buffer);
   }
 
+  public final void gradientPattern(Color... colors) {
+    pattern = LEDPattern.gradient(GradientType.kContinuous, colors);
+  }
+  
   /**
    * changes the pattern to a gradient with all the colors you pass as arguments.
    *
-   * @param colors
+   * @param colors any number of Color arguments to go along the gradient
    * @return Command that makes it a gradient with all the colors
    */
-  public final Command gradientPattern(Color... colors) {
-    return this.runOnce(
-        () -> {
-          pattern = LEDPattern.gradient(GradientType.kContinuous, colors);
-        });
+  public final Command gradientPatternCommand(Color... colors) {
+    return this.runOnce(()->gradientPattern(colors));
   }
 
   /**
@@ -52,7 +54,7 @@ public final class Lights extends SubsystemBase {
    *
    * @param color The color to set the lights to
    */
-  public void setSolidPattern(Color color) {
+  public void solidPattern(Color color) {
     pattern = LEDPattern.solid(color);
   }
 
@@ -62,12 +64,12 @@ public final class Lights extends SubsystemBase {
    * @param color which color to do
    * @return Command which changes it to a solid color
    */
-  public final Command solidPattern(Color color) {
-    return this.runOnce(() -> setSolidPattern(color));
+  public final Command solidPatternCommand(Color color) {
+    return this.runOnce(() -> solidPattern(color));
   }
 
   /** Method to set the pattern to rainbow */
-  public void setRainbowPattern() {
+  public void rainbowPattern() {
     pattern =
         LEDPattern.rainbow(LightsConstants.kBrightestColor, LightsConstants.kBrightestColor)
             .scrollAtAbsoluteSpeed(LightsConstants.kScrollSpeed, LightsConstants.kLEDSpacing);
@@ -76,31 +78,67 @@ public final class Lights extends SubsystemBase {
   /**
    * makes the pattern rainbow
    *
-   * @return COmmand that does that
+   * @return Command that does that
    */
-  public final Command rainbowPattern() {
-    return this.runOnce(() -> setRainbowPattern());
+  public final Command rainbowPatternCommand() {
+    return this.runOnce(() -> rainbowPattern());
   }
 
   /**
    * Creates a new version of the current pattern at a different brightness.
    *
-   * @param multiplier between like 0.1 and 2
+   * @param multiplier between 0 and 100
    * @return command that does it
    */
-  public final Command multiplyBrightness(float multiplier) {
-    return this.runOnce(
-        () -> {
-          // doesnt work
-          pattern.atBrightness(Dimensionless.ofBaseUnits(multiplier, null));
-        });
+  public final void changeBrightness(byte multiplier) {
+    if (multiplier < 0) {
+      multiplier = 0;
+    } else if (multiplier > 100) {
+      multiplier = 100;
+    }
+    pattern.atBrightness(Percent.of(multiplier));
+  }
+  
+  /**
+   * changes the brightness but as a command
+   * @param mulitplier between 0 and 100
+   */
+  public final Command changeBrightnessCommand(byte multiplier) {
+    return this.runOnce(()->changeBrightness(multiplier));
+  }
+
+  /**
+   * show and hide the current pattern instantly at an interval
+   * No making it smooth or any of that fancy stuff
+   * 
+   * @param time milliseconds to show it for
+   * @param smooth whether its like a smooth pattern
+   */
+  public final void blink(short time, boolean smooth) {
+    if (time > Short.MAX_VALUE) {
+      time = Short.MAX_VALUE;
+    } else if (time < 0) {
+      time = 0;
+    }
+    if (smooth) {
+      pattern.breathe(Milliseconds.of(time));
+    } else {
+      pattern.blink(Milliseconds.of(time));
+    }
+  }
+
+  /**
+   * @see blink()
+   */
+  public final Command blinkCommand(short time, boolean smooth) {
+    return this.run(()->blinkCommand(time, smooth));
   }
 
   public void setPattern(Color color, boolean rainbow) {
     if (rainbow) {
-      setRainbowPattern();
+      rainbowPattern();
     } else {
-      setSolidPattern(color);
+      solidPattern(color);
     }
   }
 
