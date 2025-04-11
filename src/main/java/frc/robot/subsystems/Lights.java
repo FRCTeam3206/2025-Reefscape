@@ -12,6 +12,7 @@ import frc.robot.Constants.LightsConstants;
 
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -21,7 +22,7 @@ public final class Lights extends SubsystemBase {
   public final AddressableLED lights = new AddressableLED(LightsConstants.kPort);
   public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LightsConstants.kLength);
   public LEDPattern pattern = LEDPattern.solid(LightsConstants.kDefaultBlue);
-  public final short numberOfLights = (short) buffer.getLength();
+  public final int numberOfLights = buffer.getLength();
 
   public Lights() {
     lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
@@ -30,8 +31,9 @@ public final class Lights extends SubsystemBase {
     lights.start();
   }
 
+  @Override
   public void periodic() {
-    pattern.applyTo(buffer);
+    // pattern.applyTo(buffer);
     lights.setData(buffer);
   }
 
@@ -109,29 +111,28 @@ public final class Lights extends SubsystemBase {
 
   /**
    * show and hide the current pattern instantly at an interval
-   * No making it smooth or any of that fancy stuff
    * 
-   * @param time milliseconds to show it for
+   * @param time seconds to show it for
    * @param smooth whether its like a smooth pattern
    */
-  public final void blink(short time, boolean smooth) {
-    if (time > Short.MAX_VALUE) {
-      time = Short.MAX_VALUE;
+  public final void blink(double time, boolean smooth) {
+    if (time > 10) {
+      time = 10;
     } else if (time < 0) {
       time = 0;
     }
     if (smooth) {
-      pattern.breathe(Milliseconds.of(time));
+      pattern = pattern.breathe(Seconds.of(time));
     } else {
-      pattern.blink(Milliseconds.of(time));
+      pattern = pattern.blink(Seconds.of(time));
     }
   }
 
   /**
    * @see blink()
    */
-  public final Command blinkCommand(short time, boolean smooth) {
-    return this.run(()->blinkCommand(time, smooth));
+  public final Command blinkCommand(double time, boolean smooth) {
+    return this.runOnce(()->blink(time, smooth));
   }
 
   public void setPattern(Color color, boolean rainbow) {

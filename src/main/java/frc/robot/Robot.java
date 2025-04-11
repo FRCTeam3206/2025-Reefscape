@@ -228,28 +228,26 @@ public class Robot extends TimedRobot {
     m_climber.setDefaultCommand(
         m_climber.directControl(
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
-
-    m_lights.setDefaultCommand(
-      m_lights.blinkCommand((short) 2000, true)
-    );
     
     m_lights.setDefaultCommand(
-        m_lights.setPatternCommand(
-            () -> {
-              if (m_climber.getCanClimb()) {
-                return LightsConstants.kClimbGreen; // Light green (Light green-blue)
-              } else if (m_robotDrive.autoAligned()) {
-                return LightsConstants.kAlignedGreen; // Dark green (Green)
-              } else if (m_coral.hasCoral()) {
-                return Color.kWhite;
-              } else {
-                return LightsConstants.kDefaultBlue; // Blue
-              }
-            },
-            () -> {
-              return m_climber.getClimbed();
+      m_lights.blinkCommand(1.0, true)
+      /*m_lights.setPatternCommand(
+          () -> {
+            if (m_climber.getCanClimb()) {
+              return LightsConstants.kClimbGreen; // Light green (Light green-blue)
+            } else if (m_robotDrive.autoAligned()) {
+              return LightsConstants.kAlignedGreen; // Dark green (Green)
+            } else if (m_coral.hasCoral()) {
+              return Color.kWhite;
+            } else {
+              return LightsConstants.kDefaultBlue; // Blue
             }
-        ));
+          },
+          () -> {
+            return m_climber.getClimbed();
+          }
+      );*/
+    );
   }
 
   /**
