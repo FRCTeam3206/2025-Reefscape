@@ -111,4 +111,8 @@ public final class Lights extends SubsystemBase {
   public final Command blink(short milliseconds) {
     return this.runOnce(() -> {});
   }
+
+  public final Command solidPurple() {
+    return solidPattern(Color.kPurple);
+  }
 }

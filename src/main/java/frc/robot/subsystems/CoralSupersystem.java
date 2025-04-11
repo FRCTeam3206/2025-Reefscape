@@ -213,4 +213,8 @@ public class CoralSupersystem {
   public Command climb() {
     return m_arm.climbArm();
   }
+
+  public CoralIntake getIntake() {
+    return m_coralOmnis;
+  }
 }

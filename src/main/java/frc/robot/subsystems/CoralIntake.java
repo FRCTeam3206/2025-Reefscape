@@ -21,13 +21,34 @@ public class CoralIntake extends SubsystemBase {
         Configs.Coral.wheelsConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void intake() {
-    m_wheels.set(CoralConstants.kIntakeSpeed);
+  public void spinIn() {
+    m_wheels.set(-.5);
   }
+
+  public Command spinCommandIn() {
+    return run(()->spinIn());
+  }
+  
+  public Command intakeHalt() {
+    return run(()->spinIn()).until(()->hasCoral());
+  }
+
+  public Command timerIntake() {
+    return (run(()->spinIn()).until(()->!hasCoral())).andThen (run(()->spinIn()).withTimeout(1));
+  }
+
+public void spinOut() {
+  m_wheels.set(.5);
+}
+
+public Command spinCommandOut() {
+  return run(()->spinOut());
+}
 
   public void outake() {
     m_wheels.set(CoralConstants.kOutakeSpeed);
   }
+
 
   public boolean hasCoral() {
     return !m_coralSensor.get();
@@ -53,15 +74,15 @@ public class CoralIntake extends SubsystemBase {
     m_wheels.set(0);
   }
 
-  public Command intakeCommand() {
-    return this.run(
-        () -> {
-          intake();
-        });
-  }
+  // public Command intakeCommand() {
+  //   return this.run(
+  //       () -> {
+  //         intake();
+  //       });
+  // }
 
   public Command intakeUntilSuccessCommand() {
-    return intakeCommand().until(() -> hasCoral()).andThen(stopCommand());
+    return run(() -> spinIn());//intakeCommand().until(() -> hasCoral()).andThen(stopCommand());
   }
 
   public Command scoreCommand() {

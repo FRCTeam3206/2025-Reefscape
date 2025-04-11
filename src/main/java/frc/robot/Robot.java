@@ -128,53 +128,57 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_weaponsController.x().whileTrue(m_coral.getIntake().spinCommandIn());
+    m_weaponsController.y().whileTrue(m_coral.getIntake().spinCommandOut());
+    m_weaponsController.b().whileTrue(m_coral.getIntake().intakeHalt());
+    m_weaponsController.a().whileTrue(m_coral.getIntake().timerIntake());
     // if (Robot.isReal()) {
-    m_driverController
-        .button(1)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_fastMode = !m_fastMode;
-                  m_speedMultiplier =
-                      m_fastMode ? DriveConstants.kFastSpeed : DriveConstants.kSlowSpeed;
-                }));
-    m_driverController.button(7).whileTrue(m_robotDrive.setXCommand());
-    // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
-    // !m_fieldRelative));
-    // m_weaponsController
-    //     .a()
-    //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
-    m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    // } else {
-    //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
-    // }
+    // m_driverController
+    //     .button(1)
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               m_fastMode = !m_fastMode;
+    //               m_speedMultiplier =
+    //                   m_fastMode ? DriveConstants.kFastSpeed : DriveConstants.kSlowSpeed;
+    //             }));
+    // m_driverController.button(7).whileTrue(m_robotDrive.setXCommand());
+    // // m_weaponsController.back().onTrue(new InstantCommand(() -> m_fieldRelative =
+    // // !m_fieldRelative));
+    // // m_weaponsController
+    // //     .a()
+    // //     .onTrue(m_robotDrive.runOnce(() -> m_robotDrive.zeroHeading(m_robotDrive.getPose())));
+    // m_driverController.button(2).onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // // } else {
+    // //   m_weaponsController.start().onTrue(new InstantCommand(() -> resetRobotToFieldCenter()));
+    // // }
 
-    m_driverController.button(3).whileTrue(m_robotDrive.getToNearestReefCommand(false));
-    m_driverController.button(4).whileTrue(m_robotDrive.getToNearestReefCommand(true));
+    // m_driverController.button(3).whileTrue(m_robotDrive.getToNearestReefCommand(false));
+    // m_driverController.button(4).whileTrue(m_robotDrive.getToNearestReefCommand(true));
 
-    // m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
-    // m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
-    // m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
-    // m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
+    // // m_weaponsController.a().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(0)));
+    // // m_weaponsController.x().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(45)));
+    // // m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
+    // // m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
 
-    m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
-    m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
-    m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
-    m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
+    // m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
+    // m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
+    // m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
+    // m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
 
-    m_weaponsController.a().whileTrue(m_coral.floorIntake());
-    m_weaponsController.b().whileTrue(m_coral.feederIntakeCommand());
-    m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
-    m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
-    m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
-    m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
-    // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
-    m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
+    // m_weaponsController.a().whileTrue(m_coral.floorIntake());
+    // m_weaponsController.b().whileTrue(m_coral.feederIntakeCommand());
+    // m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
+    // m_weaponsController.povRight().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l2));
+    // m_weaponsController.x().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l3));
+    // m_weaponsController.y().whileTrue(m_coral.scoreToBranchCommand(ReefLevels.l4));
+    // // m_weaponsController.povRight().whileTrue(m_coral.armWristL2L3());
+    // m_weaponsController.back().whileTrue(m_coral.coralExtakeOverride());
 
-    m_weaponsController.start().whileTrue(m_coral.scoreWheels());
+    // m_weaponsController.start().whileTrue(m_coral.scoreWheels());
 
-    m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
-    m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
+    // m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
+    // m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
 
     // m_weaponsController.a().whileTrue(L4Stop(ReefPose.CLOSE_LEFT, true));
 
@@ -230,22 +234,24 @@ public class Robot extends TimedRobot {
         m_climber.directControl(
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
 
-    m_lights.setDefaultCommand(
-        m_lights.setPatternCommand(
-            () -> {
-              if (m_climber.getCanClimb()) {
-                return LightsConstants.kClimbGreen; // Light green (Light green-blue)
-              } else if (m_robotDrive.autoAligned()) {
-                return LightsConstants.kAlignedGreen; // Dark green (Green)
-              } else if (m_coral.hasCoral()) {
-                return LightsConstants.kCoralRed; // Red-orange
-              } else {
-                return LightsConstants.kDefaultBlue; // Blue
-              }
-            },
-            () -> {
-              return m_climber.getClimbed();
-            }));
+            m_lights.setDefaultCommand(m_lights.solidPurple());
+
+    // m_lights.setDefaultCommand(
+    //     m_lights.setPatternCommand(
+    //         () -> {
+    //           if (m_climber.getCanClimb()) {
+    //             return LightsConstants.kClimbGreen; // Light green (Light green-blue)
+    //           } else if (m_robotDrive.autoAligned()) {
+    //             return LightsConstants.kAlignedGreen; // Dark green (Green)
+    //           } else if (m_coral.hasCoral()) {
+    //             return LightsConstants.kCoralRed; // Red-orange
+    //           } else {
+    //             return LightsConstants.kDefaultBlue; // Blue
+    //           }
+    //         },
+    //         () -> {
+    //           return m_climber.getClimbed();
+    //         }));
   }
 
   /**
