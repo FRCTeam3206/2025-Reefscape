@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.pathing.utils.AllianceUtil;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants.ReefLevels;
-import frc.robot.Constants.LightsConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.NumCoralAuton;
 import frc.robot.Constants.PathingConstants.ReefPose;
@@ -228,26 +226,26 @@ public class Robot extends TimedRobot {
     m_climber.setDefaultCommand(
         m_climber.directControl(
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
-    
+
     m_lights.setDefaultCommand(
-      m_lights.blinkCommand(1.0, true)
-      /*m_lights.setPatternCommand(
-          () -> {
-            if (m_climber.getCanClimb()) {
-              return LightsConstants.kClimbGreen; // Light green (Light green-blue)
-            } else if (m_robotDrive.autoAligned()) {
-              return LightsConstants.kAlignedGreen; // Dark green (Green)
-            } else if (m_coral.hasCoral()) {
-              return Color.kWhite;
-            } else {
-              return LightsConstants.kDefaultBlue; // Blue
+        m_lights.blinkCommand(1.0, true)
+        /*m_lights.setPatternCommand(
+            () -> {
+              if (m_climber.getCanClimb()) {
+                return LightsConstants.kClimbGreen; // Light green (Light green-blue)
+              } else if (m_robotDrive.autoAligned()) {
+                return LightsConstants.kAlignedGreen; // Dark green (Green)
+              } else if (m_coral.hasCoral()) {
+                return Color.kWhite;
+              } else {
+                return LightsConstants.kDefaultBlue; // Blue
+              }
+            },
+            () -> {
+              return m_climber.getClimbed();
             }
-          },
-          () -> {
-            return m_climber.getClimbed();
-          }
-      );*/
-    );
+        );*/
+        );
   }
 
   /**

@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.units.measure.Dimensionless;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -9,11 +11,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
-
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Seconds;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -40,7 +37,7 @@ public final class Lights extends SubsystemBase {
   public final void gradientPattern(Color... colors) {
     pattern = LEDPattern.gradient(GradientType.kContinuous, colors);
   }
-  
+
   /**
    * changes the pattern to a gradient with all the colors you pass as arguments.
    *
@@ -48,7 +45,7 @@ public final class Lights extends SubsystemBase {
    * @return Command that makes it a gradient with all the colors
    */
   public final Command gradientPatternCommand(Color... colors) {
-    return this.runOnce(()->gradientPattern(colors));
+    return this.runOnce(() -> gradientPattern(colors));
   }
 
   /**
@@ -100,18 +97,19 @@ public final class Lights extends SubsystemBase {
     }
     pattern = pattern.atBrightness(Percent.of(multiplier));
   }
-  
+
   /**
    * changes the brightness but as a command
+   *
    * @param mulitplier between 0 and 100
    */
   public final Command changeBrightnessCommand(double multiplier) {
-    return this.runOnce(()->changeBrightness(multiplier));
+    return this.runOnce(() -> changeBrightness(multiplier));
   }
 
   /**
    * show and hide the current pattern instantly at an interval
-   * 
+   *
    * @param time seconds to show it for
    * @param smooth whether its like a smooth pattern
    */
@@ -132,7 +130,7 @@ public final class Lights extends SubsystemBase {
    * @see blink()
    */
   public final Command blinkCommand(double time, boolean smooth) {
-    return this.runOnce(()->blink(time, smooth));
+    return this.runOnce(() -> blink(time, smooth));
   }
 
   public void setPattern(Color color, boolean rainbow) {
