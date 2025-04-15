@@ -25,15 +25,15 @@ public final class Lights extends SubsystemBase {
   public final int numberOfLights = buffer.getLength();
 
   public Lights() {
-    lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
-    lights.setSyncTime(LightsConstants.kMicrosecondsSync);
+    // lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
+    // lights.setSyncTime(LightsConstants.kMicrosecondsSync);
     lights.setLength(numberOfLights);
     lights.start();
   }
 
   @Override
   public void periodic() {
-    // pattern.applyTo(buffer);
+    pattern.applyTo(buffer);
     lights.setData(buffer);
   }
 
