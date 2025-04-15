@@ -228,6 +228,9 @@ public class Robot extends TimedRobot {
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
 
     m_lights.setDefaultCommand(
+        // The problem here is that the default command re-runs, so it keeps calling blinkCommand()
+        // when you only want to call it once. We need to re-consider the desired states and the
+        // logic for setting the lights into those states.
         m_lights.blinkCommand(1.0, true)
         /*m_lights.setPatternCommand(
             () -> {
