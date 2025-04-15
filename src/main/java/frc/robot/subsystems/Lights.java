@@ -98,7 +98,7 @@ public final class Lights extends SubsystemBase {
     } else if (multiplier > 100) {
       multiplier = 100;
     }
-    pattern.atBrightness(Percent.of(multiplier));
+    pattern = pattern.atBrightness(Percent.of(multiplier));
   }
   
   /**
