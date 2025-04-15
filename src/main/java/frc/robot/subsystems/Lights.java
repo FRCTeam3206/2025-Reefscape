@@ -92,7 +92,7 @@ public final class Lights extends SubsystemBase {
    * @param multiplier between 0 and 100
    * @return command that does it
    */
-  public final void changeBrightness(byte multiplier) {
+  public final void changeBrightness(double multiplier) {
     if (multiplier < 0) {
       multiplier = 0;
     } else if (multiplier > 100) {
@@ -105,7 +105,7 @@ public final class Lights extends SubsystemBase {
    * changes the brightness but as a command
    * @param mulitplier between 0 and 100
    */
-  public final Command changeBrightnessCommand(byte multiplier) {
+  public final Command changeBrightnessCommand(double multiplier) {
     return this.runOnce(()->changeBrightness(multiplier));
   }
 
@@ -147,7 +147,7 @@ public final class Lights extends SubsystemBase {
     return run(() -> setPattern(color.get(), rainbow.getAsBoolean()));
   }
 
-  public final Command blink(short milliseconds) {
-    return this.runOnce(() -> {});
+  public final Command blink(int milliseconds) {
+    return runOnce(() -> {});
   }
 }
