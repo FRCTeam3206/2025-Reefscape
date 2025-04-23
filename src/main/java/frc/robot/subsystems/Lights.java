@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LightsConstants;
+
+import static edu.wpi.first.units.Units.Percent;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -23,8 +26,8 @@ public final class Lights extends SubsystemBase {
   public boolean alternateFirstColor = true;
 
   public Lights() {
-    lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
-    lights.setSyncTime(LightsConstants.kMicrosecondsSync);
+    // lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
+    // lights.setSyncTime(LightsConstants.kMicrosecondsSync);
     lights.setLength(numberOfLights);
     lights.start();
   }
@@ -53,7 +56,7 @@ public final class Lights extends SubsystemBase {
    * @param color The color to set the lights to
    */
   public void setSolidPattern(Color color) {
-    pattern = LEDPattern.solid(color);
+    pattern = LEDPattern.solid(color).atBrightness(Percent.of(LightsConstants.kAmoutOfBrightness));
   }
 
   /**
@@ -113,6 +116,6 @@ public final class Lights extends SubsystemBase {
   }
 
   public final Command solidPurple() {
-    return solidPattern(Color.kPurple);
+    return solidPattern(Color.kLavender);
   }
 }

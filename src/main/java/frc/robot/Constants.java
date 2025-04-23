@@ -309,6 +309,8 @@ public final class Constants {
     /** hue that takes you all the way back to red, in degrees */
     public static final short kMaxHue = 180;
 
+    public static final double kAmoutOfBrightness = 50;
+
     public static final Distance kLEDSpacing = Meters.of(1 / 120.0);
     public static final LinearVelocity kScrollSpeed = MetersPerSecond.of(1);
 
@@ -316,6 +318,7 @@ public final class Constants {
     public static final Color kAlignedGreen = Color.fromHSV(0, 255, 100);
     public static final Color kCoralRed = Color.fromHSV(60, 255, 100);
     public static final Color kClimbGreen = Color.fromHSV(175, 220, 100);
+    public static final Color kRealPurple = Color .fromHSV(90, 180, 100);
   }
 
   public static final class CoralConstants {

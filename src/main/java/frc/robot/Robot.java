@@ -234,7 +234,8 @@ public class Robot extends TimedRobot {
         m_climber.directControl(
             () -> -MathUtil.applyDeadband(m_weaponsController.getRightY(), 0.5)));
 
-            m_lights.setDefaultCommand(m_lights.solidPurple());
+            
+    m_lights.setDefaultCommand(m_lights.solidPurple());
 
     // m_lights.setDefaultCommand(
     //     m_lights.setPatternCommand(
