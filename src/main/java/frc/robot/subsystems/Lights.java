@@ -116,6 +116,10 @@ public final class Lights extends SubsystemBase {
   }
 
   public final Command solidPurple() {
-    return solidPattern(Color.kLavender);
+    return solidPattern(LightsConstants.kRealPurple);
+  }
+
+  public final Command ifTruePurple(Supplier<Boolean> setPurple) {
+    return setPatternCommand(()->setPurple.get()?LightsConstants.kRealPurple:Color.kBlue,()->false);
   }
 }

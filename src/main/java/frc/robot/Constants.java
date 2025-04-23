@@ -318,7 +318,7 @@ public final class Constants {
     public static final Color kAlignedGreen = Color.fromHSV(0, 255, 100);
     public static final Color kCoralRed = Color.fromHSV(60, 255, 100);
     public static final Color kClimbGreen = Color.fromHSV(175, 220, 100);
-    public static final Color kRealPurple = Color .fromHSV(90, 180, 100);
+    public static final Color kRealPurple = Color .fromHSV(160, 180, 100);
   }
 
   public static final class CoralConstants {
