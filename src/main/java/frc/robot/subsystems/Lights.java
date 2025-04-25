@@ -23,8 +23,8 @@ public final class Lights extends SubsystemBase {
   public boolean alternateFirstColor = true;
 
   public Lights() {
-    lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
-    lights.setSyncTime(LightsConstants.kMicrosecondsSync);
+    // lights.setColorOrder(AddressableLED.ColorOrder.kRGB);
+    // lights.setSyncTime(LightsConstants.kMicrosecondsSync);
     lights.setLength(numberOfLights);
     lights.start();
   }

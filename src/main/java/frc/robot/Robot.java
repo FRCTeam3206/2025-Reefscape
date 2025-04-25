@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +35,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathingConstants.NumCoralAuton;
 import frc.robot.Constants.PathingConstants.ReefPose;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Algae2;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralSupersystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -73,12 +75,11 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Algae m_algae = new Algae();
   private final CoralSupersystem m_coral = new CoralSupersystem();
 
   private final ClimberSubsystem m_climber = new ClimberSubsystem();
   private final Lights m_lights = new Lights();
-
+  private final Algae2 algae = new Algae2();
   private boolean m_fieldRelative = true;
   private boolean m_invertControls = true;
   private double m_speedMultiplier = DriveConstants.kSlowSpeed;
@@ -157,11 +158,6 @@ public class Robot extends TimedRobot {
     // m_weaponsController.y().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(75)));
     // m_weaponsController.b().whileTrue(m_coral.armToAngle(Rotation2d.fromDegrees(30)));
 
-    m_weaponsController.povUp().whileTrue(m_algae.extendCommandContinuous());
-    m_weaponsController.povDown().whileTrue(m_algae.retractCommandContinuous());
-    m_weaponsController.rightTrigger().whileTrue(m_algae.intakeCommand());
-    m_weaponsController.leftTrigger().whileTrue(m_algae.extakeCommand());
-
     m_weaponsController.a().whileTrue(m_coral.floorIntake());
     m_weaponsController.b().whileTrue(m_coral.feederIntakeCommand());
     m_weaponsController.povLeft().whileTrue(m_coral.placeLevelOne());
@@ -175,6 +171,7 @@ public class Robot extends TimedRobot {
 
     m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
     m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
+    m_weaponsController.rightTrigger().whileTrue(algae.intakeAlgaeCommand());
 
     // m_weaponsController.a().whileTrue(L4Stop(ReefPose.CLOSE_LEFT, true));
 
@@ -223,7 +220,6 @@ public class Robot extends TimedRobot {
     // m_coral.getArm().setDefaultCommand(m_coral.getArm().setVoltageDirectly(() ->
     // m_weaponsController.getLeftY()));
 
-    m_algae.setDefaultCommand(m_algae.holdPositionCommand());
     // m_elevator.setDefaultCommand(m_elevator.stopCommand());
 
     m_climber.setDefaultCommand(
@@ -240,12 +236,13 @@ public class Robot extends TimedRobot {
               } else if (m_coral.hasCoral()) {
                 return LightsConstants.kCoralRed; // Red-orange
               } else {
-                return LightsConstants.kDefaultBlue; // Blue
+                return Color.kAquamarine; // Blue
               }
             },
             () -> {
               return m_climber.getClimbed();
             }));
+            algae.setDefaultCommand(algae.stopAlgaeCommand());
   }
 
   /**
