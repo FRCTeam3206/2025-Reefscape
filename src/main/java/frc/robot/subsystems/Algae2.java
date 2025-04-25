@@ -10,17 +10,17 @@ import frc.robot.Constants.AlgaeConstants;
 public class Algae2 extends SubsystemBase {
     private SparkMax algaeWheels = new SparkMax(AlgaeConstants.kWheelsCanId, MotorType.kBrushless);
     public Algae2() { }
-    public void intakeAlgae() {
-        algaeWheels.set(0.1);
+    public Command setPowerCommand(double speed) {
+        return run(()->algaeWheels.set(speed));
     }
     public Command intakeAlgaeCommand() {
-        return run(()->intakeAlgae()); 
+        return setPowerCommand(AlgaeConstants.kAlgeaIntakeWheelSpeed);
     } 
-    public void stopAlgae() {
-        algaeWheels.set(0.0);
-    }
     public Command stopAlgaeCommand() {
-        return run(()->stopAlgae());
+        return setPowerCommand(0.0);
+    }
+    public Command extakeCommand() {
+        return setPowerCommand(AlgaeConstants.kALgaeExtakeSpeed);
     }
     
 

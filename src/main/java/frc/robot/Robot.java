@@ -172,6 +172,7 @@ public class Robot extends TimedRobot {
     m_weaponsController.leftBumper().whileTrue(m_climber.deployCommand());
     m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
     m_weaponsController.rightTrigger().whileTrue(algae.intakeAlgaeCommand());
+    m_weaponsController.leftTrigger().whileTrue(algae.extakeCommand());
 
     // m_weaponsController.a().whileTrue(L4Stop(ReefPose.CLOSE_LEFT, true));
 

@@ -239,6 +239,8 @@ public final class Constants {
     public static final double kHoldUpVoltage = -.6;
     public static final double kHoldDownVoltage = 0.2;
 
+    public static final double kAlgeaIntakeWheelSpeed = 0.3;
+    public static final double kALgaeExtakeSpeed = -0.3;
     public static final double kRetractSpeed = -0.6;
     public static final double kExtendSpeed = 0.05;
     public static final double kRetractedAngle = 0.1;
