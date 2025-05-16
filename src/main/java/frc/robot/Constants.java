@@ -230,7 +230,8 @@ public final class Constants {
   public static final class AlgaeConstants {
     public static final int kArmCanId = 42;
     public static final int kWheelsCanId = 41;
-
+    public static final double kArmUpSpeed = -0.2;
+    public static final double kArmDownSpeed = 0.05;
     public static final DCMotor kArmMotorType = DCMotor.getNEO(1);
     public static final DCMotor kWheelsMotorType = DCMotor.getNeo550(1);
 

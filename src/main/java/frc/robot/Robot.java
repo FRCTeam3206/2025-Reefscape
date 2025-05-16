@@ -173,6 +173,8 @@ public class Robot extends TimedRobot {
     m_weaponsController.rightBumper().onFalse(m_climber.climbCommand().alongWith(m_coral.climb()));
     m_weaponsController.rightTrigger().whileTrue(algae.intakeAlgaeCommand());
     m_weaponsController.leftTrigger().whileTrue(algae.extakeCommand());
+    m_weaponsController.povDown().whileTrue(algae.moveArmDown());
+    m_weaponsController.povUp().whileTrue(algae.moveArmUp());
 
     // m_weaponsController.a().whileTrue(L4Stop(ReefPose.CLOSE_LEFT, true));
 
@@ -243,7 +245,7 @@ public class Robot extends TimedRobot {
             () -> {
               return m_climber.getClimbed();
             }));
-            algae.setDefaultCommand(algae.stopAlgaeCommand());
+    algae.setDefaultCommand(algae.stopCommand());
   }
 
   /**
