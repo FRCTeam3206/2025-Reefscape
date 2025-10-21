@@ -50,7 +50,8 @@ public class CoralSupersystem {
 
   public Command defaultArm() {
     return ((m_wrist.toHorizontalStop().alongWith(m_coralOmnis.stopCommand()))
-        .andThen(m_arm.toStored())).alongWith(m_elevator.stopCommand());
+            .andThen(m_arm.toStored()))
+        .alongWith(m_elevator.stopCommand());
   }
 
   /**
