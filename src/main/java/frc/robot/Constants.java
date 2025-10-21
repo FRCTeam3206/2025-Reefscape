@@ -89,7 +89,7 @@ public final class Constants {
     // These values need to be tuned.
     public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.5, 0.5, 0.1);
 
-    public static final double kFastSpeed = 0.8;
+    public static final double kFastSpeed = 0.95;
     public static final double kSlowSpeed = 0.5;
   }
 
@@ -615,7 +615,7 @@ public final class Constants {
     public static final double kArmMOI = 0.1; // 0.395; // kg*m² - estimated from CAD
 
     public static final double kPosOffset = Units.inchesToMeters(11);
-    public static final double kL2Pos = 0.40; // .78;
+    public static final double kL2Pos = 0.5; // .78;
     public static final double kL3Pos = 0.82;
     public static final double kL4Pos = 1.46;
 
